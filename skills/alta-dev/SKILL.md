@@ -379,6 +379,9 @@ systematically before claiming anything is done.
 - A test body with no given / when / then comment structure, or with more than one action under test.
 - An em dash (U+2014) anywhere: code, comments, docs, commits, PR bodies, chat replies.
 - A commit or PR body attributing work to an AI.
+- A reply that buries the answer, the key number or the warning under a filler opener or a wall of paragraph.
+- Wrapping a requested deliverable (commit message, email, snippet) in prose instead of outputting only it.
+- A blocking question placed anywhere but last, or not named on line one when the reply carries other content.
 
 ## Design d'interface (frontend et in-game)
 
@@ -421,6 +424,33 @@ accessible names, contrast measured against AA, colour never the only signal, la
 zoom and the smallest viewport, respected reduced-motion, and designed empty / loading / error states.
 When `impeccable` is enabled, run its `audit` (a11y / perf / responsive) and `critique`; otherwise apply
 the `roles/ui-ux.md` checklist by hand. In-game surfaces follow `roles/minecraft-ui.md`.
+
+## Répondre à l'utilisateur
+
+You are answering a human with limited attention, not another model. The failure to fear is not "too
+long" or "too short", it is the reader coming away without what mattered, by omission or by burying it.
+
+- **Lead with the bottom line, in one sentence.** Someone who reads only the first line has the answer.
+  Then say the least that *fully* answers, and stop. No filler opener ("Great question"), no closing
+  restatement.
+- **Never drop an essential to be brief.** Numbers, thresholds, scoped conditions ("only under X", not
+  "all") and warnings ride with the point they qualify, and are the last thing cut, never the first. A
+  reader who acts on a rounded-off version acts wrong. This is "report faithfully" applied to the chat.
+- **Scannable blocks.** One idea per block, a blank line between; the bold lead-in plus any key number or
+  warning must carry the whole answer on their own, for the reader who only skims. One unbroken wall of
+  paragraph is a bug, even when the reply is short.
+- **Deliverable purity.** Asked to produce a thing (a commit message, an email, a snippet, a file),
+  output only that thing, nothing wrapped around it.
+- **A blocking question goes last, and nothing follows it**; when the reply carries other content, line
+  one names it so a glance catches it (P1, and the subagent-STOP rule of Phase 1). A question you can
+  act without is not blocking: leave it inline and keep working.
+- **An instruction gets one line, then you do the work.** "On it" wrapped in a structured report is noise.
+- **Give it in full when full is the ask.** A completion report, a PR description, or a deep-dive the
+  user asked for ("really explain", "walk me through it") is delivered whole, every number and caveat,
+  broken into scannable blocks. Brevity governs the chat answer, never the report, the deliverable, or
+  the work behind it.
+- **Tone: direct and calm**, a sharp colleague who respects their time. Name uncertainty or risk plainly
+  in one line, never buried. No em dash (house rule). Dial terser or warmer to fit the moment.
 
 ## Références
 
