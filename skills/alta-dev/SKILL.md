@@ -263,6 +263,34 @@ Receiving the same correction twice is the failure this prevents. What was learn
 an explicit correction (a convention discovered, a decision made, a preference stated) is swept at
 the end by **Phase 6**.
 
+## Signaler un problème (proposer un ticket)
+
+Any bug, inconsistency, or broken feature you notice gets surfaced as a GitHub issue proposal,
+whether it is the task itself or something you stumbled on beside it. Spotting it and staying silent
+is the failure this prevents.
+
+**Fix it or file it, not both by accident:**
+- The problem **is** the task: fix it. A tracking issue only if the project drives work through issues.
+- **Incidental**, outside the current scope: do not fix it inline (that is scope creep). Propose a
+  ticket and keep going.
+
+When you find one:
+
+1. **Confirm it is real** before saying a word: reproduce it, or point at the exact `file:line` with
+   expected vs actual. A plausible guess is not a bug (Ne jamais fabriquer). If you cannot confirm,
+   say so instead of filing speculation.
+2. **Check for a duplicate**: `gh issue list --search "<keywords>" --state all`. If it already exists,
+   link it instead of opening another.
+3. **Draft the issue and show it first.** Reuse the repo's `.github/ISSUE_TEMPLATE` and its labels when
+   present; otherwise a concrete title (`area: symptom`), then expected vs actual, the minimal repro or
+   trigger, evidence (`file:line`, commit, log), impact, and a suggested direction if you have one.
+   Bug-report shape: `roles/product.md`.
+4. **Create only on the user's OK**: `gh issue create --title ... --body ... [--label ...]` in the
+   current repo. Never open an issue silently, and never in a repo you were not asked to touch. Report
+   the issue URL.
+
+One concrete ticket beats a bug lost in the diff.
+
 ## Table des rationalisations
 
 The ones that fire most often. **Full set, grouped by theme: `references/rationalizations.md`.** Read it
@@ -283,6 +311,8 @@ systematically before claiming anything is done.
 | "Review only left nitpicks, close enough." | Nitpicks are in scope. Loop until clean. |
 | "The session is over, I'll remember next time." | Next session is fresh context; it remembers nothing you did not write. Consolidate now. (Phase 6) |
 | "That is a minor preference, not worth recording." | Every repeated correction began as a minor preference. Persist it where it belongs. (Phase 6) |
+| "It is a minor glitch, not worth a ticket." | Real bugs get tracked. Draft the issue and let the user decide; do not choose silence for them. |
+| "I will just fix this unrelated bug while I am here." | Incidental bug: file a ticket, do not widen the diff. Fix only what the task is. |
 
 ## Red flags: stop
 
@@ -308,6 +338,8 @@ systematically before claiming anything is done.
 - Promoting spike code into the implementation.
 - Reporting a batch as done while any ledger row is unfinished.
 - Receiving the same correction a second time.
+- Finding a bug, inconsistency or broken feature and moving on without proposing a ticket.
+- Fixing an incidental, out-of-scope bug inline instead of filing it.
 - Ending a session without consolidating what it taught (Phase 6 skipped).
 - Persisting a transcript or task log instead of the durable rules behind it.
 - Writing a learning into a new file when an existing doc already owns the topic.
