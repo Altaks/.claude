@@ -1,16 +1,16 @@
 ---
 name: cybersec-catalog
-description: Use for any AUTHORIZED offensive or defensive security task — red team, pentest, bug bounty, exploit/CVE work, malware analysis, DFIR, incident response, threat hunting, detection engineering, SIEM/YARA/Sigma, cloud/mobile/IoT/OT security, or CTF. A large security skill library (872 skills) is installed but kept disabled to save context; this skill tells you it exists and how to switch it on.
+description: Use for any AUTHORIZED offensive or defensive security task: red team, pentest, bug bounty, exploit/CVE work, malware analysis, DFIR, incident response, threat hunting, detection engineering, SIEM/YARA/Sigma, cloud/mobile/IoT/OT security, or CTF. A large security skill library (872 skills) is installed but kept disabled to save context; this skill tells you it exists and how to switch it on.
 ---
 
-# cybersec-catalog — gateway to the opt-in security library
+# cybersec-catalog: gateway to the opt-in security library
 
 A vendored library of **872 offensive + defensive security skills** (`cybersec` plugin) is present
 in this configuration but **disabled by default** so it costs ~0 context tokens in normal projects.
-It is invisible to you until enabled — that is intentional.
+It is invisible to you until enabled; that is intentional.
 
 **Coverage:** red team, exploit dev, web/API appsec, active directory, wireless, cloud (AWS/Azure/GCP),
-mobile, IoT/OT, supply chain, C2 — and the defensive side: DFIR, memory/disk forensics, detection
+mobile, IoT/OT, supply chain, C2, and the defensive side: DFIR, memory/disk forensics, detection
 engineering (Sigma/YARA/Splunk SPL), incident response, threat hunting, SIEM, hardening. MITRE ATT&CK-mapped.
 
 ## When this skill triggers

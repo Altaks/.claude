@@ -1,6 +1,6 @@
 ---
 name: alta-dev
-description: Use when implementing a feature, fixing a bug, refactoring, reviewing a PR or diff, or preparing work to ship, in any language or project. Triggers on "/alta-dev", "/alta-implement", "/alta-review", "implement X", "fix Y", "review this PR / branch / diff", "check this against our standards", or any request to build or audit something the way the user does it.
+description: Use when implementing a feature, fixing a bug, refactoring, reviewing a PR or diff, preparing work to ship, or wrapping up a work session, in any language or project. Triggers on "/alta-dev", "/alta-implement", "/alta-review", "implement X", "fix Y", "review this PR / branch / diff", "check this against our standards", "consolidate what we learned / fin de session", or any request to build or audit something the way the user does it.
 ---
 
 # alta-dev
@@ -222,6 +222,33 @@ Full contract: `roles/delivery.md`.
 5. **Point at the commit** carrying each fix, and apply the comment to every other occurrence.
 6. Re-run the gate after each fix pass. Detail in `roles/code-review.md`.
 
+### Phase 6: consolider (la boucle de renforcement)
+
+The session taught things that must outlive it: fresh context next time means an unwritten
+lesson is lost. Run this when wrapping up, i.e. the work is shipped or the question answered and
+the session is ending, the moment the user signals "we're done" / "fin de session", or when a
+`Stop` / session-end hook triggers it.
+
+Corrections were already persisted as they arrived (§Quand on te corrige). Phase 6 sweeps
+everything else the whole discussion produced.
+
+1. **Harvest the durable, not the transcript.** Across the entire discussion, keep only what a
+   future session would need and could not re-derive: rules and preferences the user stated,
+   conventions found in the codebase, decisions and their rationale, gotchas, recurring habits.
+   Drop one-off task state and anything already written or obvious from the code and git history.
+2. **Route each item to its single home (P7, single source of truth).**
+   - Project behaviour, rules, habits, conventions → the project's `CLAUDE.md` / `AGENTS.md`.
+   - Project facts, setup, architecture, a decision worth its reasoning → `README.md`, `docs/`, an ADR.
+   - Your own cross-project working preference → the memory system.
+   - A rule belonging to this standard → the matching `references/` document.
+3. **Read the target before writing.** Update the entry that already covers it; never add a parallel
+   note beside one that owns the topic (P4). Keep the file's own structure, style and wording.
+   Factual, not speculative; relative dates made absolute; no invented rule; no em dash.
+4. **Report the ledger**: one line per file touched (what, where), plus anything you were unsure
+   whether to record, for the user to confirm. Do not commit or push these unless asked.
+
+**Sortie**: the updated docs/memory, and the ledger of what was persisted and where.
+
 ## Quand on te corrige
 
 A correction is a rule you did not have. Fixing the line is half the job.
@@ -232,11 +259,13 @@ A correction is a rule you did not have. Fixing the line is half the job.
 3. **Add it to the rationalization table** when it came with an excuse.
 4. **Say what you persisted and where.**
 
-Receiving the same correction twice is the failure this prevents.
+Receiving the same correction twice is the failure this prevents. What was learned *without* being
+an explicit correction (a convention discovered, a decision made, a preference stated) is swept at
+the end by **Phase 6**.
 
 ## Table des rationalisations
 
-The ten that fire most often. **Full set, grouped by theme: `references/rationalizations.md`.** Read it
+The ones that fire most often. **Full set, grouped by theme: `references/rationalizations.md`.** Read it
 the moment a sentence starting with "close enough", "I'll just", "surely" or "later" forms, and
 systematically before claiming anything is done.
 
@@ -252,6 +281,8 @@ systematically before claiming anything is done.
 | "I could not run the gate, so I described what it would do." | Not run is not passed. Say it up front. |
 | "3 of the 5 tasks are done, the run is complete." | It is not. State the score and what is left. |
 | "Review only left nitpicks, close enough." | Nitpicks are in scope. Loop until clean. |
+| "The session is over, I'll remember next time." | Next session is fresh context; it remembers nothing you did not write. Consolidate now. (Phase 6) |
+| "That is a minor preference, not worth recording." | Every repeated correction began as a minor preference. Persist it where it belongs. (Phase 6) |
 
 ## Red flags: stop
 
@@ -277,6 +308,9 @@ systematically before claiming anything is done.
 - Promoting spike code into the implementation.
 - Reporting a batch as done while any ledger row is unfinished.
 - Receiving the same correction a second time.
+- Ending a session without consolidating what it taught (Phase 6 skipped).
+- Persisting a transcript or task log instead of the durable rules behind it.
+- Writing a learning into a new file when an existing doc already owns the topic.
 - Claiming done without having watched the test go red with the change reverted.
 - An em dash (U+2014) anywhere: code, comments, docs, commits, PR bodies, chat replies.
 - A commit or PR body attributing work to an AI.
