@@ -148,6 +148,8 @@ templates.
 3. **If a human sees any of it, the UX is part of the spec.** `roles/ui-ux.md`, decided now: what
    confirms the action, what the refusal says and why, the empty / loading / error states, the exact
    wording. A screen, a command output, a chat line and an error string are all user-facing.
+   **Show visual UI before you build it** (see `## Design d'interface`): a preview the user signs off
+   on, never straight to code.
 4. **Design against the intended architecture, not around it.** If an architecture document or diagram
    exists, read the relevant region and ask whether this was already envisioned. If yes, build it under
    the planned name, shape and layering rather than a side structure. Evolving the core toward the plan
@@ -187,7 +189,9 @@ templates.
    nitpick. Re-run the gate, re-review. One surviving nitpick means you are not done.
    Close with the **five-pillar check**: what did this make harder to read, to change, to extend? Did
    anything get slower, and was it measured? Does anything exist for a case that does not exist yet?
-   **User-facing** adds the `roles/ui-ux.md` checklist. **Any permission, scope, origin or token**
+   **User-facing** adds the `roles/ui-ux.md` checklist and the accessibility gate (**WCAG 2.2 AA**,
+   measured, not eyeballed), plus the `impeccable` `audit` when that skill is enabled (see
+   `## Design d'interface`). **Any permission, scope, origin or token**
    granted must be a whitelist at minimum size, with the reason next to it.
 6. **Fill the completion report** (template in `worked-example.md`): gate command and outcome, unit
    tests and what they assert, end-to-end file and exact signal, the revert-proof, the residue and why,
@@ -332,6 +336,9 @@ systematically before claiming anything is done.
 - A conditional growing by one branch per type.
 - A `catch` without a logger, or a silent `return` on a user-triggered action.
 - A user-facing string written as a literal.
+- Coding a visual UI before showing a preview the user signed off on.
+- Shipping the templated default look (centered hero, three equal cards, untouched component library) with no point of view.
+- A colour pair shipped without a measured contrast ratio; meaning carried by colour alone; no visible focus state or keyboard path.
 - Proposing a fix without being able to say why the bug happened.
 - Retrying, skipping or loosening a failing test instead of hunting the race behind it.
 - Changing a shipped surface in place instead of expanding then contracting.
@@ -347,6 +354,48 @@ systematically before claiming anything is done.
 - An em dash (U+2014) anywhere: code, comments, docs, commits, PR bodies, chat replies.
 - A commit or PR body attributing work to an AI.
 
+## Design d'interface (frontend et in-game)
+
+Two failure modes to kill: shipping **AI slop** (the generic, templated look with no point of view),
+and skipping the parts that make an interface **usable and accessible**.
+
+### Preview before code (mandatory for anything visual)
+
+Never go straight to code for a screen, component or in-game menu the user has not seen. Show it first,
+get sign-off, then build. This is Phase 1, and it replaces prose speculation about "what it could look
+like".
+
+- A single web screen or component: an **Artifact** (live, clickable HTML). Load `artifact-design` for
+  the design pass, `dataviz` when it charts data.
+- A multi-screen flow, or several visual directions to choose from: the **Claude Design** canvas (the
+  `design` skill), one artboard per screen or variant.
+- In-game (Minecraft / Spigot): a text mockup of the exact rendered surface (chat block, scoreboard,
+  chest-GUI slot grid, item lore) at the real client width, per `roles/minecraft-ui.md`.
+
+### Not AI slop (have a point of view)
+
+Load the design language **before** designing: **`impeccable` if that skill is available** (propose
+enabling its plugin for real frontend work), otherwise the **`frontend-design`** skill. Both exist to
+push past the safe, templated default.
+
+- **Direction first**: the mode (persuade / operate / read / experience), the one adjective this surface
+  should feel, the reference it is not. A UI with no POV defaults to slop.
+- **Distinctive by intention**: a real type hierarchy and a chosen typeface, a deliberate colour system
+  (not the framework's defaults), decided spacing and rhythm, one memorable detail.
+- **The tells to avoid**: the centered hero over three equal cards, default component-library styling
+  left untouched, evenly grey everything, emoji as iconography, gradient on everything, copy that says
+  nothing. Consistency is not monotony: vary weight and scale to build hierarchy.
+
+### Accessible and correct by default (not a later pass)
+
+The floor is **WCAG 2.2 AA**, checked not eyeballed, and it is a **blocking** review category for
+user-facing web work. Details and the checklist: `roles/ui-ux.md` and `roles/frontend.md`. Essentials:
+semantic HTML (landmarks, headings, lists, buttons vs links), a full keyboard path with visible focus,
+accessible names, contrast measured against AA, colour never the only signal, layout holding at 200%
+zoom and the smallest viewport, respected reduced-motion, and designed empty / loading / error states.
+When `impeccable` is enabled, run its `audit` (a11y / perf / responsive) and `critique`; otherwise apply
+the `roles/ui-ux.md` checklist by hand. In-game surfaces follow `roles/minecraft-ui.md`.
+
 ## Références
 
 `references/principles.md` is always relevant. Everything else loads on demand: **normally one role
@@ -358,7 +407,7 @@ plus one language**. A change crossing disciplines reads several.
 - **product** : turning a request into a spec, user stories, acceptance criteria, bug reports, vertical slicing, spikes. Phase 1 in full.
 - **ui-ux** : **obligatoire** as soon as a human sees any of it, screen, form, command output, chat line, error string. Read in Phase 1, checklist before done.
 - **backend** : services, use cases, APIs, error taxonomy, DTOs.
-- **frontend** : web UI, atomic design, state, data access, contrast, tokens, performance budgets.
+- **frontend** : web UI, atomic design, state, data access, contrast, tokens, performance budgets, design direction (anti-slop), accessibility (WCAG 2.2 AA), preview before code.
 - **mobile** : Flutter, Android, iOS. Layout, state, platform reality, quality gate.
 - **desktop-and-cli** : desktop apps, CLI, TUI, engines. Core/shell split, backends behind one trait, packaging.
 - **networking** : anything crossing a wire. Contracts, interceptors, timeouts, retries, streams, shading.
@@ -371,6 +420,7 @@ plus one language**. A change crossing disciplines reads several.
 - **concurrency** : threads, queues, events, retries. Races, ordering, idempotency, outbox, back-pressure, flaky tests.
 - **iot-and-embedded** : firmware, sensor nodes, acquisition chains, the hardware/application split.
 - **gameplay** : game logic, plugins, tick loops, registries and events, player-facing output.
+- **minecraft-ui** : in-game Spigot/Paper interfaces - chat, scoreboard, tab, chest-GUI menus, item lore, action/boss bar, titles. Read with `gameplay` and `ui-ux`.
 - **time** : any instant, date, duration, schedule, expiry or cooldown.
 - **i18n** : any user-facing string, and before shipping a second language.
 - **dependencies** : adding, isolating, updating or removing a library. Licences and attribution.

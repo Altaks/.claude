@@ -84,6 +84,29 @@ It runs when the work wraps up, on "fin de session", or when the **Stop hook** t
   once or restart so Claude Code reloads the config. Tune the threshold with the `ALTA_PHASE6_MIN_EDITS`
   env var; remove the `Stop` block from `settings.json` to disable.
 
+## Frontend design and accessibility
+
+`alta-dev` treats UI as a first-class deliverable, not an afterthought:
+
+- **Preview before code.** For anything visual, it shows the design first and gets sign-off: an
+  **Artifact** (live HTML) for a screen or component, the **Claude Design** canvas (`design` skill) for
+  a multi-screen flow or several directions, a text mockup for in-game Minecraft surfaces.
+- **No AI slop.** It loads a design language before designing: the **`impeccable`** skill when enabled,
+  otherwise the always-available **`frontend-design`** skill. Direction, distinctive typography and
+  colour, a point of view, over the templated default.
+- **Accessibility is a gate.** WCAG 2.2 AA, measured, is a blocking review category for user-facing web
+  work (`skills/alta-dev/references/roles/ui-ux.md` + `frontend.md`). In-game UI has its own design
+  language in `references/roles/minecraft-ui.md`.
+
+**Impeccable** ([`pbakaus/impeccable`](https://github.com/pbakaus/impeccable), Apache-2.0) is registered
+as an opt-in marketplace in `settings.json` (not enabled by default, so ~0 cost). Enable it for a
+frontend project, then restart:
+
+```bash
+claude plugin enable impeccable@impeccable --scope project   # marketplace already registered
+claude plugin disable impeccable@impeccable                  # turn it back off
+```
+
 ## Updating the vendored security skills
 
 See `plugins/cybersec/UPDATING.md` (vendor + re-sync, deliberately not a submodule).

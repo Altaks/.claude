@@ -1,5 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "extraKnownMarketplaces": {
+    "impeccable": {
+      "source": {
+        "source": "github",
+        "repo": "pbakaus/impeccable",
+        "sparsePaths": [".claude-plugin", "plugin"]
+      }
+    }
+  },
   "hooks": {
     "Stop": [
       {

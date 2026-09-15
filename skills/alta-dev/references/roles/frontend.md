@@ -4,6 +4,18 @@ Web UI. **Read `ui-ux.md` first**: it is mandatory for anything a human sees, an
 document then implements. Read also with `architecture.md` (state modelling) and `mobile.md` (the same
 component discipline in a different runtime).
 
+## Direction and preview (before any code)
+
+- **Have a point of view; do not ship AI slop.** Load the design language first: the `impeccable` skill
+  when it is enabled, otherwise `frontend-design`. Decide the mode, the one adjective the surface should
+  feel, and the reference it is not. Distinctive typography, a deliberate colour system (not the
+  framework defaults), decided spacing, one memorable detail. Avoid the tells: centered hero over three
+  equal cards, untouched component-library styling, evenly grey everything, gradient on everything.
+- **Preview before you build.** A single screen or component goes in an **Artifact** (live HTML,
+  `artifact-design` for the pass, `dataviz` for charts); a multi-screen flow or several directions go in
+  the **Claude Design** canvas (the `design` skill). The user signs off on the preview, then you code.
+- Consistency is not monotony: build hierarchy by varying weight and scale, not by flattening everything.
+
 ## Component hierarchy: atomic design
 
 Structure the view layer by composition level, not by page:
@@ -48,9 +60,9 @@ Rules that make it work:
   lives, not next to the component.
 - Do not invent a raw theme value in passing. If a shade is needed, name it, justify it, and check it
   does not read as something else (a `dark` shade is not a dark-mode variant).
-- **Contrast is correctness.** Check the WCAG ratio before shipping a colour pair. Small or bold text
-  on a tinted fill routinely lands below the AA threshold; measure rather than eyeball, and state the
-  ratio in the PR when you change one.
+- **Contrast is correctness.** Check the ratio against **WCAG 2.2 AA** before shipping a colour pair.
+  Small or bold text on a tinted fill routinely lands below the AA threshold; measure rather than
+  eyeball, and state the ratio in the PR when you change one.
 - Story or sandbox-only utilities never leak into the production bundle.
 
 ## Budgets de performance

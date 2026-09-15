@@ -6,7 +6,12 @@ decided in Phase 1, not patched in once the implementation works.
 
 The rule this enforces: **a feature that works but that nobody can understand, find or recover from is
 not finished.** Read alongside the surface's own document (`frontend`, `mobile`, `desktop-and-cli`,
-`gameplay`, `backend` for client-facing wording).
+`gameplay`, `minecraft-ui` for in-game surfaces, `backend` for client-facing wording).
+
+**Preview before code.** For anything visual, the experience is shown before it is built: a web screen
+or component as an **Artifact**, a multi-screen flow or several directions as a **Claude Design** canvas
+(the `design` skill), an in-game surface as a text mockup per `minecraft-ui`. Design direction and the
+anti-slop stance come from the `impeccable` skill when enabled, otherwise `frontend-design`.
 
 ## 1. Toute action se confirme visiblement
 
@@ -46,9 +51,13 @@ Design all four before building any. Three of them are where products fail.
 
 ## 4. Accessibilité, pas une option
 
-- **Contrast is measured, not eyeballed.** Check the ratio before shipping a colour pair and state it
-  in the PR when you change one. Small or bold text on a tinted fill routinely lands below AA while
-  looking fine on the designer's screen.
+The floor is **WCAG 2.2 AA**, and it is a blocking category for user-facing work.
+
+- **Contrast is measured, not eyeballed.** Check the ratio against WCAG 2.2 AA before shipping a colour
+  pair and state it in the PR when you change one. Small or bold text on a tinted fill routinely lands
+  below AA while looking fine on the designer's screen.
+- **Semantic structure**: real landmarks, headings in order, lists, and buttons vs links by role, not a
+  pile of styled `div`s. ARIA only to fill a genuine gap, never to paper over the wrong element.
 - The layout survives the system text scale up to 200%, and the smallest supported viewport.
 - Every interactive element has an accessible name, a visible focus state, a keyboard path, and a
   target big enough to hit.
