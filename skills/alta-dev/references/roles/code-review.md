@@ -25,6 +25,25 @@ cleaner is.
    names it.
 6. **Tag every finding** with a severity, write it in the format below, and end with the summary and
    the verdict.
+7. **Post the review to the right surface** (see `## Où poster la review`): GitHub for a ready PR, the
+   Orca worktree card for a draft when the Orca CLI is present.
+
+## Où poster la review
+
+Route the finished review by the PR's state and the available tooling:
+
+- **PR ready for review → GitHub, always.** Inline comments plus a summary via
+  `gh pr review <N> --comment` / `gh api repos/<o>/<r>/pulls/<N>/comments`.
+- **PR still a draft, the Orca CLI is available** (`command -v orca` succeeds) and the review runs in an
+  Orca-managed worktree (`orca worktree current` succeeds): post a condensed
+  summary to the Orca worktree card and move it to review:
+  `orca worktree set --worktree active --comment "<counts + direction>" --workspace-status in-review --json`.
+  The full findings go in the session output for the author; do not post to GitHub while the PR is a draft.
+- **PR is a draft but Orca is not available → GitHub**, as above.
+
+Read draft state with `gh pr view <N> --json isDraft -q .isDraft`. A local diff with no PR is neither:
+deliver the review in the session. The worktree comment is one short status line (headline, not the full
+review); verify flags with `orca worktree --help` before use.
 
 ## Severities
 

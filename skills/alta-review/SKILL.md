@@ -44,6 +44,26 @@ pre-merge audit and shares its principles.
    <the suggested rewrite, fully working - no "..." placeholders>
    ```
 8. **Close with a short summary**: count per severity, 1-2 lines on the overall direction, and any positives worth flagging.
+9. **Post to the right surface** (see `## Where the review is posted`): GitHub for a ready PR, the Orca worktree card for a draft when the Orca CLI is present.
+
+## Where the review is posted
+
+Route the finished review by the PR's state and the available tooling:
+
+- **PR ready for review → GitHub, always.** Inline comments plus a summary via
+  `gh pr review <N> --comment` / `gh api repos/<owner>/<repo>/pulls/<N>/comments`.
+- **PR still a draft, and the Orca CLI is available** (`command -v orca` succeeds) and the review runs
+  in an Orca-managed worktree (`orca worktree current` succeeds): post a **condensed
+  summary** to the Orca worktree card and move it to review:
+  `orca worktree set --worktree active --comment "<counts + direction, e.g. 2 blocking, 3 nitpicks: session state, idioms>" --workspace-status in-review --json`.
+  The full findings (with snippets) go in the **session output** for the author; do not post them to
+  GitHub while the PR is a draft.
+- **PR is a draft but the Orca CLI is not available → GitHub**, as above.
+
+Read draft state with `gh pr view <N> --json isDraft -q .isDraft`. A local-only diff with no PR is
+neither: deliver the review in the session. The worktree comment is a single short status line, so it
+carries the headline, not the full review; verify Orca's flags with `orca worktree --help` before use,
+and fall back to GitHub if the worktree card is the wrong target for the project.
 
 ## Pattern catalogue
 
@@ -157,6 +177,8 @@ The concrete idioms, framework rules and platform constraints of the code under 
 - A finding without a code excerpt → re-read the diff and quote the actual lines.
 - A "do this instead" with `...` placeholders → finish the snippet; it must compile.
 - More than ~10 findings on one small PR → you are piling on; group and summarize.
+- Posting a draft PR's review to GitHub while the Orca CLI is available → it belongs on the Orca card.
+- Posting to the Orca card a review of a PR that is ready for review → that always goes to GitHub.
 - Flagging a pre-existing, unmodified issue as blocking → unless it is a true severity, scope it as `todo`.
 - Citing a rule the project's `CLAUDE.md` contradicts → defer to the project.
 - Applying Kotlin/Spigot (or any one stack's) idioms to a different language → load the right stack layer first.

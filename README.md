@@ -84,6 +84,19 @@ It runs when the work wraps up, on "fin de session", or when the **Stop hook** t
   once or restart so Claude Code reloads the config. Tune the threshold with the `ALTA_PHASE6_MIN_EDITS`
   env var; remove the `Stop` block from `settings.json` to disable.
 
+## Review routing (Orca / GitHub)
+
+`alta-review` (and `alta-dev`'s Review mode) route a finished review by the PR's state:
+
+- **Ready for review → GitHub**, always (`gh pr review` / inline comments).
+- **Draft + the Orca CLI available**, inside an Orca-managed worktree → a condensed
+  summary on the Orca worktree card (`orca worktree set --comment ... --workspace-status in-review`),
+  with the full findings in the session; nothing posted to GitHub while draft.
+- **Draft without Orca → GitHub.**
+
+Orca's CLI has no inline PR-review-comment command, so the draft path uses the worktree comment (a short
+status line) for the headline; the detail stays in the session.
+
 ## Frontend design and accessibility
 
 `alta-dev` treats UI as a first-class deliverable, not an afterthought:
