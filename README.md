@@ -22,7 +22,9 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 │   └── marketplace.json        # exposes the cybersec plugin (marketplace name: altaks-claude)
 ├── hooks/
 │   └── phase6-consolidate.sh   # Stop hook: alta-dev Phase 6 reinforcement loop
-├── settings.json               # wires the Stop hook
+├── CLAUDE.md                   # maintenance guide, loaded when working in this repo
+├── settings.json               # wires the Stop hook; registers the impeccable marketplace (opt-in)
+├── README.md                   # this file
 └── .gitignore
 ```
 
@@ -67,6 +69,28 @@ The always-on `cybersec-catalog` skill reminds Claude the library exists and wal
 The `cybersec` skills were audited for host-targeting malicious content (backdoors, exfiltration,
 prompt injection against the agent): none found; the content is offensive/defensive tradecraft
 whose only risk is running it against systems you are not authorized to test. Use accordingly.
+
+## What `alta-dev` covers
+
+The full-lifecycle standard (orient → agree → build → verify → deliver → review → consolidate), plus
+cross-cutting dimensions. Depth lives in `skills/alta-dev/references/` (one doc per role and per
+language); the highlights:
+
+- **Correctness first.** Never fabricate a symbol; verify before use. A non-obvious source (web research,
+  decompiled code, an obscure library method) is cited in a comment (link, path, or note), 5 lines max.
+- **Simplicity ladder** before writing: need it at all → reuse → stdlib → native feature → installed
+  dependency → one line → minimum. Over-engineering review tags: `delete/stdlib/native/yagni/shrink`.
+- **Tests** structured `// Given / // When / // Then`, asserting the exact signal, proven by revert.
+- **Frontend design + accessibility** (below): preview before code, no AI slop, WCAG 2.2 AA gate;
+  in-game (Minecraft/Spigot) UI has its own design language.
+- **Compliance & legal** (`roles/compliance-legal.md`): which laws, standards and licences apply (GDPR,
+  AI Act, CRA, sector rules, accessibility law, OSS/IP), triaged in Phase 1 and gated in Phase 3.
+- **Sustainability / eco-design** (`roles/sustainability.md`): RGESN + Green Software Foundation, an
+  eco-budget set in Phase 1 and gated in Phase 3.
+- **Response manner**: lead with the bottom line, never drop an essential to be brief, scannable blocks,
+  deliverable purity, a blocking question last.
+- **On finding a bug**: propose a GitHub issue (confirm, draft, create on your OK), never silently.
+- The **reinforcement loop**, **review routing**, and **frontend design** below.
 
 ## Reinforcement loop (alta-dev Phase 6)
 
