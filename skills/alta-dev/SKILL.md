@@ -177,6 +177,7 @@ templates.
 - **REQUIRED when a natural unit exists:** `superpowers:test-driven-development`. Sketch the case list
   first (empty, boundary, duplicate, not-found, expired, out-of-order, invalid-rejected-at-the-edge),
   then promote one at a time through red / green / refactor. Watch each fail *for the right reason*.
+  Write each test body in three commented phases, **given / when / then** (`roles/testing.md`).
 - **No natural unit?** Do not invent one (P3). It is still proven end to end in Phase 3.
 - Write to the principles as you go. Fixing a P2 or P5 in review costs more than not writing it.
 
@@ -359,6 +360,7 @@ systematically before claiming anything is done.
 - Persisting a transcript or task log instead of the durable rules behind it.
 - Writing a learning into a new file when an existing doc already owns the topic.
 - Claiming done without having watched the test go red with the change reverted.
+- A test body with no given / when / then comment structure, or with more than one action under test.
 - An em dash (U+2014) anywhere: code, comments, docs, commits, PR bodies, chat replies.
 - A commit or PR body attributing work to an AI.
 

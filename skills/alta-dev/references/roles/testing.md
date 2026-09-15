@@ -43,6 +43,38 @@ For anything with a usage limit, the refusal is its own test: the second use ins
 exact refusal message, and then the use that succeeds once the window reopens. A test that fires a
 power once passes happily while the limit is broken.
 
+## La structure d'un test : given / when / then
+
+Every test body is written in three phases, each marked with a comment, in order. The markers are
+**mandatory**, even when the language has a BDD DSL (use its `given/when/then` blocks when it has them,
+the comments otherwise). They make the test read as a specification and make a missing phase obvious.
+
+- `// Given` - the preconditions: the world, the inputs, the state the system starts in, with named
+  values rather than bare literals. Detailed enough that the reader knows exactly what is set up.
+- `// When` - the single action under test. One action; if you need a second, it is a second test.
+- `// Then` - the assertions on the exact observable signal (doctrine rule 2): the specific message,
+  event type, resulting state, or the notification that must not fire.
+
+No `Given` means hidden setup; no `Then` means it asserts nothing.
+
+```kotlin
+@Test
+fun `refuses a second claim inside the cooldown window`() {
+    // Given a player who just claimed the daily reward
+    val clock = MutableClock(start = INSTANT_NOON)
+    val rewards = DailyRewards(clock, cooldown = 24.hours)
+    rewards.claim(PLAYER_ID)
+
+    // When they claim again one hour later
+    clock.advance(1.hours)
+    val result = rewards.claim(PLAYER_ID)
+
+    // Then the claim is refused with the time remaining, and no reward is granted
+    assertEquals(Refused(retryAfter = 23.hours), result)
+    assertEquals(1, rewards.grantedCount(PLAYER_ID))
+}
+```
+
 ## What makes a test worthless
 
 - **Mocking the thing under test.** Blocking.
