@@ -1,0 +1,13 @@
+# OS junk (keep the shared .claude portable across machines)
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+
+# Python helper-script artifacts (skills/*/scripts)
+__pycache__/
+*.pyc
+.venv/
+venv/

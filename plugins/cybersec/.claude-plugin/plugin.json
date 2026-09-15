@@ -1,0 +1,10 @@
+{
+  "name": "cybersec",
+  "version": "0.1.0",
+  "description": "872 offensive + defensive security skills (red team, blue team/DFIR, detection engineering, cloud, mobile, IoT/OT, CTF) with MITRE ATT&CK mappings. Vendored from 26zl/cybersec-toolkit (MIT). Disabled by default to save context; enable per project for authorized security work.",
+  "author": { "name": "vendored from 26zl/cybersec-toolkit (MIT)" },
+  "homepage": "https://github.com/26zl/cybersec-toolkit",
+  "license": "MIT",
+  "keywords": ["security", "red-team", "blue-team", "dfir", "detection-engineering", "pentest", "ctf"],
+  "skills": "./skills/"
+}

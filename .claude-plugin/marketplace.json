@@ -1,0 +1,13 @@
+{
+  "name": "altaks-claude",
+  "description": "Altaks' shared Claude Code configuration: personal dev skills plus an opt-in cybersecurity skill library.",
+  "owner": { "name": "Altaks" },
+  "plugins": [
+    {
+      "name": "cybersec",
+      "source": "./plugins/cybersec",
+      "description": "872 offensive + defensive security skills (red/blue/DFIR/cloud/mobile/IoT/CTF), MITRE-mapped. Opt-in; enable only in projects doing authorized security work.",
+      "category": "security"
+    }
+  ]
+}
