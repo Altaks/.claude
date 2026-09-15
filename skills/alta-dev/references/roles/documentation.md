@@ -8,6 +8,12 @@ READMEs, architecture documents, API references, user-facing documentation sites
   anything that is wrong: a wrong comment is worse than none, and it is a blocking finding.
 - Document the **why**: the constraint, the invariant, the surprising behaviour, what the profile
   showed, why the obvious alternative does not work.
+- **Cite a non-obvious source, always.** When a line rests on something the reader cannot see from the
+  code itself - an online reference, decompiled bytecode (Spigot, a JDK internal, any binary), or an
+  obscure or undocumented library method - put the source right above it: the link, the file / path and
+  version, or a one-line note of what you found. Five lines at most; usually unnecessary, but when the
+  source is non-obvious it is **mandatory**. It is the provenance that lets the next reader trust and
+  re-verify what the code cannot make self-evident.
 - Use the language's documentation-comment syntax on a symbol (a function, a type, an exported value),
   and reserve line comments for a short note on a specific non-obvious line.
 - A file whose purpose is not obvious from its name gets a header explaining what it does and how. "This

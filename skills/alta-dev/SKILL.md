@@ -115,6 +115,13 @@ typing to make something compile; an abstraction around a one-liner; a confident
 behaviour the code lacks; a test that asserts nothing; a config key the tool does not know; an
 invented constant presented as a specification. Catalogue: `roles/code-review.md`.
 
+**Cite a non-obvious source in a comment, always.** The flip side of verifying: when the code rests on
+something the reader cannot see from the code itself - an online reference, decompiled bytecode (Spigot,
+a JDK internal, any binary), or an obscure or undocumented library method - leave the source right above
+it: the link, the file / path and version, or a one-line note of what you found. Five lines at most;
+usually none is needed, but when the source is non-obvious it is **mandatory**. Detail in
+`roles/documentation.md`.
+
 ## La boucle (ne pas réordonner, ne pas sauter)
 
 `references/worked-example.md`: one complete run, plus the blank orientation, report, PR and ledger
@@ -324,6 +331,7 @@ systematically before claiming anything is done.
 - Starting to write before knowing whether the gate and the suite can run here.
 - Working from the issue title without its comments, its links and the spec it cites.
 - Using a symbol, flag or config key whose declaration you have not read.
+- Code from decompilation, web research or an obscure library method with no source comment (link, path or explanation).
 - Writing a new type without having read the nearest existing one.
 - Writing implementation before a confirmed spec, or skipping `grill-me`.
 - A new component whose responsibility needs an "and".

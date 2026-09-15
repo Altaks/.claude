@@ -79,6 +79,10 @@ read. Check it explicitly on every diff:
 - **A test that asserts nothing**, or that mocks the thing it claims to test.
 - **A configuration key, a flag or an option that does not exist** in the tool being configured.
 - **Invented constants and thresholds** presented as if they came from a specification.
+- **A non-obvious source left uncited.** Code resting on an online reference, decompiled bytecode
+  (Spigot, a JDK internal, any binary), or an obscure or undocumented library method must carry the
+  source in a comment right above it (link, file / path and version, or a one-line note). Its absence is
+  a blocking finding: the reader cannot trust or re-verify it. Five lines at most.
 
 The rule for the author, and for you when you are the author: **verify the symbol before you use it.**
 Read the actual declaration, run the actual command, check the actual key. Plausibility is not
