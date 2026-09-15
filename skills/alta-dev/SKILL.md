@@ -167,10 +167,19 @@ templates.
 6. **Cannot reach the user** (you are a subagent): **STOP** and return the open questions as blocking
    questions. No unconfirmed assumption survives into Phase 2. (P1)
 
-**Sortie**: a 3 to 6 line spec the user confirmed, plus the boundary sketch when something is new.
+**Sortie**: a 3 to 6 line spec the user confirmed, the legal and normative regimes that apply
+(`roles/compliance-legal.md`, or "none" stated), the eco-design targets for a digital service
+(`roles/sustainability.md`), plus the boundary sketch when something is new.
 
 ### Phase 2: construire, test d'abord là où une unité existe
 
+- **Climb the ladder before writing (P3, P4), once you understand the change.** Stop at the first rung
+  that holds: (1) does this need to exist at all? Speculative need, skip it and say so in one line
+  (YAGNI); (2) already in this codebase? Reuse it (the exemplar step below); (3) does the standard
+  library do it? (4) a native platform feature? (`<input type="date">` over a picker lib, a DB constraint
+  over app code, CSS over JS); (5) an already-installed dependency? Never add a new one for what a few
+  lines do (`roles/dependencies.md`); (6) can it be one line? (7) only then, the minimum code that works.
+  The reflex shortens the solution, never the reading: trace the real flow first, then climb.
 - **Find the exemplar first (P4).** Before a new type, adapter, panel, use case or migration: grep the
   concept, list the siblings, read the most recent, follow how it wires itself. Name it in the PR.
   "Check how I did it there and copy that pattern" is the standard correction; pre-empt it.
@@ -200,7 +209,11 @@ templates.
    **User-facing** adds the `roles/ui-ux.md` checklist and the accessibility gate (**WCAG 2.2 AA**,
    measured, not eyeballed), plus the `impeccable` `audit` when that skill is enabled (see
    `## Design d'interface`). **Any permission, scope, origin or token**
-   granted must be a whitelist at minimum size, with the reason next to it.
+   granted must be a whitelist at minimum size, with the reason next to it. **Legal and normative
+   obligations** (`roles/compliance-legal.md`): the regimes named in Phase 1 are met, every dependency
+   licence is recorded and attributed, and anything needing a lawyer is flagged. An unmet obligation is
+   blocking. **Sustainability** (`roles/sustainability.md`) for a digital service: the eco-design budget
+   holds (weight, requests, queries) and the hosting and device-target choices were made.
 6. **Fill the completion report** (template in `worked-example.md`): gate command and outcome, unit
    tests and what they assert, end-to-end file and exact signal, the revert-proof, the residue and why,
    review status. **Anything you could not run is reported as not run, with the reason.** Not run is
@@ -333,12 +346,15 @@ systematically before claiming anything is done.
 - Working from the issue title without its comments, its links and the spec it cites.
 - Using a symbol, flag or config key whose declaration you have not read.
 - Code from decompilation, web research or an obscure library method with no source comment (link, path or explanation).
+- Shipping without naming which laws, standards or dependency licences apply, or adding a copyleft dependency without weighing its obligations.
+- Ignoring eco-design (weight, energy, device longevity) on a digital service, or busting the eco-budget without reporting it.
 - Writing a new type without having read the nearest existing one.
 - Writing implementation before a confirmed spec, or skipping `grill-me`.
 - A new component whose responsibility needs an "and".
 - A top-level split by mechanism (`controllers/`, `services/`, `repositories/`).
 - Choosing the folder layout after the code is written.
 - A new function whose body is one call.
+- Writing new code, or adding a dependency, before climbing the ladder: stdlib, a native platform feature, or an already-installed dependency already does it.
 - A parameter, interface or flag whose only consumer is a test.
 - A literal encoding a slot, unit, key or duration.
 - A `domain/` file importing infrastructure, or an event emitted outside the layer that owns it.
@@ -426,6 +442,8 @@ plus one language**. A change crossing disciplines reads several.
 - **observability** : what to log and at which level, what never to log, metric cardinality, traces, alerting.
 - **security** : authorization, input, secrets, dependencies, scanning, runtime posture. Whitelist over blacklist. Applies to every role.
 - **privacy** : personal data. Minimisation, consent, retention, cascading deletion, user rights, third parties. Decided in Phase 1.
+- **compliance-legal** : the laws, licences and standards the software must satisfy. Regime triage (GDPR, AI Act, CRA, sector, accessibility law) in Phase 1; OSS licence and IP obligations; the Phase 3 gate. You are not counsel: flag what needs a lawyer.
+- **sustainability** : eco-design of a digital service. RGESN and Green Software Foundation, the eco-budget (weight, energy, device longevity) in Phase 1, the gate in Phase 3. Same ship-less lever as `frontend` performance budgets.
 - **systems** : C, C++, Rust, manual resources, measured hot paths, concurrency primitives.
 - **concurrency** : threads, queues, events, retries. Races, ordering, idempotency, outbox, back-pressure, flaky tests.
 - **iot-and-embedded** : firmware, sensor nodes, acquisition chains, the hardware/application split.

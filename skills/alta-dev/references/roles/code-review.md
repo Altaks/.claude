@@ -88,6 +88,20 @@ The rule for the author, and for you when you are the author: **verify the symbo
 Read the actual declaration, run the actual command, check the actual key. Plausibility is not
 evidence, and the reviewer's time is not the place to discover that.
 
+## Over-engineering: what to cut
+
+The other side of fabrication: code that should not exist. The diff's best outcome is getting shorter.
+Tag each one; one line per finding, naming what replaces it:
+
+- `delete:` dead code, an unused flag or config, a speculative feature or "flexibility" nobody uses. Replacement: nothing.
+- `stdlib:` a hand-rolled thing the standard library ships. Name the function.
+- `native:` a dependency or hand-written code doing what the platform already does (a native input, a DB constraint, CSS over JS). Name the feature.
+- `yagni:` an abstraction with one implementation, a factory with one product, a layer or interface with one caller, a config for a value that never changes.
+- `shrink:` same logic, fewer lines. Show the shorter form.
+
+Ladder for the author (Phase 2 of the loop): need it at all, else reuse, else stdlib, else native, else an
+installed dependency, else one line, else the minimum. A finding here usually means a rung was skipped.
+
 ## Finding format
 
 ````markdown
