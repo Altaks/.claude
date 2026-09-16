@@ -22,8 +22,10 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 │   └── marketplace.json        # exposes the cybersec plugin (marketplace name: altaks-claude)
 ├── hooks/
 │   └── phase6-consolidate.sh   # Stop hook: alta-dev Phase 6 reinforcement loop
+├── output-styles/
+│   └── install.sh              # fetches the attention-span styles (AGPL, referenced not vendored)
 ├── CLAUDE.md                   # maintenance guide, loaded when working in this repo
-├── settings.json               # wires the Stop hook; registers the impeccable marketplace (opt-in)
+├── settings.json               # Stop hook; impeccable marketplace (opt-in); Spartan output style
 ├── README.md                   # this file
 └── .gitignore
 ```
@@ -41,6 +43,27 @@ Pick whichever fits how you consume config:
 - **As a project's config:** drop this repo in as the project's `.claude/`.
 
 Either way, `skills/` auto-loads; the security library stays off until enabled.
+
+## Output styles
+
+`settings.json` sets **Spartan** as the default output style, so any Claude Code session running this
+`.claude` gets answer-first, arrow-marked, zero-filler replies. It changes how Claude *talks*, never how
+it codes (`keep-coding-instructions: true`).
+
+The styles come from [alexgreensh/attention-span](https://github.com/alexgreensh/attention-span) and are
+**AGPL-3.0**, so this repo references them instead of vendoring them (see the no-AGPL rule in
+`CLAUDE.md`). `.gitignore` blocks `output-styles/*.md`, which makes that structural rather than a promise.
+
+**Fetch them once per machine**, otherwise the `outputStyle` setting points at a style that is not there:
+
+```bash
+./output-styles/install.sh                    # into this repo's output-styles/
+./output-styles/install.sh ~/.claude/output-styles   # or into your user config
+```
+
+Three styles land: **Spartan** (blunt, maximum compression), **Attention-kind** (same structure, warmer),
+**Rundown** (TL;DR briefings, checkboxes). Switch with `/config` -> *Output style*, or change
+`outputStyle` in `settings.json`. Re-run the script to update; it overwrites in place.
 
 ## The opt-in security library (`cybersec`)
 

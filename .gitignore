@@ -11,3 +11,6 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Output styles fetched by output-styles/install.sh (AGPL-3.0 upstream, never vendored)
+output-styles/*.md
