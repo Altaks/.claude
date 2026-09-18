@@ -14,3 +14,7 @@ venv/
 
 # Output styles fetched by output-styles/install.sh (AGPL-3.0 upstream, never vendored)
 output-styles/*.md
+
+# Per-project overrides written by Claude Code when this repo is mounted as a
+# submodule at <project>/.claude (they must not dirty the shared checkout)
+settings.local.json
