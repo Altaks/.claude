@@ -25,7 +25,7 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 ├── output-styles/
 │   └── install.sh              # fetches the attention-span styles (AGPL, referenced not vendored)
 ├── CLAUDE.md                   # maintenance guide, loaded when working in this repo
-├── settings.json               # Stop hook; impeccable marketplace (opt-in); Spartan output style
+├── settings.json               # Stop hook; impeccable (opt-in) + brag (on) marketplaces; Spartan style
 ├── README.md                   # this file
 └── .gitignore
 ```
@@ -165,6 +165,25 @@ frontend project, then restart:
 ```bash
 claude plugin enable impeccable@impeccable --scope project   # marketplace already registered
 claude plugin disable impeccable@impeccable                  # turn it back off
+```
+
+## Launch videos (brag)
+
+**Brag** ([`latent-spaces/brag`](https://github.com/latent-spaces/brag), MIT) is registered as a
+marketplace in `settings.json` and **enabled** (`enabledPlugins`), so `/brag` and `/brag-slim` are there
+in every project that mounts this `.claude`. It is referenced, not vendored: the skill ships ~16.6 MB of
+music, which stays out of this repo. `sparsePaths` fetches only `.claude-plugin/` and `skills/`.
+
+- `/brag-slim` is a single file, without Hyperframes or bundled assets: it builds the video with the
+  tools already on the machine. On Opus 5.5, `/brag` switches to it on its own.
+- `/brag --full` (the Hyperframes pipeline) needs Node.js 22+, FFmpeg on `PATH` and
+  `npx hyperframes` (check with `npx hyperframes doctor`).
+- Output lands in `brag-output/` in the current directory; gitignore it where the videos should not be
+  committed.
+
+```bash
+claude plugin update brag                      # pull a newer upstream release
+claude plugin disable brag@brag --scope project # turn it off for one project
 ```
 
 ## Updating the vendored security skills

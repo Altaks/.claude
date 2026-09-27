@@ -8,7 +8,17 @@
         "repo": "pbakaus/impeccable",
         "sparsePaths": [".claude-plugin", "plugin"]
       }
+    },
+    "brag": {
+      "source": {
+        "source": "github",
+        "repo": "latent-spaces/brag",
+        "sparsePaths": [".claude-plugin", "skills"]
+      }
     }
+  },
+  "enabledPlugins": {
+    "brag@brag": true
   },
   "hooks": {
     "Stop": [
