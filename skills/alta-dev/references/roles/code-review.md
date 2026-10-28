@@ -94,6 +94,11 @@ The other side of fabrication: code that should not exist. The diff's best outco
 Tag each one; one line per finding, naming what replaces it:
 
 - `delete:` dead code, an unused flag or config, a speculative feature or "flexibility" nobody uses. Replacement: nothing.
+  Find it with the language server (find-references, unused diagnostics), not by reading or grep: a
+  refactor orphans callers grep cannot tell apart from a same-named symbol. A symbol invoked by
+  reflection (a decorated handler, a generated-interface method, an injected provider) has no
+  visible caller yet is alive: never flag or delete it on that ground. No server for the language:
+  ask once to install it and remember the answer (SKILL.md, Phase 3 step 5).
 - `stdlib:` a hand-rolled thing the standard library ships. Name the function.
 - `native:` a dependency or hand-written code doing what the platform already does (a native input, a DB constraint, CSS over JS). Name the feature.
 - `yagni:` an abstraction with one implementation, a factory with one product, a layer or interface with one caller, a config for a value that never changes.

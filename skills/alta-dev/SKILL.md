@@ -202,7 +202,19 @@ templates.
    observable signal. **Prove it**: revert the change, run it, confirm red, restore. If the signal is
    not observable, extend the harness; never weaken the assertion or retreat to "manual only". (P10)
 4. **Manual-test the residue** the suite cannot reach, and name it.
-5. **Review your own diff** against `roles/code-review.md`. Fix everything: blocking, suggestion,
+5. **Sweep for dead code with the language server** (the editor's LSP, not Liskov) after every build,
+   refactor or fix. Ask it, not grep, what the change left without a caller: each symbol, export,
+   parameter, import, file and dependency touched or orphaned, through find-references and its unused
+   diagnostics. Delete what nothing calls, in the same change (`roles/code-review.md`, `delete:`).
+   **Except what is called by reflection**: a language server sees no caller for a framework handler
+   or binding (a decorated `@Button`, `@OnEvent`, `@GrpcMethod`, `@EventHandler`, `@Command` method,
+   a controller method a code-generated interface names, a provider the container injects, a
+   serialized field). Before deleting, check the symbol carries no decorator, annotation or
+   registration, and never rename or re-sign one while simplifying.
+   **No language server installed for that language?** Ask once whether to install it, naming the
+   server and the command, and save the answer as a project memory so the question never comes back;
+   on a no, fall back to the compiler's and linter's unused checks and report the sweep as partial.
+6. **Review your own diff** against `roles/code-review.md`. Fix everything: blocking, suggestion,
    nitpick. Re-run the gate, re-review. One surviving nitpick means you are not done.
    Close with the **five-pillar check**: what did this make harder to read, to change, to extend? Did
    anything get slower, and was it measured? Does anything exist for a case that does not exist yet?
@@ -214,7 +226,7 @@ templates.
    licence is recorded and attributed, and anything needing a lawyer is flagged. An unmet obligation is
    blocking. **Sustainability** (`roles/sustainability.md`) for a digital service: the eco-design budget
    holds (weight, requests, queries) and the hosting and device-target choices were made.
-6. **Fill the completion report** (template in `worked-example.md`): gate command and outcome, unit
+7. **Fill the completion report** (template in `worked-example.md`): gate command and outcome, unit
    tests and what they assert, end-to-end file and exact signal, the revert-proof, the residue and why,
    review status. **Anything you could not run is reported as not run, with the reason.** Not run is
    not passed; "compiles" is not a verification level.
@@ -356,6 +368,7 @@ systematically before claiming anything is done.
 - A new function whose body is one call.
 - Writing new code, or adding a dependency, before climbing the ladder: stdlib, a native platform feature, or an already-installed dependency already does it.
 - A parameter, interface or flag whose only consumer is a test.
+- Calling a build, refactor or fix done without a language-server sweep for what it left without a caller.
 - A literal encoding a slot, unit, key or duration.
 - A `domain/` file importing infrastructure, or an event emitted outside the layer that owns it.
 - A conditional growing by one branch per type.
