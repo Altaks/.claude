@@ -106,6 +106,11 @@ grows past fifty is restating the spec or the tests.
 **The manual procedure is written in French**, the tester's language, whatever language the rest of
 the PR is in. Commands, scenario ids and quoted in-game messages stay exactly as typed or shown.
 
+**A tester's ticks are theirs: never lose one.** Before rewriting a published procedure, read its
+`- [x]` boxes and carry each onto the step that checks the same thing. A step whose behaviour changed
+after the tick (a fix since) is split: the tested part keeps its tick, the new part starts unticked
+and names the commit. Say which ticks were carried and which were not.
+
 **It opens on the number of clients it needs**, in bold, before anything else (`**Clients nécessaires :
 1** (toi), **4** pour la dernière étape (Groupes).`), so the tester knows whom to call before starting.
 
