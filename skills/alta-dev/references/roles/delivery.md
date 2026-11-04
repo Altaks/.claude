@@ -97,6 +97,12 @@ of your context; a wall of text is skimmed, and what it hides is missed. So:
 - **Changes after review get their own block**, one bullet per commit, its SHA first.
 - Reread it as the reviewer would: if a bullet needs rereading to parse, split it.
 
+**The description is as short as the reader's job allows.** The summary names what changed and links
+the spec for the rules; the verification is two or three bullets; the procedure covers **only the
+residue**, what no automated test can observe (what a player sees, hears or clicks), never a refusal or
+a message a unit test already asserts. Twenty to thirty lines is the usual size; a description that
+grows past fifty is restating the spec or the tests.
+
 **`## Manual testing procedure`, written for someone who has never read the diff.** The tester runs it
 at a keyboard, copying commands into a client while other windows are open. Every gap they hit (a
 command to guess, a state nobody said how to reach, a cooldown to wait out) costs a round trip with
@@ -152,7 +158,10 @@ command that does not exist is a blocking finding in self-review.
 
 **6. Lean on GitHub-flavoured markdown for the reader, not for decoration.**
 - `- [ ]` task lists for the steps only, one observable outcome per box, so progress is ticked in place.
-- A table for the cast (role, what to know about it, where it stands).
+- A table for the cast (role, what to know about it, where it stands), each client given a coloured
+  square (🟥 🟦 🟩 🟨 🟪 🟧) repeated before every step or command that client runs or targets, so the
+  tester's eye finds their own lines. A square, not `$\color{...}$`: colour cannot enter a code span,
+  and LaTeX around a command breaks copying it.
 - A fenced `text` block for each sequence of commands pasted in order (the setup, a scenario's
   preparation); inline code for a single command inside a step. Inside a list item, indent the fence
   so it stays in the item.
