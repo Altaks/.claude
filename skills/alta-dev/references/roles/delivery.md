@@ -103,6 +103,9 @@ residue**, what no automated test can observe (what a player sees, hears or clic
 a message a unit test already asserts. Twenty to thirty lines is the usual size; a description that
 grows past fifty is restating the spec or the tests.
 
+**The manual procedure is written in French**, the tester's language, whatever language the rest of
+the PR is in. Commands, scenario ids and quoted in-game messages stay exactly as typed or shown.
+
 **`## Manual testing procedure`, written for someone who has never read the diff.** The tester runs it
 at a keyboard, copying commands into a client while other windows are open. Every gap they hit (a
 command to guess, a state nobody said how to reach, a cooldown to wait out) costs a round trip with
