@@ -175,6 +175,11 @@ command that does not exist is a blocking finding in self-review.
   (`- [ ] **Barrière Magique** : une sphère de verre jaune 10 s, Bob dehors.`), and each command or
   action to get there is its own nested bullet, in order. Never a chain of commands inlined with
   commas and arrows.
+- **Every wait is a bold timestamp**, opening the bullet it gates: `**[après 30 s]**`, `**[après
+  5 min]**`, `**[après 2 h]**`, counted from the bullet before. Beside it, the command that skips it
+  (`/dev timewarp real 1m`, `/db dev recharge <toi>`), **checked against what the wait reads**: a
+  timewarp moves the game clock, not the seconds a per-tick counter has seen, so a wait it cannot skip
+  says so ("réelles") rather than offering a skip that does nothing.
 - A table for the cast (role, what to know about it, where it stands), each client given a coloured
   square (🟥 🟦 🟩 🟨 🟪 🟧) repeated before every step or command that client runs or targets, so the
   tester's eye finds their own lines. A square, not `$\color{...}$`: colour cannot enter a code span,
