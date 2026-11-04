@@ -171,6 +171,10 @@ command that does not exist is a blocking finding in self-review.
 - `- [ ]` task lists for the steps only, one observable outcome per box, so progress is ticked in place.
 - **No blank line inside a list**, not even before a continuation: one blank line makes the whole list
   "loose" and GitHub spaces every item apart. A step's detail is a nested `-` bullet, never a paragraph.
+- **A step with several actions nests them.** The box reads as the outcome, in bold its notion
+  (`- [ ] **Barrière Magique** : une sphère de verre jaune 10 s, Bob dehors.`), and each command or
+  action to get there is its own nested bullet, in order. Never a chain of commands inlined with
+  commas and arrows.
 - A table for the cast (role, what to know about it, where it stands), each client given a coloured
   square (🟥 🟦 🟩 🟨 🟪 🟧) repeated before every step or command that client runs or targets, so the
   tester's eye finds their own lines. A square, not `$\color{...}$`: colour cannot enter a code span,
