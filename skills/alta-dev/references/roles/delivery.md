@@ -106,6 +106,9 @@ grows past fifty is restating the spec or the tests.
 **The manual procedure is written in French**, the tester's language, whatever language the rest of
 the PR is in. Commands, scenario ids and quoted in-game messages stay exactly as typed or shown.
 
+**It opens on the number of clients it needs**, in bold, before anything else (`**Clients nécessaires :
+1** (toi), **4** pour la dernière étape (Groupes).`), so the tester knows whom to call before starting.
+
 **`## Manual testing procedure`, written for someone who has never read the diff.** The tester runs it
 at a keyboard, copying commands into a client while other windows are open. Every gap they hit (a
 command to guess, a state nobody said how to reach, a cooldown to wait out) costs a round trip with
