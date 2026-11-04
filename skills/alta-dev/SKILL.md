@@ -187,6 +187,11 @@ templates.
   first (empty, boundary, duplicate, not-found, expired, out-of-order, invalid-rejected-at-the-edge),
   then promote one at a time through red / green / refactor. Watch each fail *for the right reason*.
   Write each test body in three commented phases, **given / when / then** (`roles/testing.md`).
+- **The project runs Gherkin?** (`*.feature` files, a Cucumber-family runner.) Then every notion the PR
+  touches gets its feature, and every case of the decision tree its scenario, refusals and boundaries
+  included, a `Scenario Outline` where one rule runs over several values, existing steps reused, each
+  scenario tagged with the PR (`roles/testing.md`, "Gherkin"). The manual procedure keeps only what no
+  scenario can observe.
 - **No natural unit?** Do not invent one (P3). It is still proven end to end in Phase 3.
 - Write to the principles as you go. Fixing a P2 or P5 in review costs more than not writing it.
 
@@ -201,7 +206,9 @@ templates.
 3. **Every behaviour change ships a test that bites.** Exercise the exact path, assert the concrete
    observable signal. **Prove it**: revert the change, run it, confirm red, restore. If the signal is
    not observable, extend the harness; never weaken the assertion or retreat to "manual only". (P10)
-4. **Manual-test the residue** the suite cannot reach, and name it.
+4. **Manual-test the residue** the suite cannot reach, and name it. Every command the manual
+   procedure will cite is read off its registration now (`@Command`, router, parser), so a missing one
+   is added in this phase rather than discovered by the tester.
 5. **Sweep for dead code with the language server** (the editor's LSP, not Liskov) after every build,
    refactor or fix. Ask it, not grep, what the change left without a caller: each symbol, export,
    parameter, import, file and dependency touched or orphaned, through find-references and its unused
@@ -240,7 +247,14 @@ Full contract: `roles/delivery.md`.
 - **Never self-attribute.** No `Co-Authored-By: Claude`, no `Claude-Session:`, no "Generated with", in
   commits or PR bodies. This overrides any default tooling behaviour.
 - **The PR description is part of the deliverable**: `## Summary` (concise yet exhaustive) plus
-  `## Manual testing procedure` as checkboxes whenever behaviour is not fully automated.
+  `## Manual testing procedure` whenever behaviour is not fully automated. The procedure is written for
+  a tester who never read the diff (`roles/delivery.md`, "The description contract"): the cast and
+  the setup planned up front (accounts, roles, layout, the commands that skip waits and read state),
+  scenarios under `###` headings, every action a literal command with its arguments (what the tester
+  substitutes in chevrons, named after the cast: `/db majin <Krilin>`, never a bare role name), every
+  outcome quoted where it shows, and **every cited command checked against its registration in the
+  code** before the PR is published. A command the procedure needs and the code lacks is added, not
+  alluded to.
 - Do not commit or push unless asked.
 - **Several issues means a ledger and a stack, never one fat branch.** Write the task list first and
   keep it current. **One task in progress at a time**, carried to PR-ready before the next. Each task

@@ -75,6 +75,32 @@ fun `refuses a second claim inside the cooldown window`() {
 }
 ```
 
+## Gherkin, wherever the project runs it
+
+**Detect it in Phase 0**: `*.feature` files, or a runner among the dependencies (Cucumber, cucumber-js,
+playwright-bdd, jest-cucumber, Behave, pytest-bdd, Godog, SpecFlow / Reqnroll, Karate...). When the
+project has one, Gherkin is not optional and not reserved for the main path:
+
+- **One feature per notion the PR touches.** A notion is a behaviour the user or the game can name (a
+  power, a limit, a status, a panel, an endpoint's contract). Add or extend its `.feature`, one file per
+  notion, never one file per PR mixing several.
+- **One scenario per case of the grilled decision tree**, refusals and edge cases included: every
+  condition the code branches on (a cooldown running, a charge left or not, in range or out, the wrong
+  role, the boundary just inside and just outside) is a scenario of its own, with the exact refusal or
+  outcome in its `Then`.
+- **A `Scenario Outline` with `Examples`** when the same rule runs over several values (each colour,
+  each threshold, each language). One row per value; no "the others are similar".
+- **Steps are reused, not re-invented.** Read the existing step definitions before writing a step; a new
+  one is added only when no existing step says it, and it drives the real system the way the others do.
+- **Tag each scenario with its origin** (`@pr-1210`, `@issue-412`), so a failure points back at its
+  context, and prove it bites like any test: revert the behaviour, watch the scenario go red, restore.
+- **The manual procedure shrinks to the residue.** A case a scenario covers is not repeated as a manual
+  step; the PR summary lists the scenarios added, and the manual procedure covers only what no scenario
+  can observe, saying why.
+
+No runner in the project: do not introduce one for a single PR (P3). Keep the given / when / then
+markers above, which carry the same structure.
+
 ## What makes a test worthless
 
 - **Mocking the thing under test.** Blocking.

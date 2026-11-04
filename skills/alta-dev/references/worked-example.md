@@ -179,13 +179,15 @@ Unit tests:    <file>, <n> cases. Asserts <the exact things>.
 End to end:    <file>. Drives <path>, asserts <the exact signal>.
 Bites:         <symbol> reverted -> red on <which assertion>. Restored -> green.
 Residue:       <not covered automatically> because <reason>; covered by <unit test|manual step>.
+Gherkin:       <none in the project | features and scenarios added, tagged @pr-N>.
+Commands:      <n>/<n> cited in the manual procedure matched against their registrations; <added: ...>.
 Review:        self-reviewed, <n> findings fixed, gate re-run <green>, re-reviewed clean.
 Not run:       <nothing | what could not run here, and why>.
 ```
 
 **Description de PR**
 
-```markdown
+~~~~markdown
 ## Summary
 - <behaviour changed>, driven by <type> in <file>. Closes #<N>, stacked on #<M>.
 - Public API impact: <none | what>. Realises <plan element> / deviates on <point> because <reason>.
@@ -194,11 +196,29 @@ Not run:       <nothing | what could not run here, and why>.
 - Not covered automatically: <residue>, because <reason>; covered by <what>.
 
 ## Manual testing procedure
-- [ ] Prereq: <environment, services, data state>.
-- [ ] <action> -> <expected observable outcome>.
-- [ ] Edge case: <input> -> <expected refusal>.
-- [ ] Non-regression: <existing behaviour> still works.
+
+| Role | Account | Stands |
+|---|---|---|
+| <role> | <which client> | <position> |
+
+Setup, from a fresh <environment>:
+
+```text
+<exact commands, in order; what the tester substitutes is in chevrons, named after the cast>
 ```
+
+Skip a wait with `<command>`; read the state with `<command>`.
+
+### <Notion or power>
+- [ ] `<Role>` runs `<exact command, its arguments>` -> <where>: "<quoted message>".
+- [ ] Refusal: `<exact command, bad input>` -> "<quoted refusal>".
+
+### Non-regression
+- [ ] <existing behaviour, by its exact command> -> <unchanged outcome>.
+~~~~
+
+The full contract (composition, chevrons, commands checked against their registrations, GitHub
+markdown) is in `roles/delivery.md`.
 
 **Registre, quand le run couvre plusieurs issues**
 
