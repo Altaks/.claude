@@ -158,6 +158,8 @@ command that does not exist is a blocking finding in self-review.
 
 **6. Lean on GitHub-flavoured markdown for the reader, not for decoration.**
 - `- [ ]` task lists for the steps only, one observable outcome per box, so progress is ticked in place.
+- **No blank line inside a list**, not even before a continuation: one blank line makes the whole list
+  "loose" and GitHub spaces every item apart. A step's detail is a nested `-` bullet, never a paragraph.
 - A table for the cast (role, what to know about it, where it stands), each client given a coloured
   square (🟥 🟦 🟩 🟨 🟪 🟧) repeated before every step or command that client runs or targets, so the
   tester's eye finds their own lines. A square, not `$\color{...}$`: colour cannot enter a code span,
