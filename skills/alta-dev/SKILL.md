@@ -246,7 +246,9 @@ Full contract: `roles/delivery.md`.
   Split with `git add -p`. Drive-by reformatting is its own `style(...)` commit.
 - **Never self-attribute.** No `Co-Authored-By: Claude`, no `Claude-Session:`, no "Generated with", in
   commits or PR bodies. This overrides any default tooling behaviour.
-- **The PR description is part of the deliverable**: `## Summary` (concise yet exhaustive) plus
+- **The PR description is part of the deliverable**: `## Summary` (concise yet exhaustive, short
+  bullets under bold sub-headings, never a paragraph over two lines: a human reads it with far less
+  context than you) plus
   `## Manual testing procedure` whenever behaviour is not fully automated. The procedure is written for
   a tester who never read the diff (`roles/delivery.md`, "The description contract"): the cast and
   the setup planned up front (accounts, roles, layout, the commands that skip waits and read state),

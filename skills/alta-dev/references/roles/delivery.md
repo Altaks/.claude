@@ -88,6 +88,15 @@ restatement of the diff, and nothing a reviewer needs left out. It covers:
   restored);
 - what is **not** covered automatically and why, named explicitly.
 
+**Written for a human, not for a model.** A reviewer reads it between two other things, with a fraction
+of your context; a wall of text is skimmed, and what it hides is missed. So:
+- **No paragraph longer than two lines.** One fact per bullet, a bullet fits on one or two lines.
+- **Group under bold sub-headings** (`**GDK**`, `**Roles**`, `**Also**`), a handful of bullets each.
+- **Name, do not narrate.** A bullet names the behaviour and its entry point; the full rules live in the
+  spec the summary links to, not in the summary. No numbers a reviewer does not need to judge the PR.
+- **Changes after review get their own block**, one bullet per commit, its SHA first.
+- Reread it as the reviewer would: if a bullet needs rereading to parse, split it.
+
 **`## Manual testing procedure`, written for someone who has never read the diff.** The tester runs it
 at a keyboard, copying commands into a client while other windows are open. Every gap they hit (a
 command to guess, a state nobody said how to reach, a cooldown to wait out) costs a round trip with
@@ -103,6 +112,11 @@ derive what they need, and state it once, up front:
 - **The layout** the steps depend on: distances, positions, groups, who stands near whom. "Three
   Freezer players within 30 blocks of each other" is a setup line, not something the tester discovers
   when a step fails.
+- **The project's own scenario runner first.** When the project can set a scene up by itself (an
+  in-game runner fed by `.feature` files, a seed command, fixtures loaded by a script), each scenario
+  of the procedure starts from it, by its exact id, read off the runner rather than guessed (a slug is
+  computed: `The Emblème makes a Majin` may become `the-embl-me-makes-a-majin`). Hand-built setup is
+  only for what no scenario casts yet, and is flagged as such, with the scenario that should be added.
 - **The accelerators**: the command that skips each cooldown, timer or wait the steps would otherwise
   sit through, and the command that reads the state each step checks (an inspector, a debug dump).
 - **Scenarios, not one long list.** Group the steps under a `###` heading per feature or power, each
