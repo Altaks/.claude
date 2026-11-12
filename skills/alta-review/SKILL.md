@@ -120,6 +120,7 @@ paragraph, not as a separate section. Example: ``**[blocking]** `path/File.ext:L
 | 2.4 | **Extend by adding a type or a listener, never by growing a conditional.** | A `when`/`if` chain gaining a branch per variant; a module calling each variant directly. | Use the extension point / event the codebase already has; the variant registers itself. |
 | 2.5 | **Extract to a file or class only at 2+ real call sites.** | A one-file helper called from exactly one place. | Inline it where it is used. |
 | 2.6 | **Fail loud at boundaries, trust internals downstream.** | Defensive null-checks scattered in private helpers past a validated edge. | Validate once at the public boundary; internals assert invariants and otherwise trust the input. |
+| 2.7 | **Release N works with release N-1.** Where a rolling or blue / green deploy runs the new release next to the previous one, every contract between parts not replaced at the same instant is read and written by both. | A renamed channel, topic, property key or route; a payload format changed within one release; a field the previous release still sends or reads, removed or retyped. A shared constant does not make it safe: the previous release still runs the old value. | Expand in release N, move the readers, contract in N+1 (`alta-dev` `roles/evolution.md`), or ship with the project's full-restart path. The project's `CLAUDE.md` lists its seams. |
 
 ### Layer 3+ - Stack layer (loaded)
 
