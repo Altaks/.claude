@@ -7,7 +7,9 @@ done.
 
 1. **A test that still passes when the change is reverted proves nothing.** Revert, run, watch it go
    red, restore. Every behaviour change ships a test that has passed this check, and the PR says which
-   symbol was reverted.
+   symbol was reverted. A scripted revert check must print the name of each test that went red; a run
+   that prints nothing was not run (a quiet flag hiding failures, a missing binary such as `timeout` on
+   macOS), and silence is never read as "all red".
 2. **Assert the exact signal.** The specific message, the specific event *type*, the state the entity
    ends in, the notification that must no longer fire. "Did not throw" and "the handler was called" are
    not assertions.
