@@ -32,8 +32,20 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 
 ## Context cost
 
-Only `skills/` is auto-loaded. Always-on cost is ~360 tokens (4 skills). Enabling the `cybersec`
-plugin adds ~75k tokens **in that project only**; disabling returns it to ~0.
+Only `skills/` is auto-loaded, and only each skill's name and description. Always-on cost is
+**~700 tokens** (9 of the 21 skills listed). Enabling the `cybersec` plugin adds ~75k tokens **in that
+project only**; disabling returns it to ~0.
+
+**Overlapping skills are hidden, not deleted** (`skillOverrides` in `settings.json`). Claude Code gives
+the skill listing 1% of the context window and shortens descriptions past it, so a duplicate costs
+triggering accuracy as well as tokens:
+
+- `off`: `caveman` (the Spartan output style covers it), `write-a-skill` (`superpowers:writing-skills`).
+- `user-invocable-only`, still typable as `/name`: `tdd`, `diagnose`, `handoff`, `teach`, `zoom-out`,
+  `prototype`, `grill-with-docs`, `to-prd`, `to-issues`, `triage`, and `arena`.
+- `name-only`: `setup-matt-pocock-skills`, since `to-prd`, `to-issues` and `triage` tell Claude to run it.
+
+Change one in `/skills` or in `settings.json`; remove the entry to restore it.
 
 ## Using this repo elsewhere
 
@@ -117,7 +129,7 @@ language); the highlights:
 
 ## Reinforcement loop (alta-dev Phase 6)
 
-`alta-dev` ends with **Phase 6: consolider**, a sweep that turns what a session taught into durable
+`alta-dev` ends with **Phase 6: consolidate**, a sweep that turns what a session taught into durable
 docs so the next session does not relearn it. Learnings route to their single home: project
 behaviour/rules to `CLAUDE.md`/`AGENTS.md`, facts/architecture/decisions to `README.md`/`docs/`/ADRs,
 personal cross-project preferences to the memory system, a standard's rule to `references/`.
@@ -125,7 +137,7 @@ personal cross-project preferences to the memory system, a standard's rule to `r
 It runs when the work wraps up, on "fin de session", or when the **Stop hook** triggers it:
 
 - `hooks/phase6-consolidate.sh` fires on `Stop`, **once per session**, and only after substantive
-  file-modifying work (≥ `ALTA_PHASE6_MIN_EDITS`, default 2). It then blocks the stop once and asks
+  file-modifying work (≥ `ALTA_PHASE6_MIN_EDITS`, default 5). It then blocks the stop once and asks
   Claude to run Phase 6. Pure Q&A sessions never trigger it. It fails open: any error allows the stop.
 - Active only when this repo is the running `.claude` (project or user). After enabling, open `/hooks`
   once or restart so Claude Code reloads the config. Tune the threshold with the `ALTA_PHASE6_MIN_EDITS`

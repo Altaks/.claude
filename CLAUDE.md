@@ -28,8 +28,17 @@ sustainability, response manner), with depth in its `references/roles/` and `ref
 - Validate a plugin or marketplace manifest with `claude plugin validate <path>`.
 - After any change: sweep for em dashes, and confirm no duplicate skill `name:` across the repo.
 - **Wire a cross-cutting `alta-dev` rule in every relevant place at once**: the loop phase (or a
-  top-level section), a red flag, and the matching `references/roles/` doc. Keep them consistent, and
-  keep the citing-file's reference accurate (do not point at a doc or symbol that does not exist).
+  top-level section) and the matching `references/roles/` doc. Keep them consistent, and keep the
+  citing-file's reference accurate (do not point at a doc or symbol that does not exist).
+- **A red flag only for a rule Claude was seen breaking** (a correction, or an excuse recorded in
+  `references/rationalizations.md`); never one that restates a phase.
+- **Keep `alta-dev` lean**: `SKILL.md` under 500 lines (Anthropic's guidance), detail in `references/`.
+  All in English, except example output a rule requires in French (the manual test procedures in
+  `roles/delivery.md`), official titles (RGESN) and phrases users type as triggers ("fin de session").
+  Pairings ("read X with Y") live only in the `SKILL.md` router, never inside role docs; every
+  reference over 100 lines opens with a `## Contents` list.
+- **Hide a skill instead of deleting it**: overlapping skills get a `skillOverrides` entry in
+  `settings.json` (`off`, `user-invocable-only` or `name-only`), so the listing stays small.
 - **Folding an external skill**: paraphrase its directives in your own words (ideas, not text). Vendor a
   whole third-party skill only as an **opt-in plugin** under `plugins/` (never into `skills/`), keep its
   LICENSE and attribution, and never vendor AGPL or unclear-license content into the repo.
