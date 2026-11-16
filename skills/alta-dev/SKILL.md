@@ -19,8 +19,9 @@ first. Where they conflict with this skill they are right; where they are silent
 
 ## Modes
 
-| Situation | Mode | Départ |
+| Situation | Mode | Start |
 |---|---|---|
+| A change that passes all four fast-lane checks | **Fast lane** | `### Fast lane` below |
 | Feature, bugfix, issue to close | **Build** | Phase 0 below |
 | New component, module, service, project | **Design** | Phase 0, then `roles/architecture.md` |
 | A bug, a failing test, unexpected behaviour | **Debug** | `roles/debugging.md`, then Build for the fix |
@@ -32,63 +33,37 @@ first. Where they conflict with this skill they are right; where they are silent
 A project-local skill for any of these wins over the generic path. Build always ends with a Review
 pass on your own diff.
 
-## Les cinq piliers
+## The five pillars
 
 Every rule serves one of five properties. Reason from them when no principle covers the case.
 
-| Pilier | Concrètement | Porté par |
+| Pillar | In practice | Carried by |
 |---|---|---|
-| **Lisibilité** | Read it once, know what it does. Domain names, no bare literals, one thing per function at one level of abstraction, comments adding what code cannot. | P5, P6, `languages/*` |
-| **Maintenabilité** | Changing one behaviour touches one place. One source of truth, one owner per concern, layering that holds, tests that catch the regression. | P2, P4, P7, P10 |
-| **Extensibilité** | The next variant is a new file plus a registration, never an edit inside a conditional. Closed sets exhaustive so the compiler names every site. | P8 |
-| **Simplicité** | KISS and YAGNI. Nothing built for a case that does not exist yet: no layer, seam, parameter or wrapper without a consumer today. | P2, P3 |
+| **Readability** | Read it once, know what it does. Domain names, no bare literals, one thing per function at one level of abstraction, comments adding what code cannot. | P5, P6, `languages/*` |
+| **Maintainability** | Changing one behaviour touches one place. One source of truth, one owner per concern, layering that holds, tests that catch the regression. | P2, P4, P7, P10 |
+| **Extensibility** | The next variant is a new file plus a registration, never an edit inside a conditional. Closed sets exhaustive so the compiler names every site. | P8 |
+| **Simplicity** | KISS and YAGNI. Nothing built for a case that does not exist yet: no layer, seam, parameter or wrapper without a consumer today. | P2, P3 |
 | **Performance** | Measured, never assumed. Cost paid at construction, not per event. Hot paths optimised with a profile; cold code stays readable. | P8, `roles/systems.md` |
 
-### Arbitrage
+### Arbitration
 
-| Conflit | Qui gagne |
+| Conflict | Winner |
 |---|---|
-| Performance vs lisibilité | Lisibilité, until a profile says otherwise. On a **measured** hot path performance wins, with a comment stating what the profile showed. |
-| Extensibilité vs simplicité | Simplicité. An extension point with no consumer today is maintenance cost with a nice name. |
-| DRY vs simplicité | Two sites that look alike but change for different reasons stay apart. Extract at the third real repetition. |
-| Maintenabilité vs élégance locale | The codebase's conventions. Consistency is a feature. |
-| Lisibilité vs simplicité | A helper wrapping one call is surface, not readability (P2). Fix the name at the call site instead. |
-| Simplicité vs testabilité | Simplicité. Never a seam for a test (P3); test from the outside. |
-| Extensibilité vs performance | Off a hot path, extensibilité. On a measured one, the profile decides and the exception is documented. |
-| N'importe lequel vs correction | Correction. P9 and P10 outrank all five. |
+| Performance vs readability | Readability, until a profile says otherwise. On a **measured** hot path performance wins, with a comment stating what the profile showed. |
+| Extensibility vs simplicity | Simplicity. An extension point with no consumer today is maintenance cost with a nice name. |
+| DRY vs simplicity | Two sites that look alike but change for different reasons stay apart. Extract at the third real repetition. |
+| Maintainability vs local elegance | The codebase's conventions. Consistency is a feature. |
+| Readability vs simplicity | A helper wrapping one call is surface, not readability (P2). Fix the name at the call site instead. |
+| Simplicity vs testability | Simplicity. Never a seam for a test (P3); test from the outside. |
+| Extensibility vs performance | Off a hot path, extensibility. On a measured one, the profile decides and the exception is documented. |
+| Any of them vs correctness | Correctness. P9 and P10 outrank all five. |
 
-## Le canon
+## The ten principles
 
-Shared vocabulary. **Name one in a finding title** when it gives a model that outlives the PR; do not
-force jargon when the concrete rule is clearer. Example: `[issue(blocking)] File.kt:L44 - DIP
-violation: the concrete adapter is injected instead of the port`.
+Cite by number in a finding. Evidence, smells, do-instead and the shared vocabulary (KISS, SOLID,
+deep modules, ...): `references/principles.md`, opened at the principle you need.
 
-| Principe | Smell | Pilier | Règle |
-|---|---|---|---|
-| **KISS** | A clever scheme where one stdlib call exists; an abstraction "to make it general". | Simplicité | P3 |
-| **DRY** | Same non-trivial logic at 3+ sites; same literal in two files. | Maintenabilité | P4, P5 |
-| **YAGNI** | A parameter, hook, config field or extension point with no consumer in this change. | Simplicité | P3, P8 |
-| **SRP** (S de SOLID) | One class or function doing several identifiable things. An "and" in its name. | Maintenabilité | P6, P7 |
-| **OCP** | A conditional gaining a branch per variant instead of using the extension point. | Extensibilité | P8 |
-| **LSP** | A subtype that throws, returns null where the parent never does, or weakens a precondition. | Maintenabilité | - |
-| **ISP** | A fat interface whose implementers leave most methods no-op. | Simplicité | - |
-| **DIP** | A global, a static singleton or a concrete adapter instead of the injected port. (A platform's own static API is not a DIP smell.) | Maintenabilité | P7 |
-| **Composition over inheritance** | A new abstract layer where injecting a collaborator would do. | Extensibilité | P7 |
-| **Deep modules** | Much public surface hiding little behaviour. | Simplicité | P2 |
-| **Single source of truth** | A parallel list beside the registry; a value duplicated across schema, contract and code. | Maintenabilité | P7 |
-| **Least visibility** | A public or module-internal symbol with no consumer outside its file. | Maintenabilité | P7 |
-| **Fail loud at boundaries** | A silent return deep inside; defensive null-checks downstream of validated input. | Correction | P9 |
-| **Pure functions where possible** | A helper reading or mutating shared state for no reason. | Testabilité | P3, P10 |
-| **Rule of three** | Extracting at the second lookalike, or never at the fifth. | Simplicité | P4 |
-| **Least astonishment** | A name, return type or side effect that surprises the caller. | Lisibilité | P6 |
-| **CQS** | A command returning the updated entity. | Maintenabilité | `roles/backend.md` |
-| **Least privilege, default deny** | Any permission, scope, role, origin or token wider than needed. **Whitelist, never blacklist**, every grant justified in writing. | Correction | P9, `roles/security.md` |
-
-## Les dix principes
-
-Evidence, smells and do-instead: `references/principles.md`. Cite by number in a finding.
-
-| # | Principe | Le tell |
+| # | Principle | The tell |
 |---|---|---|
 | **P1** | **Never guess.** Any doubt about behaviour, edge case or intent is a question for the user, not a "reasonable default". | "I'll assume the sensible default and note it." |
 | **P2** | **No wrapper, alias or passthrough.** A body that is one delegating call is deleted and the API called directly, everywhere. Test seams included: mock the real API. | `fun resolve(id) = Api.lookup(id)`, `manager.foo() = sub.foo()`, `setX(v) { x = v }`. |
@@ -101,7 +76,7 @@ Evidence, smells and do-instead: `references/principles.md`. Cite by number in a
 | **P9** | **Fail loud, at the boundary and in CI. Deny by default.** Validate once at the edge then trust internals. Never swallow, never silently no-op, never let a missing check pass. Permissions whitelisted to the minimum, each grant justified. Every user action confirms visibly. | A silent `return`, `catch {}` with no logger, a missing permission check, a wildcard scope, a denylist where an allowlist belongs. |
 | **P10** | **Nothing is done until it is proven.** A test that still passes with the change reverted proves nothing. Assert the exact signal, not a proxy. Duration is never a reason to skip a test. | "It compiles", "the E2E is green" without the revert check, `expect(handler).toHaveBeenCalled()` without checking which event. |
 
-## Ne jamais fabriquer
+## Never fabricate
 
 You are generating this code, so this is your most likely failure, and it is a **blocking** review
 category.
@@ -122,19 +97,38 @@ it: the link, the file / path and version, or a one-line note of what you found.
 usually none is needed, but when the source is non-obvious it is **mandatory**. Detail in
 `roles/documentation.md`.
 
-## La boucle (ne pas réordonner, ne pas sauter)
+## The loop (do not reorder, do not skip outside the fast lane)
 
 `references/worked-example.md`: one complete run, plus the blank orientation, report, PR and ledger
 templates.
 
-### Phase 0: s'orienter avant de toucher
+### Fast lane
+
+Take it only when **all four** hold on the actual diff, not on an estimate:
+
+1. **30 lines or fewer** of production code changed (tests excluded).
+2. **No new public symbol**: exported function, type, endpoint, command, config key or event.
+3. **No user-facing change**: no string, screen, message or output a human reads.
+4. **No dependency** added, removed or bumped.
+
+Then, in order: Phase 0 steps 1, 2, 4 and 5; the fix, test first when a unit exists (Phase 2); Phase 3
+steps 1 (whole gate), 3 (a test that bites, revert-proof included) and 6 (review your own diff), plus
+step 5 when the diff removes or renames a symbol; a two-line report: the gate command and its outcome,
+the revert-proof result. Skipped: grilling, the written spec, the templates, the completion report.
+
+- **A check breaks mid-way** (the fix grows, needs a new symbol, touches a string): stop and resume
+  the full loop at Phase 1.
+- **The fast lane skips ceremony, never questions.** Unclear intent is still asked (P1).
+
+### Phase 0: orient before touching anything
 
 1. **Read the task at its source.** `gh issue view <N> --comments`, then every linked issue, PR and
    document. Read the exact section of the spec and quote it. **A disagreement between the
    documentation and the code is itself a finding, and often the bug.**
 2. **Read the project's rules**: `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`, `docs/`. They win.
-3. **Load your references**: the role and language documents matching what you will touch, and say
-   which. Not loading them is how a rule gets missed.
+3. **Name your references**: the role and language documents this change needs (`## References`).
+   Load each when its phase reaches it, not all up front, and say which you loaded. Skipping the one a
+   phase names is how a rule gets missed.
 4. **Take stock**: current branch, correct base, clean tree, existing stack, an open PR already
    covering this, prior review comments. `git status`, `git log --oneline -10`, `gh pr list`. Correct
    the base now, not after three commits.
@@ -144,19 +138,25 @@ templates.
    shippable, so a blocker is the first thing the user needs.
 6. **Check it is not already done**: partially implemented, superseded, or closed by another PR.
 
-**Sortie**: an orientation note. What the issue asks, the branch, the references loaded, any blocker.
+**Context hygiene, in every phase.** Context is a budget; spend it on the task.
+- A broad search (many files, unknown location) goes to an `Explore` subagent and comes back as a
+  conclusion, not as file dumps.
+- A large file: grep for the spot, then read that slice. Never re-read a file you just edited.
 
-### Phase 1: se mettre d'accord (aucun code d'implémentation)
+**Output**: an orientation note. What the issue asks, the branch, the references named, any blocker.
+
+### Phase 1: agree first (no implementation code)
 
 1. **Grill first.** `grill-me`, one question at a time, recommending an answer for each, exploring the
-   codebase rather than asking what you can find. Then `superpowers:brainstorming` to converge.
+   codebase rather than asking what you can find. Then converge: lay out two or three approaches with
+   their trade-offs and your recommendation, and get the user's pick.
 2. **Surface what the request hides**: silent side effects, toggleability, public-API impact, the
    message the user actually sees, the unhappy path.
 3. **If a human sees any of it, the UX is part of the spec.** `roles/ui-ux.md`, decided now: what
    confirms the action, what the refusal says and why, the empty / loading / error states, the exact
    wording. A screen, a command output, a chat line and an error string are all user-facing.
-   **Show visual UI before you build it** (see `## Design d'interface`): a preview the user signs off
-   on, never straight to code.
+   **Visual UI gets a preview the user signs off on before any code**: an Artifact, a Claude Design
+   canvas, or an in-game text mockup, with a design point of view (`roles/ui-ux.md`, `roles/frontend.md`).
 4. **Design against the intended architecture, not around it.** If an architecture document or diagram
    exists, read the relevant region and ask whether this was already envisioned. If yes, build it under
    the planned name, shape and layering rather than a side structure. Evolving the core toward the plan
@@ -167,11 +167,11 @@ templates.
 6. **Cannot reach the user** (you are a subagent): **STOP** and return the open questions as blocking
    questions. No unconfirmed assumption survives into Phase 2. (P1)
 
-**Sortie**: a 3 to 6 line spec the user confirmed, the legal and normative regimes that apply
+**Output**: a 3 to 6 line spec the user confirmed, the legal and normative regimes that apply
 (`roles/compliance-legal.md`, or "none" stated), the eco-design targets for a digital service
 (`roles/sustainability.md`), plus the boundary sketch when something is new.
 
-### Phase 2: construire, test d'abord là où une unité existe
+### Phase 2: build, test first where a unit exists
 
 - **Climb the ladder before writing (P3, P4), once you understand the change.** Stop at the first rung
   that holds: (1) does this need to exist at all? Speculative need, skip it and say so in one line
@@ -183,21 +183,20 @@ templates.
 - **Find the exemplar first (P4).** Before a new type, adapter, panel, use case or migration: grep the
   concept, list the siblings, read the most recent, follow how it wires itself. Name it in the PR.
   "Check how I did it there and copy that pattern" is the standard correction; pre-empt it.
-- **REQUIRED when a natural unit exists:** `superpowers:test-driven-development`. Sketch the case list
-  first (empty, boundary, duplicate, not-found, expired, out-of-order, invalid-rejected-at-the-edge),
-  then promote one at a time through red / green / refactor. Watch each fail *for the right reason*.
-  Write each test body in three commented phases, **given / when / then** (`roles/testing.md`).
-- **The project runs Gherkin?** (`*.feature` files, a Cucumber-family runner.) Then every notion the PR
-  touches gets its feature, and every case of the decision tree its scenario, refusals and boundaries
-  included, a `Scenario Outline` where one rule runs over several values, existing steps reused, each
-  scenario tagged with the PR (`roles/testing.md`, "Gherkin"). The manual procedure keeps only what no
-  scenario can observe.
+- **When a natural unit exists, test first** (`roles/testing.md`). Sketch the case list first (empty,
+  boundary, duplicate, not-found, expired, out-of-order, invalid-rejected-at-the-edge), then promote
+  one at a time through red / green / refactor. Watch each fail *for the right reason* before writing
+  the code that passes it. Write each test body in three commented phases, **given / when / then**.
+- **The project runs Gherkin** (`*.feature` files)? Every notion the PR touches gets its feature and
+  every case of the decision tree its scenario (`roles/testing.md`, "Gherkin"). The manual procedure
+  keeps only what no scenario can observe.
 - **No natural unit?** Do not invent one (P3). It is still proven end to end in Phase 3.
 - Write to the principles as you go. Fixing a P2 or P5 in review costs more than not writing it.
 
-### Phase 3: vérifier pour de vrai
+### Phase 3: verify for real
 
-`superpowers:verification-before-completion`. Evidence before assertions.
+**Evidence before assertions.** A claim (passes, fixed, done) cites a command you ran in this session
+and its output. No command, no claim.
 
 1. **Run the project's whole gate**, not the module subset: root `./gradlew check`,
    `pnpm exec nx affected -t lint test`, `make precommit module=<name>`, `cargo clippy && cargo test`.
@@ -210,35 +209,25 @@ templates.
    procedure will cite is read off its registration now (`@Command`, router, parser), so a missing one
    is added in this phase rather than discovered by the tester.
 5. **Sweep for dead code with the language server** (the editor's LSP, not Liskov) after every build,
-   refactor or fix. Ask it, not grep, what the change left without a caller: each symbol, export,
-   parameter, import, file and dependency touched or orphaned, through find-references and its unused
-   diagnostics. Delete what nothing calls, in the same change (`roles/code-review.md`, `delete:`).
-   **Except what is called by reflection**: a language server sees no caller for a framework handler
-   or binding (a decorated `@Button`, `@OnEvent`, `@GrpcMethod`, `@EventHandler`, `@Command` method,
-   a controller method a code-generated interface names, a provider the container injects, a
-   serialized field). Before deleting, check the symbol carries no decorator, annotation or
-   registration, and never rename or re-sign one while simplifying.
-   **No language server installed for that language?** Ask once whether to install it, naming the
-   server and the command, and save the answer as a project memory so the question never comes back;
-   on a no, fall back to the compiler's and linter's unused checks and report the sweep as partial.
+   refactor or fix: find-references and unused diagnostics, not grep, on every symbol, export,
+   parameter, import, file and dependency touched or orphaned. Delete what nothing calls, in the same
+   change. **Never delete what reflection calls** (a decorated handler, a generated-interface method,
+   an injected provider, a serialized field), and no LSP installed means ask once and remember:
+   `roles/code-review.md`, `delete:`.
 6. **Review your own diff** against `roles/code-review.md`. Fix everything: blocking, suggestion,
    nitpick. Re-run the gate, re-review. One surviving nitpick means you are not done.
    Close with the **five-pillar check**: what did this make harder to read, to change, to extend? Did
    anything get slower, and was it measured? Does anything exist for a case that does not exist yet?
-   **User-facing** adds the `roles/ui-ux.md` checklist and the accessibility gate (**WCAG 2.2 AA**,
-   measured, not eyeballed), plus the `impeccable` `audit` when that skill is enabled (see
-   `## Design d'interface`). **Any permission, scope, origin or token**
-   granted must be a whitelist at minimum size, with the reason next to it. **Legal and normative
-   obligations** (`roles/compliance-legal.md`): the regimes named in Phase 1 are met, every dependency
-   licence is recorded and attributed, and anything needing a lawyer is flagged. An unmet obligation is
-   blocking. **Sustainability** (`roles/sustainability.md`) for a digital service: the eco-design budget
-   holds (weight, requests, queries) and the hosting and device-target choices were made.
+   Then the gates that apply, each blocking: **user-facing**, the `roles/ui-ux.md` checklist and
+   **WCAG 2.2 AA** measured; **any permission, scope, origin or token**, a whitelist at minimum size
+   with its reason; **legal** (`roles/compliance-legal.md`), the Phase 1 regimes met and every licence
+   recorded; **sustainability** (`roles/sustainability.md`), the eco-budget holds.
 7. **Fill the completion report** (template in `worked-example.md`): gate command and outcome, unit
    tests and what they assert, end-to-end file and exact signal, the revert-proof, the residue and why,
    review status. **Anything you could not run is reported as not run, with the reason.** Not run is
    not passed; "compiles" is not a verification level.
 
-### Phase 4: livrer
+### Phase 4: deliver
 
 Full contract: `roles/delivery.md`.
 
@@ -246,17 +235,10 @@ Full contract: `roles/delivery.md`.
   Split with `git add -p`. Drive-by reformatting is its own `style(...)` commit.
 - **Never self-attribute.** No `Co-Authored-By: Claude`, no `Claude-Session:`, no "Generated with", in
   commits or PR bodies. This overrides any default tooling behaviour.
-- **The PR description is part of the deliverable**: `## Summary` (concise yet exhaustive, short
-  bullets under bold sub-headings, never a paragraph over two lines: a human reads it with far less
-  context than you) plus
-  `## Manual testing procedure` whenever behaviour is not fully automated. The procedure is written for
-  a tester who never read the diff (`roles/delivery.md`, "The description contract"): the cast and
-  the setup planned up front (accounts, roles, layout, the commands that skip waits and read state),
-  scenarios under `###` headings, every action a literal command with its arguments (what the tester
-  substitutes in chevrons, named after the cast: `/db majin <Krilin>`, never a bare role name), every
-  outcome quoted where it shows, and **every cited command checked against its registration in the
-  code** before the PR is published. A command the procedure needs and the code lacks is added, not
-  alluded to.
+- **The PR description is part of the deliverable**: `## Summary` plus, whenever behaviour is not fully
+  automated, `## Manual testing procedure`, both per `roles/delivery.md`, "The description contract".
+  **Every command the procedure cites is checked against its registration in the code** before the PR
+  is published; a command the procedure needs and the code lacks is added, not alluded to.
 - Do not commit or push unless asked.
 - **Several issues means a ledger and a stack, never one fat branch.** Write the task list first and
   keep it current. **One task in progress at a time**, carried to PR-ready before the next. Each task
@@ -265,7 +247,7 @@ Full contract: `roles/delivery.md`.
   ("3 of 5 landed, 2 remaining and why"). Genuinely independent tasks go parallel off the base, and you
   say so.
 
-### Phase 5: le cycle de review (la PR est ouverte, pas finie)
+### Phase 5: the review cycle (the PR is open, not finished)
 
 1. **Answer every comment.** Silence reads as ignored.
 2. **Verify before agreeing.** `superpowers:receiving-code-review`. Blind agreement wastes both sides.
@@ -275,14 +257,14 @@ Full contract: `roles/delivery.md`.
 5. **Point at the commit** carrying each fix, and apply the comment to every other occurrence.
 6. Re-run the gate after each fix pass. Detail in `roles/code-review.md`.
 
-### Phase 6: consolider (la boucle de renforcement)
+### Phase 6: consolidate (the reinforcement loop)
 
 The session taught things that must outlive it: fresh context next time means an unwritten
 lesson is lost. Run this when wrapping up, i.e. the work is shipped or the question answered and
 the session is ending, the moment the user signals "we're done" / "fin de session", or when a
 `Stop` / session-end hook triggers it.
 
-Corrections were already persisted as they arrived (§Quand on te corrige). Phase 6 sweeps
+Corrections were already persisted as they arrived (`## When corrected`). Phase 6 sweeps
 everything else the whole discussion produced.
 
 1. **Harvest the durable, not the transcript.** Across the entire discussion, keep only what a
@@ -300,99 +282,62 @@ everything else the whole discussion produced.
 4. **Report the ledger**: one line per file touched (what, where), plus anything you were unsure
    whether to record, for the user to confirm. Do not commit or push these unless asked.
 
-**Sortie**: the updated docs/memory, and the ledger of what was persisted and where.
+**Output**: the updated docs/memory, and the ledger of what was persisted and where.
 
-## Quand on te corrige
+## When corrected
 
 A correction is a rule you did not have. Fixing the line is half the job.
 
 1. **Fix every occurrence** of the same mistake in the diff, not only the flagged one.
 2. **Persist the rule**: a memory entry, the project's `CLAUDE.md` / `AGENTS.md`, and the matching
    reference here. This is an explicit standing request, in those words.
-3. **Add it to the rationalization table** when it came with an excuse.
+3. **Add it to `references/rationalizations.md`** when it came with an excuse.
 4. **Say what you persisted and where.**
 
 Receiving the same correction twice is the failure this prevents. What was learned *without* being
 an explicit correction (a convention discovered, a decision made, a preference stated) is swept at
 the end by **Phase 6**.
 
-## Signaler un problème (proposer un ticket)
+## Report a problem (propose a ticket)
 
-Any bug, inconsistency, or broken feature you notice gets surfaced as a GitHub issue proposal,
-whether it is the task itself or something you stumbled on beside it. Spotting it and staying silent
-is the failure this prevents.
+Any bug, inconsistency or broken feature you notice is surfaced as a GitHub issue proposal. The
+problem that **is** the task gets fixed; an **incidental** one gets a ticket, never an inline fix.
+Confirm it, check for a duplicate, draft and show it, create only on the user's OK:
+`roles/product.md`, "Report a problem".
 
-**Fix it or file it, not both by accident:**
-- The problem **is** the task: fix it. A tracking issue only if the project drives work through issues.
-- **Incidental**, outside the current scope: do not fix it inline (that is scope creep). Propose a
-  ticket and keep going.
+## Rationalizations
 
-When you find one:
+The four that fire most. **Full set, grouped by theme: `references/rationalizations.md`.** Read it the
+moment a sentence starting with "close enough", "I'll just", "surely" or "later" forms, and before
+claiming anything is done.
 
-1. **Confirm it is real** before saying a word: reproduce it, or point at the exact `file:line` with
-   expected vs actual. A plausible guess is not a bug (Ne jamais fabriquer). If you cannot confirm,
-   say so instead of filing speculation.
-2. **Check for a duplicate**: `gh issue list --search "<keywords>" --state all`. If it already exists,
-   link it instead of opening another.
-3. **Draft the issue and show it first.** Reuse the repo's `.github/ISSUE_TEMPLATE` and its labels when
-   present; otherwise a concrete title (`area: symptom`), then expected vs actual, the minimal repro or
-   trigger, evidence (`file:line`, commit, log), impact, and a suggested direction if you have one.
-   Bug-report shape: `roles/product.md`.
-4. **Create only on the user's OK**: `gh issue create --title ... --body ... [--label ...]` in the
-   current repo. Never open an issue silently, and never in a repo you were not asked to touch. Report
-   the issue URL.
-
-One concrete ticket beats a bug lost in the diff.
-
-## Table des rationalisations
-
-The ones that fire most often. **Full set, grouped by theme: `references/rationalizations.md`.** Read it
-the moment a sentence starting with "close enough", "I'll just", "surely" or "later" forms, and
-systematically before claiming anything is done.
-
-| Excuse | Réalité |
+| Excuse | Reality |
 |---|---|
 | "I'll assume the sensible default and note it." | Assuming is guessing. Ask; if unreachable, stop and return the question. (P1) |
 | "It is a tiny helper, it reads better." | "REMEMBER THAT I DON'T WANT THIS KIND OF SMALL HELPER FUNCTIONS SINCE THEY ONLY ALIAS ONE METHOD CALL." Delete it. (P2) |
-| "The wrapper is a test seam, not production logic." | It is in production code, so it is production complexity. Mock the API. (P3) |
-| "I wrote a fresh implementation, it came out cleaner." | Find the exemplar and copy its shape. Consistency beats local elegance. (P4) |
-| "It is only used once, a literal is clearer." | Magic string again. Name it. (P5) |
 | "That method surely exists, the name is obvious." | Read the declaration. A plausible signature is fabricated until verified. |
 | "The E2E is green." | Green *because* of your change? Revert, watch it go red, restore. (P10) |
-| "I could not run the gate, so I described what it would do." | Not run is not passed. Say it up front. |
-| "3 of the 5 tasks are done, the run is complete." | It is not. State the score and what is left. |
-| "Review only left nitpicks, close enough." | Nitpicks are in scope. Loop until clean. |
-| "The session is over, I'll remember next time." | Next session is fresh context; it remembers nothing you did not write. Consolidate now. (Phase 6) |
-| "That is a minor preference, not worth recording." | Every repeated correction began as a minor preference. Persist it where it belongs. (Phase 6) |
-| "It is a minor glitch, not worth a ticket." | Real bugs get tracked. Draft the issue and let the user decide; do not choose silence for them. |
-| "I will just fix this unrelated bug while I am here." | Incidental bug: file a ticket, do not widen the diff. Fix only what the task is. |
 
 ## Red flags: stop
+
+Only rules already broken in practice (each backed by `references/rationalizations.md` or a house
+rule); every other rule lives in its phase.
 
 - "I'll just assume", or "the conservative reading is".
 - Starting to write before knowing whether the gate and the suite can run here.
 - Working from the issue title without its comments, its links and the spec it cites.
 - Using a symbol, flag or config key whose declaration you have not read.
-- Code from decompilation, web research or an obscure library method with no source comment (link, path or explanation).
-- Shipping without naming which laws, standards or dependency licences apply, or adding a copyleft dependency without weighing its obligations.
-- Ignoring eco-design (weight, energy, device longevity) on a digital service, or busting the eco-budget without reporting it.
 - Writing a new type without having read the nearest existing one.
 - Writing implementation before a confirmed spec, or skipping `grill-me`.
-- A new component whose responsibility needs an "and".
 - A top-level split by mechanism (`controllers/`, `services/`, `repositories/`).
 - Choosing the folder layout after the code is written.
 - A new function whose body is one call.
-- Writing new code, or adding a dependency, before climbing the ladder: stdlib, a native platform feature, or an already-installed dependency already does it.
+- Writing new code, or adding a dependency, before climbing the ladder.
 - A parameter, interface or flag whose only consumer is a test.
-- Calling a build, refactor or fix done without a language-server sweep for what it left without a caller.
 - A literal encoding a slot, unit, key or duration.
 - A `domain/` file importing infrastructure, or an event emitted outside the layer that owns it.
-- A conditional growing by one branch per type.
 - A `catch` without a logger, or a silent `return` on a user-triggered action.
 - A user-facing string written as a literal.
-- Coding a visual UI before showing a preview the user signed off on.
-- Shipping the templated default look (centered hero, three equal cards, untouched component library) with no point of view.
-- A colour pair shipped without a measured contrast ratio; meaning carried by colour alone; no visible focus state or keyboard path.
 - Proposing a fix without being able to say why the bug happened.
 - Retrying, skipping or loosening a failing test instead of hunting the race behind it.
 - Changing a shipped surface in place instead of expanding then contracting.
@@ -402,123 +347,66 @@ systematically before claiming anything is done.
 - Finding a bug, inconsistency or broken feature and moving on without proposing a ticket.
 - Fixing an incidental, out-of-scope bug inline instead of filing it.
 - Ending a session without consolidating what it taught (Phase 6 skipped).
-- Persisting a transcript or task log instead of the durable rules behind it.
-- Writing a learning into a new file when an existing doc already owns the topic.
 - Claiming done without having watched the test go red with the change reverted.
-- A test body with no given / when / then comment structure, or with more than one action under test.
 - An em dash (U+2014) anywhere: code, comments, docs, commits, PR bodies, chat replies.
 - A commit or PR body attributing work to an AI.
-- A reply that buries the answer, the key number or the warning under a filler opener or a wall of paragraph.
-- Wrapping a requested deliverable (commit message, email, snippet) in prose instead of outputting only it.
-- A blocking question placed anywhere but last, or not named on line one when the reply carries other content.
 
-## Design d'interface (frontend et in-game)
+## Answering the user
 
-Two failure modes to kill: shipping **AI slop** (the generic, templated look with no point of view),
-and skipping the parts that make an interface **usable and accessible**.
+A human with limited attention reads this. The failure is omission or burial, not length.
 
-### Preview before code (mandatory for anything visual)
+- **Bottom line first**, in one sentence; then the least that fully answers. No filler opener, no
+  closing recap.
+- **Never cut an essential to be brief**: numbers, thresholds, scoped conditions ("only under X") and
+  warnings ride with the point they qualify.
+- **Scannable blocks**: one idea each, bold lead-ins that carry the answer on their own. One unbroken
+  wall of paragraph is a bug.
+- **Deliverable purity**: asked for a thing (commit message, email, snippet, file), output only it.
+- **A blocking question goes last**, named on line one when other content precedes it. An instruction
+  gets one line, then the work.
+- **Full when full is the ask**: completion reports, PR descriptions and requested deep dives keep
+  every number and caveat, in scannable blocks.
+- Direct and calm; risk named plainly in one line; no em dash.
 
-Never go straight to code for a screen, component or in-game menu the user has not seen. Show it first,
-get sign-off, then build. This is Phase 1, and it replaces prose speculation about "what it could look
-like".
+## References
 
-- A single web screen or component: an **Artifact** (live, clickable HTML). Load `artifact-design` for
-  the design pass, `dataviz` when it charts data.
-- A multi-screen flow, or several visual directions to choose from: the **Claude Design** canvas (the
-  `design` skill), one artboard per screen or variant.
-- In-game (Minecraft / Spigot): a text mockup of the exact rendered surface (chat block, scoreboard,
-  chest-GUI slot grid, item lore) at the real client width, per `roles/minecraft-ui.md`.
+Load on demand, **normally one role plus one language**; `+` names the documents to read with it.
+Every document a task needs is listed here: open it from this index and read it in full (long ones
+start with a Contents list), even when another reference mentions it.
 
-### Not AI slop (have a point of view)
+### By role, `references/roles/`
 
-Load the design language **before** designing: **`impeccable` if that skill is available** (propose
-enabling its plugin for real frontend work), otherwise the **`frontend-design`** skill. Both exist to
-push past the safe, templated default.
+- **architecture**: a component, module, service or project; a layer, boundary or extension point. Design checklist.
+- **product**: turning a request into a spec, user stories, acceptance criteria, bug reports, vertical slicing, spikes, reporting a problem you found. Phase 1 in full.
+- **ui-ux** (+ the surface's own document: frontend, mobile, desktop-and-cli, gameplay, minecraft-ui, backend): **mandatory** as soon as a human sees any of it, screen, form, command output, chat line, error string. Preview before code, design direction. Read in Phase 1, checklist before done.
+- **backend** (+ architecture, data): services, use cases, APIs, error taxonomy, DTOs.
+- **frontend** (after ui-ux; + architecture, mobile): web UI, atomic design, state, data access, contrast, tokens, performance budgets, design direction (anti-slop), accessibility (WCAG 2.2 AA), preview before code.
+- **mobile**: Flutter, Android, iOS. Layout, state, platform reality, quality gate.
+- **desktop-and-cli**: desktop apps, CLI, TUI, engines. Core/shell split, backends behind one trait, packaging.
+- **networking** (+ security, backend): anything crossing a wire. Contracts, interceptors, timeouts, retries, streams, shading.
+- **data** (+ backend, architecture): schema, migrations, repositories, fixtures, pipelines.
+- **devops** (+ security, delivery): CI, containers, infrastructure as code, releases, environments, incidents, postmortems.
+- **observability** (+ devops, privacy): what to log and at which level, what never to log, metric cardinality, traces, alerting.
+- **security** (+ networking, devops): authorization, input, secrets, dependencies, scanning, runtime posture. Whitelist over blacklist. Applies to every role.
+- **privacy** (+ data, security, observability): personal data. Minimisation, consent, retention, cascading deletion, user rights, third parties. Decided in Phase 1.
+- **compliance-legal** (+ privacy, security, dependencies): the laws, licences and standards the software must satisfy. Regime triage (GDPR, AI Act, CRA, sector, accessibility law) in Phase 1; OSS licence and IP obligations; the Phase 3 gate. You are not counsel: flag what needs a lawyer.
+- **sustainability**: eco-design of a digital service. RGESN and Green Software Foundation, the eco-budget (weight, energy, device longevity) in Phase 1, the gate in Phase 3. Same ship-less lever as `frontend` performance budgets.
+- **systems** (+ architecture, iot-and-embedded): C, C++, Rust, manual resources, measured hot paths, concurrency primitives.
+- **concurrency** (+ systems, networking, data): threads, queues, events, retries. Races, ordering, idempotency, outbox, back-pressure, flaky tests.
+- **iot-and-embedded** (+ systems, networking): firmware, sensor nodes, acquisition chains, the hardware/application split.
+- **gameplay** (+ systems, architecture): game logic, plugins, tick loops, registries and events, player-facing output.
+- **minecraft-ui** (+ gameplay, ui-ux): in-game Spigot/Paper interfaces - chat, scoreboard, tab, chest-GUI menus, item lore, action/boss bar, titles.
+- **time** (+ data, i18n): any instant, date, duration, schedule, expiry or cooldown.
+- **i18n** (+ ui-ux): any user-facing string, and before shipping a second language.
+- **dependencies** (+ security, architecture): adding, isolating, updating or removing a library. Licences and attribution.
+- **debugging**: any bug or unexpected behaviour, before proposing a fix. Reproduction, evidence, bisection, git archaeology, root cause.
+- **evolution**: changing anything with a consumer you do not control. Expand and contract, deprecation, flags, rollout, removal.
+- **testing**: before the first test, and before claiming done.
+- **code-review**: severities, finding format, output template, tone, fabricated code, answering feedback.
+- **delivery**: commits, branches, PR stacking, the description contract, the ledger.
+- **documentation**: comments, READMEs, architecture documents, ADRs, doc sites.
 
-- **Direction first**: the mode (persuade / operate / read / experience), the one adjective this surface
-  should feel, the reference it is not. A UI with no POV defaults to slop.
-- **Distinctive by intention**: a real type hierarchy and a chosen typeface, a deliberate colour system
-  (not the framework's defaults), decided spacing and rhythm, one memorable detail.
-- **The tells to avoid**: the centered hero over three equal cards, default component-library styling
-  left untouched, evenly grey everything, emoji as iconography, gradient on everything, copy that says
-  nothing. Consistency is not monotony: vary weight and scale to build hierarchy.
-
-### Accessible and correct by default (not a later pass)
-
-The floor is **WCAG 2.2 AA**, checked not eyeballed, and it is a **blocking** review category for
-user-facing web work. Details and the checklist: `roles/ui-ux.md` and `roles/frontend.md`. Essentials:
-semantic HTML (landmarks, headings, lists, buttons vs links), a full keyboard path with visible focus,
-accessible names, contrast measured against AA, colour never the only signal, layout holding at 200%
-zoom and the smallest viewport, respected reduced-motion, and designed empty / loading / error states.
-When `impeccable` is enabled, run its `audit` (a11y / perf / responsive) and `critique`; otherwise apply
-the `roles/ui-ux.md` checklist by hand. In-game surfaces follow `roles/minecraft-ui.md`.
-
-## Répondre à l'utilisateur
-
-You are answering a human with limited attention, not another model. The failure to fear is not "too
-long" or "too short", it is the reader coming away without what mattered, by omission or by burying it.
-
-- **Lead with the bottom line, in one sentence.** Someone who reads only the first line has the answer.
-  Then say the least that *fully* answers, and stop. No filler opener ("Great question"), no closing
-  restatement.
-- **Never drop an essential to be brief.** Numbers, thresholds, scoped conditions ("only under X", not
-  "all") and warnings ride with the point they qualify, and are the last thing cut, never the first. A
-  reader who acts on a rounded-off version acts wrong. This is "report faithfully" applied to the chat.
-- **Scannable blocks.** One idea per block, a blank line between; the bold lead-in plus any key number or
-  warning must carry the whole answer on their own, for the reader who only skims. One unbroken wall of
-  paragraph is a bug, even when the reply is short.
-- **Deliverable purity.** Asked to produce a thing (a commit message, an email, a snippet, a file),
-  output only that thing, nothing wrapped around it.
-- **A blocking question goes last, and nothing follows it**; when the reply carries other content, line
-  one names it so a glance catches it (P1, and the subagent-STOP rule of Phase 1). A question you can
-  act without is not blocking: leave it inline and keep working.
-- **An instruction gets one line, then you do the work.** "On it" wrapped in a structured report is noise.
-- **Give it in full when full is the ask.** A completion report, a PR description, or a deep-dive the
-  user asked for ("really explain", "walk me through it") is delivered whole, every number and caveat,
-  broken into scannable blocks. Brevity governs the chat answer, never the report, the deliverable, or
-  the work behind it.
-- **Tone: direct and calm**, a sharp colleague who respects their time. Name uncertainty or risk plainly
-  in one line, never buried. No em dash (house rule). Dial terser or warmer to fit the moment.
-
-## Références
-
-`references/principles.md` is always relevant. Everything else loads on demand: **normally one role
-plus one language**. A change crossing disciplines reads several.
-
-### Par spécialisation, `references/roles/`
-
-- **architecture** : a component, module, service or project; a layer, boundary or extension point. Design checklist.
-- **product** : turning a request into a spec, user stories, acceptance criteria, bug reports, vertical slicing, spikes. Phase 1 in full.
-- **ui-ux** : **obligatoire** as soon as a human sees any of it, screen, form, command output, chat line, error string. Read in Phase 1, checklist before done.
-- **backend** : services, use cases, APIs, error taxonomy, DTOs.
-- **frontend** : web UI, atomic design, state, data access, contrast, tokens, performance budgets, design direction (anti-slop), accessibility (WCAG 2.2 AA), preview before code.
-- **mobile** : Flutter, Android, iOS. Layout, state, platform reality, quality gate.
-- **desktop-and-cli** : desktop apps, CLI, TUI, engines. Core/shell split, backends behind one trait, packaging.
-- **networking** : anything crossing a wire. Contracts, interceptors, timeouts, retries, streams, shading.
-- **data** : schema, migrations, repositories, fixtures, pipelines.
-- **devops** : CI, containers, infrastructure as code, releases, environments, incidents, postmortems.
-- **observability** : what to log and at which level, what never to log, metric cardinality, traces, alerting.
-- **security** : authorization, input, secrets, dependencies, scanning, runtime posture. Whitelist over blacklist. Applies to every role.
-- **privacy** : personal data. Minimisation, consent, retention, cascading deletion, user rights, third parties. Decided in Phase 1.
-- **compliance-legal** : the laws, licences and standards the software must satisfy. Regime triage (GDPR, AI Act, CRA, sector, accessibility law) in Phase 1; OSS licence and IP obligations; the Phase 3 gate. You are not counsel: flag what needs a lawyer.
-- **sustainability** : eco-design of a digital service. RGESN and Green Software Foundation, the eco-budget (weight, energy, device longevity) in Phase 1, the gate in Phase 3. Same ship-less lever as `frontend` performance budgets.
-- **systems** : C, C++, Rust, manual resources, measured hot paths, concurrency primitives.
-- **concurrency** : threads, queues, events, retries. Races, ordering, idempotency, outbox, back-pressure, flaky tests.
-- **iot-and-embedded** : firmware, sensor nodes, acquisition chains, the hardware/application split.
-- **gameplay** : game logic, plugins, tick loops, registries and events, player-facing output.
-- **minecraft-ui** : in-game Spigot/Paper interfaces - chat, scoreboard, tab, chest-GUI menus, item lore, action/boss bar, titles. Read with `gameplay` and `ui-ux`.
-- **time** : any instant, date, duration, schedule, expiry or cooldown.
-- **i18n** : any user-facing string, and before shipping a second language.
-- **dependencies** : adding, isolating, updating or removing a library. Licences and attribution.
-- **debugging** : any bug or unexpected behaviour, before proposing a fix. Reproduction, evidence, bisection, git archaeology, root cause.
-- **evolution** : changing anything with a consumer you do not control. Expand and contract, deprecation, flags, rollout, removal.
-- **testing** : before the first test, and before claiming done.
-- **code-review** : severities, finding format, output template, tone, fabricated code, answering feedback.
-- **delivery** : commits, branches, PR stacking, the description contract, the ledger.
-- **documentation** : comments, READMEs, architecture documents, ADRs, doc sites.
-
-### Par langage, `references/languages/`
+### By language, `references/languages/`
 
 `kotlin`, `java`, `typescript`, `javascript`, `rust`, `python`, `php`, `c`, `cpp`, `dart`, `hcl`,
 `sql`, `bash`, `yaml`, `nix`, `markdown`. Idioms, layout, tooling and gate for each.

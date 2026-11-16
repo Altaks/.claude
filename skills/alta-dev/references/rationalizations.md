@@ -1,23 +1,23 @@
-# Table complète des rationalisations
+# Complete table of rationalizations
 
-Every excuse below was actually made, and corrected, in these codebases. The ten most frequent are kept
-inline in `SKILL.md`; this is the full set.
+Every excuse below was actually made, and corrected, in these codebases. The four most frequent are kept
+inline in `SKILL.md`; this is the full set, and the record behind its red flags.
 
-**Quand la lire**: the moment a sentence starting with "it is fine because", "close enough", "I'll just",
-"surely", or "later" forms. And systematically before claiming anything is done (Phase 3), because that
-is where most of them fire.
+**When to read it**: the moment a sentence starting with "it is fine because", "close enough", "I'll
+just", "surely", or "later" forms. And systematically before claiming anything is done (Phase 3),
+because that is where most of them fire.
 
-## P1, ne pas deviner
+## P1, do not guess
 
-| Excuse | Réalité |
+| Excuse | Reality |
 |---|---|
 | "I'll assume the sensible default and note it." | Assuming is guessing. Ask; if unreachable, stop and return the question. |
 | "I read the issue title, that is enough." | Read it, its comments, its links and the spec it cites. The doc-versus-code gap is often the bug. |
 | "Behaviour is obvious from the request." | Surface the silent side effects and confirm them. Obvious to you is a guess to them. |
 
-## P2, P3, P4, P5 : ce qu'on écrit
+## P2, P3, P4, P5: what we write
 
-| Excuse | Réalité |
+| Excuse | Reality |
 |---|---|
 | "It is a tiny helper, it reads better." | "REMEMBER THAT I DON'T WANT THIS KIND OF SMALL HELPER FUNCTIONS SINCE THEY ONLY ALIAS ONE METHOD CALL." Delete it. (P2) |
 | "The wrapper is a test seam, not production logic." | It is in production code, so it is production complexity. Mock the API. (P3) |
@@ -28,9 +28,9 @@ is where most of them fire.
 | "It is only used once, a literal is clearer." | Magic string again. Name it. (P5) |
 | "That method surely exists, the name is obvious." | Read the declaration. A plausible signature is fabricated until verified. |
 
-## Structure et architecture
+## Structure and architecture
 
-| Excuse | Réalité |
+| Excuse | Reality |
 |---|---|
 | "I added an abstraction for the future case." | YAGNI. "Is this needed?" and the answer is usually no. |
 | "I'll structure it properly once it grows." | A structure decided after the fact is one nobody chose. Name the boundary first. |
@@ -40,9 +40,9 @@ is where most of them fire.
 | "The spike works, I'll clean it up later." | Spike code is deleted, not promoted. Rebuild with what you learned. |
 | "The reason for that choice is in the PR somewhere." | Not findable in two years. An expensive-to-reverse decision gets an ADR with the rejected options. |
 
-## Coût et robustesse
+## Cost and robustness
 
-| Excuse | Réalité |
+| Excuse | Reality |
 |---|---|
 | "Reading config on click keeps it live-editable." | "Re-reading from the configuration on EVERY click ???" Cache at construction. (P8) |
 | "I early-returned so it cannot crash." | A subscriber that cannot find its entity is corrupted state. Let it throw. (P9) |
@@ -52,9 +52,9 @@ is where most of them fire.
 | "I stored the timestamp, the zone is obvious." | Until the next region, machine or daylight-saving change. |
 | "It is one string, I'll hardcode it for now." | A user-facing literal makes the second language a rewrite instead of a file. |
 
-## Vérification
+## Verification
 
-| Excuse | Réalité |
+| Excuse | Reality |
 |---|---|
 | "The test asserts the handler was called." | It does not check *which* event. Assert the exact signal. (P10) |
 | "The E2E is green." | Green *because* of your change? Revert, watch it go red, restore. (P10) |
@@ -65,19 +65,23 @@ is where most of them fire.
 | "The symptom is gone, the bug is fixed." | If you cannot say why it happened, it is a coincidence. Root cause, then the test. |
 | "No natural pure unit, so I skipped verification." | The end-to-end test is mandatory regardless. Never leave a behaviour unverified. (P10) |
 
-## Livraison et boucle
+## Delivery and the loop
 
-| Excuse | Réalité |
+| Excuse | Reality |
 |---|---|
 | "Review only left nitpicks, close enough." | Nitpicks are in scope. Loop until clean. |
 | "I bundled the tasks, the diff is coherent." | Stack the PRs. Linear review is the point. |
 | "3 of the 5 tasks are done, the run is complete." | It is not. State the score and what is left. |
 | "I'll check whether the tests can run once the code is written." | Preflight first. An unverifiable change is not shippable. |
 | "The user corrected me, I fixed that line." | Fix every occurrence, then persist the rule in memory, project rules and skill. |
+| "The session is over, I'll remember next time." | Next session is fresh context; it remembers nothing you did not write. Consolidate now. (Phase 6) |
+| "That is a minor preference, not worth recording." | Every repeated correction began as a minor preference. Persist it where it belongs. (Phase 6) |
+| "It is a minor glitch, not worth a ticket." | Real bugs get tracked. Draft the issue and let the user decide; do not choose silence for them. |
+| "I will just fix this unrelated bug while I am here." | Incidental bug: file a ticket, do not widen the diff. Fix only what the task is. |
 
-## Données et vie privée
+## Data and privacy
 
-| Excuse | Réalité |
+| Excuse | Reality |
 |---|---|
 | "I'll collect the field now, we might need it." | No purpose, no collection. Data never stored needs no protection, deletion or breach notice. |
 | "Deletion removes the row, that is enough." | Deletion cascades: derived tables, indexes, caches, exports, logs, analytics, third parties. |

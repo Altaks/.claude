@@ -1,13 +1,22 @@
 # Frontend
 
-Web UI. **Read `ui-ux.md` first**: it is mandatory for anything a human sees, and it decides what this
-document then implements. Read also with `architecture.md` (state modelling) and `mobile.md` (the same
-component discipline in a different runtime).
+Web UI.
+
+## Contents
+
+- Direction and preview (before any code)
+- Component hierarchy: atomic design
+- State
+- Data access
+- Styling
+- Performance budgets
+- Correctness and hygiene
+- Verify by looking
 
 ## Direction and preview (before any code)
 
 - **Have a point of view; do not ship AI slop.** Load the design language first: the `impeccable` skill
-  when it is enabled, otherwise `frontend-design`. Decide the mode, the one adjective the surface should
+  when it is enabled, otherwise `frontend-design`. Decide the mode (persuade / operate / read / experience), the one adjective the surface should
   feel, and the reference it is not. Distinctive typography, a deliberate colour system (not the
   framework defaults), decided spacing, one memorable detail. Avoid the tells: centered hero over three
   equal cards, untouched component-library styling, evenly grey everything, gradient on everything.
@@ -65,7 +74,7 @@ Rules that make it work:
   eyeball, and state the ratio in the PR when you change one.
 - Story or sandbox-only utilities never leak into the production bundle.
 
-## Budgets de performance
+## Performance budgets
 
 **A budget that is not enforced is a wish.** Declare the numbers, check them in CI, and fail the build
 when they are exceeded. Otherwise every release adds a little and nobody is ever responsible.

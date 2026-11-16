@@ -1,6 +1,16 @@
-# Produit, specs et tickets
+# Product, specs and tickets
 
 Turning a request into something buildable. This is Phase 1 of the loop, written out.
+
+## Contents
+
+- Grill before you build
+- Writing a user story
+- Acceptance criteria describe behaviour, not implementation
+- Bug reports
+- Report a problem (propose a ticket)
+- Splitting work
+- Scope discipline
 
 ## Grill before you build
 
@@ -55,6 +65,34 @@ exists. Screenshots or a recording when the symptom is visual.
 A bug report is also the proof that a scenario was missing from the test suite, so the first action on
 picking it up is writing the failing test, not the fix.
 
+## Report a problem (propose a ticket)
+
+Any bug, inconsistency, or broken feature you notice gets surfaced as a GitHub issue proposal,
+whether it is the task itself or something you stumbled on beside it. Spotting it and staying silent
+is the failure this prevents.
+
+**Fix it or file it, not both by accident:**
+- The problem **is** the task: fix it. A tracking issue only if the project drives work through issues.
+- **Incidental**, outside the current scope: do not fix it inline (that is scope creep). Propose a
+  ticket and keep going.
+
+When you find one:
+
+1. **Confirm it is real** before saying a word: reproduce it, or point at the exact `file:line` with
+   expected vs actual. A plausible guess is not a bug (Never fabricate). If you cannot confirm,
+   say so instead of filing speculation.
+2. **Check for a duplicate**: `gh issue list --search "<keywords>" --state all`. If it already exists,
+   link it instead of opening another.
+3. **Draft the issue and show it first.** Reuse the repo's `.github/ISSUE_TEMPLATE` and its labels when
+   present; otherwise a concrete title (`area: symptom`), then expected vs actual, the minimal repro or
+   trigger, evidence (`file:line`, commit, log), impact, and a suggested direction if you have one.
+   Bug-report shape: `## Bug reports` above.
+4. **Create only on the user's OK**: `gh issue create --title ... --body ... [--label ...]` in the
+   current repo. Never open an issue silently, and never in a repo you were not asked to touch. Report
+   the issue URL.
+
+One concrete ticket beats a bug lost in the diff.
+
 ## Splitting work
 
 - One concern per ticket, and one ticket per PR wherever possible.
@@ -63,7 +101,7 @@ picking it up is writing the failing test, not the fix.
 - A ticket that cannot be verified from the outside is either too small to be a ticket or too vague to
   be started.
 
-### Découper en tranches verticales
+### Cutting vertical slices
 
 **Slice through the layers, never along them.** A slice that delivers "the database table" or "the API
 layer" is worth nothing on its own: it cannot be demonstrated, cannot be tested end to end, and cannot
@@ -80,7 +118,7 @@ be shipped or reverted independently.
   slice; "the validation layer" is not.
 - A slice that cannot be finished in one PR-sized change is still too big. Cut it again.
 
-### Le spike
+### The spike
 
 When the uncertainty is technical rather than functional (does this API do what we need, is this
 approach fast enough, does this library work in this runtime), the honest move is a **spike**: a
