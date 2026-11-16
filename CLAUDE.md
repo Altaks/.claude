@@ -6,8 +6,8 @@ not global dev guidance: that lives in the `alta-dev` skill. See `README.md` for
 ## What this repo is
 
 A portable `.claude` shared across projects: always-on personal skills in `skills/`, an opt-in
-`cybersec` security plugin in `plugins/`, a marketplace in `.claude-plugin/`, the Phase 6 hook in
-`hooks/`. `alta-dev` is the flagship standard: the full lifecycle plus cross-cutting dimensions
+`cybersec` security plugin and two opt-in mods (`model-gatekeeper`, `agent-board`) in `plugins/`, a
+marketplace in `.claude-plugin/`, the Phase 6 hook in `hooks/`. `alta-dev` is the flagship standard: the full lifecycle plus cross-cutting dimensions
 (correctness, the simplicity ladder, tests, frontend and accessibility, compliance-legal,
 sustainability, response manner), with depth in its `references/roles/` and `references/languages/`.
 
@@ -42,6 +42,20 @@ sustainability, response manner), with depth in its `references/roles/` and `ref
 - **Folding an external skill**: paraphrase its directives in your own words (ideas, not text). Vendor a
   whole third-party skill only as an **opt-in plugin** under `plugins/` (never into `skills/`), keep its
   LICENSE and attribution, and never vendor AGPL or unclear-license content into the repo.
+
+## Editing a mod
+
+A mod is a plugin whose `hooks/hooks.json` names a TypeScript hooks module (`plugins/model-gatekeeper`,
+`plugins/agent-board`). Load the `plugin-authoring` skill before changing one: it writes this build's
+API types, which are the reference.
+
+- Gate: `claude plugin validate plugins/<mod>` (manifest, module, types) and
+  `claude plugin test plugins/<mod>` (`tests/*.test.ts*`), both clean.
+- Never commit `.claude-plugin/types/`: Claude Code writes it on load and git-ignores it itself.
+- A mod never rewrites a tool call's input to change behaviour: auto mode refuses the rewritten call.
+  Act at a later event instead (`model-gatekeeper` sets the model at `agent.spawn`).
+- A hook that wraps an `Agent` or `Workflow` call stops hearing the agents it spawns: match tool calls
+  so those two are left out (see `agent-board`).
 
 ## Commits
 

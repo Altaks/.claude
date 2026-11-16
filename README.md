@@ -13,13 +13,15 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 │   ├── grill-me/               #   plan stress-test
 │   └── cybersec-catalog/       #   tiny pointer to the opt-in security library (see below)
 ├── plugins/
-│   └── cybersec/               # 872 offensive+defensive security skills, DISABLED by default
-│       ├── .claude-plugin/plugin.json
-│       ├── skills/             #   the 872 skills (loaded only when the plugin is enabled)
-│       ├── ORIGIN.md           #   attribution + pinned upstream commit
-│       └── UPDATING.md         #   how to refresh the vendored copy
+│   ├── cybersec/               # 872 offensive+defensive security skills, DISABLED by default
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── skills/             #   the 872 skills (loaded only when the plugin is enabled)
+│   │   ├── ORIGIN.md           #   attribution + pinned upstream commit
+│   │   └── UPDATING.md         #   how to refresh the vendored copy
+│   ├── model-gatekeeper/       # mod: routes each subagent to haiku / sonnet / opus, opt-in
+│   └── agent-board/            # mod: side pane of subagent cards + on-demand graph, opt-in
 ├── .claude-plugin/
-│   └── marketplace.json        # exposes the cybersec plugin (marketplace name: altaks-claude)
+│   └── marketplace.json        # exposes the three plugins (marketplace name: altaks-claude)
 ├── hooks/
 │   └── phase6-consolidate.sh   # Stop hook: alta-dev Phase 6 reinforcement loop
 ├── output-styles/
@@ -34,7 +36,7 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 
 Only `skills/` is auto-loaded, and only each skill's name and description. Always-on cost is
 **~700 tokens** (9 of the 21 skills listed). Enabling the `cybersec` plugin adds ~75k tokens **in that
-project only**; disabling returns it to ~0.
+project only**; disabling returns it to ~0. The two mods add no context: they hold no skills, only hooks.
 
 **Overlapping skills are hidden, not deleted** (`skillOverrides` in `settings.json`). Claude Code gives
 the skill listing 1% of the context window and shortens descriptions past it, so a duplicate costs
@@ -98,6 +100,32 @@ claude plugin disable cybersec@altaks-claude
 
 Enabled-plugin skills load at session start, so they become available the **next** session.
 The always-on `cybersec-catalog` skill reminds Claude the library exists and walks through enabling it.
+
+## The opt-in mods (`model-gatekeeper`, `agent-board`)
+
+Two Claude Code mods (function-hook plugins: TypeScript hooks modules, no skills) for sessions that use
+subagents. Each one's README has the details.
+
+- **`model-gatekeeper`** picks a model tier for each subagent as it starts, so Opus is not the default
+  for every job: `Explore` runs on haiku, `general-purpose` is classified by a small model into haiku,
+  sonnet or opus, never above the parent's model. It changes only the model, at spawn time: rewriting
+  the Agent call itself makes auto mode refuse it, so effort is left as the session sets it.
+  `/gatekeeper` lists its decisions; `/gatekeeper off` stops it for the session.
+- **`agent-board`** docks a pane on the right with a card per running subagent (model, status, task,
+  live activity, latest message), opening by itself when a subagent starts. `g` in the pane switches to
+  a graph of who spawned or messaged whom; `/agent-board` reopens it.
+
+```bash
+# Install at user scope (adds the altaks-claude marketplace on the way if needed)
+claude plugin install model-gatekeeper --marketplace /path/to/this/repo --scope user
+claude plugin install agent-board --marketplace /path/to/this/repo --scope user
+
+# Turn one back off
+claude plugin disable model-gatekeeper@altaks-claude
+```
+
+A mod installed from a folder marketplace is read from that folder: after editing it, `/reload-plugins`
+picks up the change. Check one with `claude plugin validate plugins/<mod>` and `claude plugin test plugins/<mod>`.
 
 ## Security note
 
