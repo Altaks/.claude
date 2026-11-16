@@ -30,7 +30,20 @@
     "code-modernization@claude-plugins-official": true
   },
   "skillOverrides": {
-    "arena-skill:arena": "user-invocable-only"
+    "arena-skill:arena": "user-invocable-only",
+    "caveman": "off",
+    "write-a-skill": "off",
+    "tdd": "user-invocable-only",
+    "diagnose": "user-invocable-only",
+    "handoff": "user-invocable-only",
+    "teach": "user-invocable-only",
+    "zoom-out": "user-invocable-only",
+    "prototype": "user-invocable-only",
+    "grill-with-docs": "user-invocable-only",
+    "to-prd": "user-invocable-only",
+    "to-issues": "user-invocable-only",
+    "triage": "user-invocable-only",
+    "setup-matt-pocock-skills": "name-only"
   },
   "hooks": {
     "Stop": [
