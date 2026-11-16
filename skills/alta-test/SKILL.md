@@ -1,20 +1,10 @@
 ---
 name: alta-test
 description: >-
-  Builds an EXHAUSTIVE test suite for Minecraft "UHC à rôles" (roles-UHC)
-  plugins on 1.8.8 (Spigot), in Kotlin: JUnit + Mockito (mockito-core +
-  mockito-inline) unit tests for pure logic, and Mineflayer E2E tests in-game
-  (no MockBukkit). Use whenever the topic is testing a Minecraft plugin: role
-  behaviour and powers, role distribution, win conditions, the game state
-  machine (grâce → PvP → bordure → deathmatch → fin), UHC rules, commands or
-  config, even if the user never says "test", "Mineflayer" or "JUnit". Always
-  START with the grill-me skill to pin down expected behaviour (every branch),
-  then write ONE test per scenario: never sample, dodge, or skip a slow E2E
-  test. Write one E2E file per role (spec + regression net). Also trigger WHEN
-  A BUG IS MENTIONED: write an E2E test reproducing it (red before fix, green
-  after) as a permanent guard. Sample triggers: "écris des tests pour mon
-  rôle", "teste le Loup", "j'ai un bug avec le rôle X", "reproduce this bug in
-  a test". Responses in French.
+  Use when writing or extending tests for a Minecraft roles-UHC plugin (Spigot 1.8.8, Kotlin: JUnit
+  + Mockito units, Mineflayer E2E), or when a bug in one is mentioned and needs a reproducing test,
+  even if "test" is never said. Triggers: "écris des tests pour mon rôle", "teste le Loup", "j'ai un
+  bug avec le rôle X".
 ---
 
 # alta-test: Test suites for Minecraft roles-UHC ("UHC à rôles") plugins (1.8.8)

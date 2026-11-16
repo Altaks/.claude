@@ -1,6 +1,10 @@
 ---
 name: alta-refactor
-description: Refactor and clean up Java or Kotlin code to make it readable, reusable, maintainable, extensible, and logically structured, without changing observable behavior. Use this whenever working on a .java or .kt file and the goal is to improve code quality: refactoring, cleaning up, simplifying, restructuring, removing duplication, untangling a god class, taming nested conditionals, applying SOLID, or modernizing to current Java/Kotlin idioms. Reach for it on any request like "make this cleaner", "more maintainable", or "better structured", even if the word "refactor" is never used, and also before adding a feature to messy code, to prepare the ground.
+description: >-
+  Use when the goal is better Java or Kotlin code quality without changing behavior: refactor, clean
+  up, simplify, restructure, remove duplication, untangle a god class, flatten nested conditionals,
+  apply SOLID, modernize idioms, or prepare messy code before adding a feature, even if "refactor"
+  is never said.
 ---
 
 # Refactoring Java & Kotlin

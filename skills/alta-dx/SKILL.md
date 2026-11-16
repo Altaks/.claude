@@ -1,6 +1,9 @@
 ---
 name: alta-dx
-description: Audit the UHCGDK framework boundary to find where a game-mode developer is forced to bricoler instead of declaring, and to find the framework notions that are still half-built. Hunts incomplete concepts, missing abstractions, leaky escape hatches, copy-pasted boilerplate, clumsy syntax, and runtime CPU/memory waste, then files each finding into AUDIT-DX.md and (on approval) GitHub issues labelled on the Project v2 board. Use on "/alta-dx", or whenever the topic is developer experience, DX, an API or syntax that is not developer-friendly, boilerplate a consumer must repeat, a concept a module had to invent for itself, or making the GDK more declarative and reusable across game modes. Read-only: it never edits production code, it hands the work off to alta-refactor.
+description: >-
+  Use when auditing the developer experience of the UHCGDK framework: on "/alta-dx", or when the
+  topic is DX, an API or syntax that is not developer-friendly, boilerplate a consumer must repeat,
+  a concept a module had to invent for itself, or making the GDK more declarative across game modes.
 ---
 
 # Hunting DX friction in the GDK
