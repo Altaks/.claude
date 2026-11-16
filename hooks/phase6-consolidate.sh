@@ -71,7 +71,7 @@ print(n)
 PY
 )"
 EDITS="${EDITS:-0}"
-THRESHOLD="${ALTA_PHASE6_MIN_EDITS:-2}"                 # override via env if wanted
+THRESHOLD="${ALTA_PHASE6_MIN_EDITS:-5}"                 # override via env if wanted
 [ "$EDITS" -ge "$THRESHOLD" ] 2>/dev/null || exit 0
 
 # --- fire once: mark, then block the stop with the Phase 6 instruction ------
