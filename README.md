@@ -25,7 +25,7 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 ├── output-styles/
 │   └── install.sh              # fetches the attention-span styles (AGPL, referenced not vendored)
 ├── CLAUDE.md                   # maintenance guide, loaded when working in this repo
-├── settings.json               # Stop hook; impeccable marketplace (opt-in); Spartan output style
+├── settings.json               # Stop hook; impeccable (opt-in), unslop + arena + code-modernization (on); Spartan
 ├── README.md                   # this file
 └── .gitignore
 ```
@@ -165,6 +165,35 @@ frontend project, then restart:
 ```bash
 claude plugin enable impeccable@impeccable --scope project   # marketplace already registered
 claude plugin disable impeccable@impeccable                  # turn it back off
+```
+
+## Enabled third-party plugins (unslop, arena, code-modernization)
+
+All three are **referenced, not vendored**, and **enabled** (`enabledPlugins` in `settings.json`), so they
+load in every project that mounts this `.claude`. The two GitHub marketplaces fetch only `.claude-plugin/`
+and `skills/` (`sparsePaths`).
+
+- **unslop** ([`heydamir/unslop`](https://github.com/heydamir/unslop), CC-BY-4.0): turns AI-looking UI
+  into a designed interface. Plugin id `unslop@heydamir` (marketplace name is `heydamir`). Its
+  live-site snapshot and story-video scripts need Node.js, Playwright (`npm install -D playwright`,
+  `npx playwright install chromium`) and FFmpeg on `PATH`. Writes `unslop/` and `unslop-story/` in the
+  current directory.
+- **arena** ([`Jakeschincariol/arena-skill`](https://github.com/Jakeschincariol/arena-skill), MIT):
+  `/arena <task>` runs N subagents on one task through an attack/defend/judge bracket. **Costly:** the
+  default 100 agents is 595 subagent calls, `--quick` (16 agents) is 91. **Explicit `/arena` only:**
+  `skillOverrides` sets it `user-invocable-only`, so Claude never sees it and cannot fire it on its
+  own (upstream would trigger on "try again" / "bad answer"). Needs `python3`. Writes `.arena/` in the
+  current directory.
+- **code-modernization** (`claude-plugins-official`, Apache-2.0): `/modernize` for legacy codebases
+  (assess, map, extract rules, plan, transform, verify). Ships hooks that send **whole-number usage
+  counts** through Claude Code's telemetry; off with `CODE_MODERNIZATION_TELEMETRY=0` or
+  `DISABLE_TELEMETRY=1`. Writes `analysis/` in the current directory.
+
+Gitignore the output folders where they should not be committed.
+
+```bash
+claude plugin update unslop@heydamir                       # pull a newer upstream release
+claude plugin disable arena-skill@arena-skill --scope project   # turn one off for one project
 ```
 
 ## Updating the vendored security skills

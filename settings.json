@@ -8,7 +8,29 @@
         "repo": "pbakaus/impeccable",
         "sparsePaths": [".claude-plugin", "plugin"]
       }
+    },
+    "heydamir": {
+      "source": {
+        "source": "github",
+        "repo": "heydamir/unslop",
+        "sparsePaths": [".claude-plugin", "skills"]
+      }
+    },
+    "arena-skill": {
+      "source": {
+        "source": "github",
+        "repo": "Jakeschincariol/arena-skill",
+        "sparsePaths": [".claude-plugin", "skills"]
+      }
     }
+  },
+  "enabledPlugins": {
+    "unslop@heydamir": true,
+    "arena-skill@arena-skill": true,
+    "code-modernization@claude-plugins-official": true
+  },
+  "skillOverrides": {
+    "arena-skill:arena": "user-invocable-only"
   },
   "hooks": {
     "Stop": [
