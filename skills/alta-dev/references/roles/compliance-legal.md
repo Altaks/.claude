@@ -1,8 +1,7 @@
 # Compliance and legal
 
 The laws, licences and standards a piece of software must satisfy to be shipped. Decided in Phase 1
-(which regimes apply), built to, and gated in Phase 3. Read with `privacy.md` (personal data),
-`security.md` (controls) and `dependencies.md` (licences of what you pull in).
+(which regimes apply), built to, and gated in Phase 3.
 
 **You are not counsel.** Surface the applicable regime and its concrete obligations, implement the
 technical controls, and state your assumptions. Where a decision needs a lawyer, a DPO or a

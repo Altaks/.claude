@@ -1,6 +1,16 @@
-# Documentation technique
+# Technical documentation
 
 READMEs, architecture documents, API references, user-facing documentation sites.
+
+## Contents
+
+- In-code documentation
+- The README
+- The architecture document
+- Decisions: ADRs
+- Generated documentation
+- User-facing documentation sites
+- Style
 
 ## In-code documentation
 
@@ -54,7 +64,7 @@ One document describing the system as it is meant to be, kept as the target rath
 Per-component documents live next to the component and are linked from the root, so they are read by
 whoever is working in that directory.
 
-## Les décisions : ADR
+## Decisions: ADRs
 
 An architecture decision record is a short, numbered, immutable note explaining **why** something was
 decided. It is the artefact that stops the same debate being reopened every six months, and it is what
@@ -73,16 +83,16 @@ The shape, one page at most:
 Status: accepted | superseded by ADR-0012 | proposed
 Date: <YYYY-MM-DD>
 
-## Contexte
+## Context
 What forced a decision. The constraints, the numbers, the deadline.
 
-## Options envisagées
+## Options considered
 Each one with its cost, honestly. This is the section that has the value.
 
-## Décision
+## Decision
 What was chosen, and the reason it beat the others.
 
-## Conséquences
+## Consequences
 What this makes easy, what it makes hard, and what will have to change if it is reversed.
 ```
 

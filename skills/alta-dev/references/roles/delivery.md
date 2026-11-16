@@ -1,5 +1,12 @@
 # Git, commits and pull requests
 
+## Contents
+
+- Commits
+- Branches
+- Pull requests
+- Issues
+
 ## Commits
 
 **Conventional Commits**, enforced by a pre-commit or commit-msg hook in every repo that matters.

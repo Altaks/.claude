@@ -1,7 +1,6 @@
-# IoT et embarqué
+# IoT and embedded
 
-Microcontrollers, sensor nodes, acquisition systems, bare-metal games and firmware. Read with
-`systems.md` (resources and performance) and `networking.md` (the uplink).
+Microcontrollers, sensor nodes, acquisition systems, bare-metal games and firmware.
 
 ## Separate the hardware from the application
 

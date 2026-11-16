@@ -1,4 +1,4 @@
-# Markdown et prose technique
+# Markdown and technical prose
 
 Read with `roles/documentation.md`, which covers what to write. This file covers how to write it.
 

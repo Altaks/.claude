@@ -1,4 +1,4 @@
-# Dart et Flutter
+# Dart and Flutter
 
 ## The boundary that matters
 

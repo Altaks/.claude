@@ -1,16 +1,26 @@
-# Observabilité : logs, métriques, traces
+# Observability: logs, metrics, traces
 
 Instrumentation is written **with** the code, not after the first incident. A component nobody can see
 into cannot be operated, and the moment you need the signal is the moment it is too late to add it.
 
-Read with `devops.md` (the pipeline and the dashboards) and `privacy.md` (what must never be logged).
 
-## Les trois signaux répondent à trois questions
+## Contents
 
-| Signal | Répond à | Coût |
+- The three signals answer three questions
+- Logs
+- Metrics
+- Traces
+- Error reporting
+- Alerting
+- Cost and retention
+- Testing the instrumentation
+
+## The three signals answer three questions
+
+| Signal | Answers | Cost |
 |---|---|---|
 | **Logs** | What happened in this one case, in detail. | High per event. Sparse and deliberate. |
-| **Métriques** | How often, how long, how much, aggregated over everything. | Low, but cardinality is the trap. |
+| **Metrics** | How often, how long, how much, aggregated over everything. | Low, but cardinality is the trap. |
 | **Traces** | Where the time went, across components, for one request. | Sampled. |
 
 Reaching for a log when you needed a metric produces a file nobody can aggregate. Reaching for a
@@ -37,9 +47,9 @@ logger.error('Failed to send the submission', { submissionId, attempt, error })
 - Correlation identifier on every line crossing a boundary, propagated through the interceptor or
   middleware, so one request can be reassembled across components.
 
-**Les niveaux, avec la règle de décision**
+**The levels, with the decision rule**
 
-| Niveau | Quand | Le test |
+| Level | When | The test |
 |---|---|---|
 | `ERROR` | Something failed and a human must look. | If nobody acts on it, it was not an error. |
 | `WARN` | Recovered from something unexpected, or approaching a limit. | If it never leads to action, it is `INFO`. |
@@ -49,11 +59,11 @@ logger.error('Failed to send the submission', { submissionId, attempt, error })
 
 An `ERROR` nobody acts on trains everyone to ignore all of them, which is how a real one gets missed.
 
-**Ce qui ne se logue jamais**: a secret, a token, a password, a full authentication header, a complete
+**What is never logged**: a secret, a token, a password, a full authentication header, a complete
 payload containing personal data, a card number. Scrub at the point of logging, not in a later
 pipeline. See `privacy.md`.
 
-## Métriques
+## Metrics
 
 - **Measure what the user feels first**: latency, error rate, saturation, throughput. Internal counters
   come after.
@@ -77,7 +87,7 @@ pipeline. See `privacy.md`.
 - When the shipped artefact is obfuscated, minified or relocated, **verify the span and attribute names
   survive the transform**, or the traces become unreadable exactly when you need them.
 
-## Rapport d'erreurs
+## Error reporting
 
 - An error tracker wired at the boundary, with the release version attached so a spike maps to a
   deploy.
@@ -94,13 +104,13 @@ pipeline. See `privacy.md`.
   notification.
 - Page for what needs a human now; everything else is a dashboard or a ticket.
 
-## Coût et rétention
+## Cost and retention
 
 Telemetry is a product with a bill. Sample traces, set retention per signal deliberately, and drop the
 debug volume that nobody has queried in a year. Dashboards live in the repository next to the code
 that emits the signals, so they evolve with it instead of rotting in a console.
 
-## Tester l'instrumentation
+## Testing the instrumentation
 
 Do not assert on log text everywhere: it makes every wording change a failing test. Do assert the
 signals that are part of the contract, such as an audit event, a security-relevant log, or a metric a

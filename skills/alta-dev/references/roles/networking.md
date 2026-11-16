@@ -1,7 +1,6 @@
-# Réseau et protocoles
+# Networking and protocols
 
-Anything that crosses a wire: HTTP, gRPC, sockets, proxies, gateways, streaming. Read with
-`security.md` (TLS, authentication) and `backend.md` (API semantics).
+Anything that crosses a wire: HTTP, gRPC, sockets, proxies, gateways, streaming.
 
 ## Contract first
 

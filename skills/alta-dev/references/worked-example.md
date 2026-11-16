@@ -1,4 +1,4 @@
-# Un run complet, de l'issue au PR
+# A complete run, from issue to PR
 
 One pass through the loop, then the blank templates. Read it once to calibrate; work from the
 templates afterwards.
@@ -9,14 +9,25 @@ asked, the state that must survive a transfer, the test that bites, and the resi
 
 ---
 
-## L'issue reçue
+## Contents
+
+- The issue as received
+- Phase 0, orientation note
+- Phase 1, the confirmed spec
+- Phase 2, the exemplar then the tests
+- Phase 3, the filled-in report
+- Phase 4, commits and PR
+- What the example demonstrates
+- Blank templates
+
+## The issue as received
 
 > **#412 The probe action has no usage limit**
 > `probe.md` says the action is capped. It is not. A caller can probe every event in the session.
 
 Two lines. Everything below came from Phase 0.
 
-## Phase 0, note d'orientation
+## Phase 0, orientation note
 
 ```
 Issue #412, plus its 3 comments: the reporter also mentions the cost being charged on a refusal.
@@ -33,7 +44,7 @@ Preflight: root gate runs. End-to-end suite runs, container runtime up, fixtures
 Caught before a single line was written: the wrong base branch, the exemplar to copy, and a second
 question hidden in the issue's third comment.
 
-## Phase 1, la spec confirmée
+## Phase 1, the confirmed spec
 
 Two genuine ambiguities, asked rather than assumed (P1): does a **refused** probe consume a charge and
 arm the cooldown, or only a successful one? Does the charge count reset per session, or follow the
@@ -50,19 +61,19 @@ caller and resets at the end of the session.
 - Public API impact: none.
 ```
 
-## Phase 2, l'exemplaire puis les tests
+## Phase 2, the exemplar then the tests
 
-**Exemplaire (P4).** Grepped the state framework from #398, listed the three actions already migrated,
+**Exemplar (P4).** Grepped the state framework from #398, listed the three actions already migrated,
 read the most recent, copied its shape: same state holder keyed by caller, same registration, same
 teardown hook. Nothing invented.
 
-**Liste de cas d'abord**, promue une par une:
+**Case list first**, promoted one by one:
 
 ```
 - a successful probe spends one charge and arms the cooldown
-- a second probe within the cooldown is refused, on a different target   <- le piège: le refus
-                                                                           "même cible" existant
-                                                                           masquerait celui-ci
+- a second probe within the cooldown is refused, on a different target   <- the trap: the existing
+                                                                           "same target" refusal
+                                                                           would mask this one
 - the same probe five minutes later succeeds
 - the sixth successful probe is refused for lack of charges
 - a refused probe spends nothing and leaves the cooldown untouched
@@ -72,7 +83,7 @@ teardown hook. Nothing invented.
 
 Clock mocked, state object real. Every refusal asserts **its own message**, not just "refused".
 
-## Phase 3, le rapport rempli
+## Phase 3, the filled-in report
 
 ```
 Gate:          root gate, green. Consumers compile.
@@ -92,7 +103,7 @@ Not run:       nothing.
 
 **Bites** is the line that matters. Without it the others are decoration.
 
-## Phase 4, commits et PR
+## Phase 4, commits and PR
 
 ```
 feat(probe): add per-caller charge and cooldown state
@@ -141,9 +152,9 @@ five minutes of setup to re-prove the same handoff the unit test already pins.
 - [ ] Non-regression: probing the same target twice still gives the original same-target refusal.
 ```
 
-## Ce que l'exemple démontre
+## What the example demonstrates
 
-| Comportement | Où |
+| Behaviour | Where |
 |---|---|
 | The documentation is read and quoted, and its conflict with the code is the finding | Phase 0, first summary bullet |
 | The base branch is corrected before any commit | Phase 0 |
@@ -158,9 +169,9 @@ five minutes of setup to re-prove the same handoff the unit test already pins.
 
 ---
 
-## Gabarits vierges
+## Blank templates
 
-**Note d'orientation, fin de Phase 0**
+**Orientation note, end of Phase 0**
 
 ```
 Issue #<N>, plus its <k> comments: <what they add>.
@@ -171,7 +182,7 @@ Preflight: gate <runs|blocked by X>. End-to-end <runs|blocked by X>.
 Blocker: <none | what is missing and what it prevents>.
 ```
 
-**Rapport de complétion, fin de Phase 3**
+**Completion report, end of Phase 3**
 
 ```
 Gate:          <command>, <green|red>. <consumers compile / affected projects pass>
@@ -185,7 +196,7 @@ Review:        self-reviewed, <n> findings fixed, gate re-run <green>, re-review
 Not run:       <nothing | what could not run here, and why>.
 ```
 
-**Description de PR**
+**PR description**
 
 ~~~~markdown
 ## Summary
@@ -220,7 +231,7 @@ Skip a wait with `<command>`; read the state with `<command>`.
 The full contract (composition, chevrons, commands checked against their registrations, GitHub
 markdown) is in `roles/delivery.md`.
 
-**Registre, quand le run couvre plusieurs issues**
+**Ledger, when the run covers several issues**
 
 ```
 | # | Issue | Branch (off)     | State       | PR   |

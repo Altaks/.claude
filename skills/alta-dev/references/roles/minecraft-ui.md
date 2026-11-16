@@ -2,7 +2,7 @@
 
 The frontend of a Spigot/Paper plugin: chat, scoreboard, tab list, chest-GUI menus, item lore, action
 bar, boss bar, titles, signs, books, holograms. **Read `ui-ux.md` first**: its ten rules (feedback, the
-four states, words, hierarchy, consistency, support constraints, recovery, discoverability) all apply
+four states, words, hierarchy, consistency, medium constraints, recovery, discoverability) all apply
 here. This document is how they land in the game client. Same goal as the web: usable, consistent, with
 a point of view, never the default server look.
 
@@ -51,7 +51,7 @@ Least astonishment: the same surface for the same kind of information across the
 - `syntax()`, `examples()` and tab-completion stay in sync; a bad invocation replies with the syntax.
 - A menu item's lore says what clicking does. The empty state teaches the feature.
 
-## Checklist avant de dire que c'est fini
+## Checklist before calling it done
 
 - [ ] Right surface for each piece of information; same surface for the same job across the plugin.
 - [ ] Rendered in the real client at the oldest supported version, screenshot in the PR.

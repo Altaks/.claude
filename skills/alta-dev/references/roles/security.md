@@ -1,9 +1,19 @@
-# Cybersécurité
+# Cybersecurity
 
-Applies to every role: security is a property of the design, not a review stage. Read with
-`networking.md` (transport) and `devops.md` (pipeline and secrets).
+Applies to every role: security is a property of the design, not a review stage.
 
-## Règle zéro : whitelist, jamais blacklist
+## Contents
+
+- Rule zero: whitelist, never blacklist
+- Authorization is part of the use case
+- Input is hostile until validated
+- Secrets
+- Dependencies and supply chain
+- Static analysis
+- Runtime posture
+- Defensive engineering habits
+
+## Rule zero: whitelist, never blacklist
 
 **Everything is denied until it is explicitly allowed, and the smallest possible set is allowed.** A
 denylist is a list of the attacks you already thought of; the next one is not on it, and neither is the
@@ -11,7 +21,7 @@ resource someone adds next month.
 
 This is the default everywhere, with no exception unless it is written down and justified:
 
-| Surface | La whitelist | Le piège de la blacklist |
+| Surface | The whitelist | The blacklist trap |
 |---|---|---|
 | Authorization | Enumerate who may run each operation. A route, command, job or subscription starts closed. | "Everyone except guests" silently grants the role created later. |
 | Input validation | Accept a declared shape and reject everything else. Allowed values, allowed types, allowed ranges. | Stripping "dangerous" characters always misses an encoding. |

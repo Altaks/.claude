@@ -1,12 +1,25 @@
-# Vie privée et données personnelles
+# Privacy and personal data
 
 Personal data is a liability you are borrowing, not an asset you own. The rules below are engineering
 rules, and they are decided in Phase 1 with the spec, because retrofitting deletion, consent or
 minimisation into a shipped feature is a rewrite.
 
-Read with `data.md` (storage), `security.md` (access), `observability.md` (what never reaches a log).
 
-## 1. Ce qui compte comme donnée personnelle
+## Contents
+
+- 1. What counts as personal data
+- 2. Minimisation, at design time
+- 3. Consent, when it applies
+- 4. Retention and deletion
+- 5. Data subject rights
+- 6. Pseudonymisation is not anonymisation
+- 7. Environments and logs
+- 8. Third parties
+- 9. Access
+- 10. Data breach
+- In review
+
+## 1. What counts as personal data
 
 Broader than a name and an email. Also: account and device identifiers, IP addresses, precise
 location, behavioural traces, anything a user typed into a free-text field (which will eventually
@@ -15,7 +28,7 @@ contain everything), and **combinations that re-identify** even when each part l
 Special categories (health, biometrics, political or religious views, sexual orientation, criminal
 records) carry stricter obligations, and a free-text field can collect them by accident.
 
-## 2. Minimisation, à la conception
+## 2. Minimisation, at design time
 
 At spec time, four questions per field, answered in the ticket:
 
@@ -31,7 +44,7 @@ is, because data you never stored needs no protection, no deletion and no breach
 decision. Feeding an existing dataset into a new analytics tool, a new model or a new vendor is a new
 purpose, not a technical detail.
 
-## 3. Consentement, quand il s'applique
+## 3. Consent, when it applies
 
 - Granular, per purpose. One checkbox covering everything is not consent.
 - **Revocable**, and revoking it actually stops the processing and triggers the deletion.
@@ -40,7 +53,7 @@ purpose, not a technical detail.
   wearing an engineering excuse.
 - Pre-ticked boxes and consent bundled into terms acceptance do not count.
 
-## 4. Rétention et suppression
+## 4. Retention and deletion
 
 - **Every dataset has a documented retention**, and an automated job that enforces it. "Forever" is a
   decision that gets written down and justified, not a default.
@@ -52,7 +65,7 @@ purpose, not a technical detail.
 - Anything you cannot delete immediately (an immutable backup, an append-only ledger) has a stated
   policy: how long until it ages out, and what protects it meanwhile.
 
-## 5. Droits des personnes
+## 5. Data subject rights
 
 Access, export, rectification, deletion, objection. Each one is a feature with an owner and a
 deadline, not an ad-hoc script.
@@ -61,7 +74,7 @@ deadline, not an ad-hoc script.
 - The identity of the requester is verified before anything is returned or deleted.
 - The request is traceable: who asked, when, what was done.
 
-## 6. Pseudonymisation n'est pas anonymisation
+## 6. Pseudonymisation is not anonymisation
 
 - **Pseudonymised data is still personal data.** Replacing the name with an identifier changes nothing
   legally if the mapping exists anywhere.
@@ -69,7 +82,7 @@ deadline, not an ad-hoc script.
   re-identifies most people. Do not claim it lightly.
 - Hashing an email is not anonymisation: the input space is small enough to enumerate.
 
-## 7. Environnements et logs
+## 7. Environments and logs
 
 - **Never a raw production dump in a lower environment.** Scrub deterministically, or generate
   realistic synthetic data. The scrubbing job is code, reviewed and tested like any other.
@@ -77,7 +90,7 @@ deadline, not an ad-hoc script.
   at the point of emission, and never log a full request body containing user input.
 - Screenshots, fixtures and test data committed to the repository must not contain real people.
 
-## 8. Tiers
+## 8. Third parties
 
 Every processor is a decision: a hosting provider, an analytics tool, an email sender, a model
 provider, a support tool. Each one needs a documented purpose, a contract, and an entry in the record
@@ -87,19 +100,19 @@ configuration.
 Cross-border transfers are a legal decision, not an infrastructure detail. Ask before choosing a
 region.
 
-## 9. Accès
+## 9. Access
 
 Least privilege on the data itself, not only on the application (see `security.md`). Sensitive records
 carry an audit trail of who read them, and a broad export capability is itself a risk that deserves a
 control.
 
-## 10. Violation de données
+## 10. Data breach
 
 A plan exists before it is needed: how it is detected, who is told, in what order, and within what
 deadline. The clock is short, and it starts at awareness, not at confirmation. Handle it through the
 incident process in `devops.md`, with the legal path attached.
 
-## En review
+## In review
 
 Flag as blocking: a new field capturing personal data with no stated purpose or retention; a log line
 or an error report carrying an email, a token or a payload; an export returning more columns than the

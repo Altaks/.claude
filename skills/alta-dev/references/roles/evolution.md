@@ -1,4 +1,4 @@
-# Faire évoluer ce qui est déjà livré
+# Evolving what has already shipped
 
 Once something has a consumer you do not control, changing it is a **migration**, not an edit. This
 document is the method for changing a public surface without breaking anyone.
@@ -31,7 +31,7 @@ Compressing these into one change is how an outage happens, and it is also how a
 unreviewable. The same shape applies to a schema (add column, backfill, switch reads, drop) and to a
 wire contract (add field, migrate clients, stop writing the old one).
 
-## 3. Règles dures des contrats
+## 3. Hard rules for contracts
 
 - **Additive only** on anything already shipped. Never reuse a field number, never change a shipped
   field's type, never repurpose an existing value to mean something new.
@@ -41,7 +41,7 @@ wire contract (add field, migrate clients, stop writing the old one).
   a strict consumer.
 - Renaming is never free: it is an expand-and-contract like everything else.
 
-## 4. Dépréciation
+## 4. Deprecation
 
 - Mark it with the language's deprecation mechanism so consumers see it at compile time, not at
   runtime.
@@ -67,7 +67,7 @@ exists.
 - A flag is not a substitute for a decision. If both branches are meant to live forever, that is a
   configuration option, and it is designed and documented as one.
 
-## 6. Déploiement progressif
+## 6. Progressive rollout
 
 - Decide the rollback path **before** deploying, not while the alert is firing.
 - Dark launch (run the new path, do not use the result) to compare behaviour under real load.
@@ -75,7 +75,7 @@ exists.
 - Migrations and code deploy in an order that works in both directions: the old code must survive the
   new schema, because the rollback runs it.
 
-## 7. Retirer une fonctionnalité
+## 7. Removing a feature
 
 The reverse of building one, and it is a real piece of work:
 
@@ -85,7 +85,7 @@ The reverse of building one, and it is a real piece of work:
    and its feature flags. A removal that leaves the config key behind is half done.
 4. Say in the PR what was removed and what replaced it, so the archaeology works later.
 
-## 8. Versionner honnêtement
+## 8. Versioning honestly
 
 - The version is derived from the history or from a label, never hand-edited.
 - A breaking change is **announced**, not discovered by a consumer's failing build. It carries a

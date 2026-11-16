@@ -1,8 +1,7 @@
-# Jeu et temps réel
+# Games and real time
 
 Game logic, plugins, ticked simulations, anything where a loop runs at a fixed rate and players
 observe the result. Everything a player perceives is user-facing, so **`ui-ux.md` applies here too**.
-Read with `systems.md` (hot paths) and `architecture.md` (extension points).
 
 ## The shape that scales
 

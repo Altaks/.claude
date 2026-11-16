@@ -1,8 +1,7 @@
-# Concurrence, ordonnancement et fiabilité
+# Concurrency, ordering and reliability
 
 Everything here is about the same thing: **two events you did not order will happen in the order you
-did not expect**, and the one you never tested will happen in production. Read with `systems.md`
-(threads and locks), `networking.md` (retries and timeouts) and `data.md` (transactions).
+did not expect**, and the one you never tested will happen in production.
 
 ## 1. Name the model, write it down
 
@@ -29,7 +28,7 @@ Any sequence of "read, decide, write" is wrong under concurrency, however small 
 - A read-then-write across a network is a lost update. Carry a version and reject a stale write, or
   merge deliberately.
 
-## 3. L'ordre n'est pas garanti
+## 3. Order is not guaranteed
 
 Events arrive out of order, twice, or very late. Design for it rather than hoping:
 
@@ -40,7 +39,7 @@ Events arrive out of order, twice, or very late. Design for it rather than hopin
   parked, and say which.
 - Do not rely on two machines agreeing on the time (see `time.md`).
 
-## 4. At-least-once est la valeur par défaut
+## 4. At-least-once is the default
 
 Every queue, every webhook, every retry, every restarted job can deliver the same thing twice.
 
@@ -52,7 +51,7 @@ Every queue, every webhook, every retry, every restarted job can deliver the sam
 - A handler that cannot find its entity is usually corrupted state, not a race to swallow: let it
   throw rather than returning early (P9). Park it and alert if the system genuinely tolerates it.
 
-## 5. Écrire et publier sont deux opérations
+## 5. Writing and publishing are two operations
 
 Saving a row and publishing the event about it are not atomic. Do them naively and you will get one
 without the other, which is the hardest class of bug to find later.
@@ -74,7 +73,7 @@ without the other, which is the hardest class of bug to find later.
   Decide and document the policy when it is full: block, drop the oldest, or reject.
 - Cancellation is designed in: a cancelled operation leaves a consistent state.
 
-## 7. Tester la concurrence
+## 7. Testing concurrency
 
 - **A flaky test is a real bug until proven otherwise.** Ordering, shared state between tests, a real
   clock, an unawaited promise. Do not retry it away; that is disabling a smoke alarm.

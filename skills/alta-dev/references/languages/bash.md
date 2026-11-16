@@ -1,4 +1,4 @@
-# Bash et scripts shell
+# Bash and shell scripts
 
 A shell script is production code the moment CI or a deployment depends on it. Treat it as such, and
 recognise when it should stop being a shell script.

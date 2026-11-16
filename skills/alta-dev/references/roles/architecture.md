@@ -1,4 +1,4 @@
-# Architecture logicielle
+# Software architecture
 
 Read before creating a component, module, service or project, and before any change adding a layer, a
 boundary or an extension point.
@@ -6,7 +6,22 @@ boundary or an extension point.
 The goal is not "a diagram exists": it is that a stranger can find where a thing belongs, change one
 behaviour without touching five files, and add a variant without editing a conditional.
 
-## 1. Partir de la frontière, pas du code
+## Contents
+
+- 1. Start from the boundary, not the code
+- 2. Deep modules, narrow interfaces
+- 3. The layers and the dependency rule
+- 4. Split by feature, not by mechanism
+- 5. Anti-corruption at every seam
+- 6. Extension points, not conditionals
+- 7. Model state explicitly
+- 8. Data out of the code
+- 9. Contract first, when two sides must agree
+- 10. Wire in operability from the start
+- 11. Document the intent, and keep it as the target
+- Design checklist
+
+## 1. Start from the boundary, not the code
 
 Before the first file: what is the **unit of change**? Name the concern in one sentence. If it needs an
 "and", that is two components.
@@ -19,7 +34,7 @@ Then decide the three things that outlive the implementation:
    layering honest once the codebase is big.
 3. **The failure modes**: what it refuses, what it throws, what it never does silently.
 
-## 2. Modules profonds, interfaces étroites
+## 2. Deep modules, narrow interfaces
 
 A small, intention-revealing surface hiding substantial behaviour. Shallow modules (much surface,
 little behind) multiply complexity: each is another thing to learn that buys nothing.
@@ -30,7 +45,7 @@ the caller must call three methods in order, or pass a flag that changes the mea
 This is the real argument behind P2: a forwarding method widens the surface without deepening the
 module, strictly worse than no method at all.
 
-## 3. Les couches et la règle de dépendance
+## 3. The layers and the dependency rule
 
 ```
 infrastructure  ->  application  ->  domain
@@ -51,13 +66,13 @@ the only place knowing both the port and its implementation. Everything else inj
 **Not every project needs three layers.** A CLI tool, a game plugin or a firmware often has two: a pure
 core and the adapters around it. What survives is the direction, not the count.
 
-## 4. Découper par feature, pas par mécanisme
+## 4. Split by feature, not by mechanism
 
 One folder per bounded context / feature / entity, each holding its own layers. Never `controllers/`,
 `services/`, `repositories/` at the top level: that scatters one feature across the tree and makes every
 change a five-directory diff.
 
-| Domaine | Découpe |
+| Domain | Split |
 |---|---|
 | Backend service | one module per context, each with `domain/` `application/` `infrastructure/` |
 | Mobile app | `logics/{model,cubit,services,adapter,provider}` beside `views/{atoms,molecules,organisms,pages}` |
@@ -69,7 +84,7 @@ change a five-directory diff.
 Common thread: **what can be swapped sits behind an interface, and what changes together lives
 together.**
 
-## 5. Anti-corruption à chaque couture
+## 5. Anti-corruption at every seam
 
 Every foreign shape is translated at the edge: persistence rows, generated transport messages,
 third-party responses, another context's published model. The adapter owns the mapping both ways;
@@ -79,7 +94,7 @@ Skipping it ("I will just pass the row through") is the single most common way a
 the foreign shape then dictates your model forever. A dedicated adapter file (`api-adapter`,
 `*Repository.toDomain`, a mapper module) is the visible form of the rule.
 
-## 6. Points d'extension, pas conditionnelles
+## 6. Extension points, not conditionals
 
 New behaviour arrives as a **new registered type** or a **new subscriber**, never another branch. The
 recurring pattern: a **registry** holding every variant keyed by a stable id, enumerated once; a **base
@@ -93,7 +108,7 @@ subscription.
 demonstrated repetition: first case specific, second noticed, third extracted. Two things that look
 alike but change for different reasons stay apart.
 
-## 7. Modéliser l'état explicitement
+## 7. Model state explicitly
 
 Where there is a lifecycle, name it. An enum of states plus the allowed transitions beats booleans that
 can encode impossible combinations.
@@ -103,7 +118,7 @@ can encode impossible combinations.
 - One state holder per feature with its own state type, not a global mutable blob.
 - Derived values computed from the state, never stored beside it and synced by hand.
 
-## 8. Les données hors du code
+## 8. Data out of the code
 
 Content, levels, layouts, thresholds and copy belong in data files, not in `if` chains. A level
 described by a JSON file, a config panel driven by a typed config object, a course described by
@@ -113,7 +128,7 @@ of a special case per instance.
 Typed configuration at the boundary: parse once into a typed model, validate there, and let the rest of
 the system assume it is valid.
 
-## 9. Contrat d'abord, quand deux côtés doivent s'accorder
+## 9. Contract first, when two sides must agree
 
 When a client and a server, or a plugin and a backend, must stay aligned, the contract is a committed
 artefact (a `.proto`, an OpenAPI spec, a shared schema) and both sides are **generated** from it.
@@ -122,7 +137,7 @@ Rules that follow: additive changes only, never reuse a field number, never chan
 type, keep enums aligned with the database schema, regenerate every consumer before committing.
 Generating the client and its mocks removes a whole class of drift.
 
-## 10. Câbler l'opérabilité dès le départ
+## 10. Wire in operability from the start
 
 A component that cannot be observed cannot be operated: a per-class logger with structured context and
 never a print; errors surfaced through a typed taxonomy rather than a string; metrics and traces on the
@@ -130,7 +145,7 @@ paths that matter with an error reporter at the boundary; an environment templat
 secrets out of the repository; a health or status surface for anything long-running. Detail in
 `observability.md`.
 
-## 11. Documenter l'intention, et la garder comme cible
+## 11. Document the intent, and keep it as the target
 
 Keep one document describing the system as it is *meant* to be, and treat it as the source of truth for
 new capabilities. When a feature needs a primitive the document already plans, build that primitive
@@ -142,7 +157,7 @@ Alongside it, record the **decisions** as ADRs (see `documentation.md`): numbere
 expensive-to-reverse choice, whose value is the rejected options and why. The architecture document
 says what the system is; the records say why it is not something else.
 
-## Checklist de conception
+## Design checklist
 
 Before the first file, and again before the PR:
 

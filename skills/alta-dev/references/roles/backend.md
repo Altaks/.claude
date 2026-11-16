@@ -1,7 +1,6 @@
 # Backend
 
-Services, APIs, use cases. Read with `architecture.md` (the layering) and `data.md` (the persistence
-side). Every error message and every field name a client reads is user-facing: `ui-ux.md` governs the
+Services, APIs, use cases. Every error message and every field name a client reads is user-facing: `ui-ux.md` governs the
 wording.
 
 ## Module shape

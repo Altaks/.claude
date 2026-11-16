@@ -1,15 +1,14 @@
-# Dépendances : choisir, isoler, retirer
+# Dependencies: choose, isolate, remove
 
 **The default answer is no.** The standard library first, then what the platform already provides,
 then a dependency. Every dependency is code you did not write, cannot review in full, must keep
-updated, and will one day have to remove. Read with `security.md` (supply chain) and
-`architecture.md` (isolation).
+updated, and will one day have to remove.
 
-## 1. Critères avant d'ajouter
+## 1. Criteria before adding
 
 Answer these in the PR description, briefly, when you add one:
 
-| Question | Ce qu'on refuse |
+| Question | What we refuse |
 |---|---|
 | Does it do the one thing we need? | A framework pulled in for one helper function. |
 | Is it maintained? Last release, open issues, number of maintainers. | A package with one maintainer and no release in two years, at the centre of the product. |
@@ -23,7 +22,7 @@ Answer these in the PR description, briefly, when you add one:
 swapped in an afternoon. One whose types appear in every signature cannot be removed at all, so it has
 become part of your architecture whether you decided that or not.
 
-## 2. Isoler
+## 2. Isolate
 
 - Wrap the third-party types at the boundary (the anti-corruption layer). The domain speaks its own
   types; the adapter speaks the library's.
@@ -32,13 +31,13 @@ become part of your architecture whether you decided that or not.
 - Where a library is genuinely foundational (the language runtime, the web framework, the ORM),
   wrapping it is theatre. Accept it as part of the platform, and say so.
 
-## 3. Une seule par métier
+## 3. Only one per purpose
 
 Two date libraries, two HTTP clients, two validation libraries or two state managers is a bug
 generator: two behaviours, two sets of quirks, and a reader who has to know which is used where.
 Choose one, migrate the other out, and write the choice down.
 
-## 4. Poids livré
+## 4. Shipped weight
 
 What you ship matters, and it is not the same as what you develop with.
 
@@ -49,7 +48,7 @@ What you ship matters, and it is not the same as what you develop with.
 - When you bundle a library into a host you do not control, relocate it so the host's outdated copy
   cannot win at runtime.
 
-## 5. Licences et attribution
+## 5. Licences and attribution
 
 - Check the licence against how the project is distributed **before** adding, not at the audit.
   Copyleft in a shipped artefact is a decision that needs to be made deliberately.
@@ -59,7 +58,7 @@ What you ship matters, and it is not the same as what you develop with.
   code that loses its origin is both a legal and a maintenance problem.
 - The project's own licence file is present and accurate, and the package metadata matches it.
 
-## 6. Tenir à jour
+## 6. Keep up to date
 
 - A dependency bot per ecosystem, and its pull requests are kept green rather than accumulating. A
   stale bot queue is an unpatched product.
@@ -71,7 +70,7 @@ What you ship matters, and it is not the same as what you develop with.
 - An explicitly ignored advisory carries the reason and a date to revisit.
 - Lockfiles committed. A build that is not reproducible is not verifiable.
 
-## 7. Retirer
+## 7. Remove
 
 When the last consumer of a dependency goes, remove the dependency **in the same change**. An unused
 dependency is still a maintenance surface, still an update to review, and still a vulnerability

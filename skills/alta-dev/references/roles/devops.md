@@ -1,7 +1,17 @@
-# DevOps, CI/CD, plateforme et observabilité
+# DevOps, CI/CD, platform and observability
 
-Pipelines, containers, infrastructure, releases, telemetry. Read with `security.md` (scanning,
-secrets) and `delivery.md` (branching and PR flow).
+Pipelines, containers, infrastructure, releases, telemetry.
+
+## Contents
+
+- CI is a gate, not a notification
+- Containers and images
+- Infrastructure as code
+- Releases
+- Environments and data
+- Observability, wired from day one
+- Incidents and postmortems
+- Toolchain
 
 ## CI is a gate, not a notification
 
@@ -79,11 +89,11 @@ trace propagation) lives in **`observability.md`**. From the platform side:
 - When the artefact is obfuscated or minified, verify the telemetry names survive the transform, or the
   traces are unreadable exactly when you need them.
 
-## Incidents et post-mortem
+## Incidents and postmortems
 
 Running something in production is a role, not a side effect of deploying.
 
-**Pendant l'incident**
+**During the incident**
 - **Restore service first, diagnose after.** Roll back, flip the kill switch, or degrade the feature.
   Understanding the root cause is the next hour's job, not this one's.
 - One person coordinates and one channel carries the truth. Everything else is noise.
@@ -93,7 +103,7 @@ Running something in production is a role, not a side effect of deploying.
 - Never run a destructive experiment on production to test a hypothesis. Reproduce in a lower
   environment; if you truly cannot, read-only first, announced.
 
-**Après**
+**After**
 - A postmortem for anything user-visible, written within days while the detail is still available.
 - **Blameless, and specific.** The question is what made the failure possible and what made it hard to
   see, not who typed it. "Someone should be more careful" is not an action item.
@@ -104,7 +114,7 @@ Running something in production is a role, not a side effect of deploying.
   the missing guardrail that would have caught a whole class of this.
 - A recurring incident means the previous postmortem's actions were never done. That is the finding.
 
-**Avant**
+**Before**
 - Alert on symptoms the user feels, not on every metric. An alert nobody acts on trains everyone to
   ignore all of them.
 - The rollback path is decided before the first deploy (see `evolution.md`).

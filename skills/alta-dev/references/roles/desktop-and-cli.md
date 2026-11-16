@@ -1,4 +1,4 @@
-# Logiciel client : desktop, CLI, TUI
+# Client software: desktop, CLI, TUI
 
 Standalone applications: GUI tools, command-line utilities, tray apps, engines. **Read `ui-ux.md`
 first**: a command output and a help text are user interfaces too. Then `architecture.md` and

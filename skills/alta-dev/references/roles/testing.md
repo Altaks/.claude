@@ -1,7 +1,20 @@
-# Qualité et tests
+# Quality and testing
 
 The full form of P10. Read before writing the first test of a feature, and before claiming anything is
 done.
+
+## Contents
+
+- The doctrine
+- Which layer proves what
+- Plan the cases before writing them
+- The structure of a test: given / when / then
+- Gherkin, wherever the project runs it
+- What makes a test worthless
+- Determinism
+- End-to-end harnesses
+- A bug is a missing test
+- Coverage
 
 ## The doctrine
 
@@ -45,7 +58,7 @@ For anything with a usage limit, the refusal is its own test: the second use ins
 exact refusal message, and then the use that succeeds once the window reopens. A test that fires a
 power once passes happily while the limit is broken.
 
-## La structure d'un test : given / when / then
+## The structure of a test: given / when / then
 
 Every test body is written in three phases, each marked with a comment, in order. The markers are
 **mandatory**, even when the language has a BDD DSL (use its `given/when/then` blocks when it has them,

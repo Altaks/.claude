@@ -1,7 +1,6 @@
-# Données et persistance
+# Data and persistence
 
-Schema, migrations, repositories, fixtures, and the analytics side. Read with `backend.md` (use cases)
-and `architecture.md` (the anti-corruption layer).
+Schema, migrations, repositories, fixtures, and the analytics side.
 
 ## The schema is a contract
 

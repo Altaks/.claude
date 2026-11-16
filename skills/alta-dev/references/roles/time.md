@@ -1,24 +1,23 @@
-# Temps, dates et fuseaux
+# Time, dates and time zones
 
 A whole class of bugs that only appears in production, at a specific hour, in a specific region, twice
-a year. All of it is avoidable with a few fixed rules. Read with `data.md` (storage) and `i18n.md`
-(display).
+a year. All of it is avoidable with a few fixed rules.
 
-## 1. Trois concepts, trois types
+## 1. Three concepts, three types
 
 Most time bugs come from using one type for all three.
 
-| Concept | Ce que c'est | Exemple |
+| Concept | What it is | Example |
 |---|---|---|
 | **Instant** | A point on the universal timeline. Absolute, zone-independent. | When the account was created, when the message was sent. |
-| **Date ou heure locale** | A calendar concept with no instant attached until you pick a zone. | A birthday, an opening hour, a billing day, a game's daily reset. |
-| **Durée** | A length of time, with no position. | A cooldown, a timeout, a session length. |
+| **Local date or time** | A calendar concept with no instant attached until you pick a zone. | A birthday, an opening hour, a billing day, a game's daily reset. |
+| **Duration** | A length of time, with no position. | A cooldown, a timeout, a session length. |
 
 Model them with different types, and the compiler stops most of the mistakes. A birthday stored as an
 instant shifts by a day for half the world; a cooldown stored as an instant expires at the wrong
 moment after a restart.
 
-## 2. Stocker en UTC, convertir au bord
+## 2. Store in UTC, convert at the edge
 
 - Instants are **stored and transported in UTC**, with the zone in the type, and converted only for
   display, at the very edge.
@@ -29,7 +28,7 @@ moment after a restart.
 - Keep one precision across the stack. Truncation between the database, the code and the wire produces
   comparisons that fail by a microsecond.
 
-## 3. Deux horloges, deux usages
+## 3. Two clocks, two uses
 
 - **Wall clock** for "when did this happen": it is the one users recognise, and it jumps. Time
   synchronisation corrects it, daylight saving shifts it, an operator can set it.
@@ -41,7 +40,7 @@ moment after a restart.
 - When the domain has its own clock (a game that can be paused, sped up or warped), schedule against
   **that** clock, so everything scheduled moves with it.
 
-## 4. Ne jamais faire d'arithmétique à la main
+## 4. Never do the arithmetic by hand
 
 - No millisecond arithmetic for calendar operations. Months, years and days are not fixed lengths.
 - "One day later" is not "plus 24 hours" on the two days a year daylight saving changes.
@@ -50,7 +49,7 @@ moment after a restart.
   Any recurring schedule eventually lands on both.
 - February 29 exists. So does a year boundary in the middle of a week.
 
-## 5. Frontières
+## 5. Boundaries
 
 - **"Today" depends on who is asking.** A daily report, a daily limit and a daily reset all need a
   declared reference zone, written down, not inherited from the server.
@@ -59,7 +58,7 @@ moment after a restart.
 - Expiry and time-to-live are stored as the **instant they expire**, never as the remaining duration:
   a remaining duration is wrong the moment the process restarts.
 
-## 6. Systèmes distribués
+## 6. Distributed systems
 
 - Never assume two machines agree on the time. Clock skew is real, and a comparison of two hosts'
   timestamps is not an ordering.
@@ -68,7 +67,7 @@ moment after a restart.
 - The timestamp a client sends is an input: validate it, and prefer your own for anything that
   matters.
 
-## 7. Affichage
+## 7. Display
 
 - Format through the locale, never with a hand-written pattern (see `i18n.md`).
 - Show the zone when the value could be misread, and prefer the user's zone over the server's.

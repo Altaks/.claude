@@ -1,4 +1,4 @@
-# YAML : pipelines, manifestes, compose
+# YAML: pipelines, manifests, compose
 
 YAML is where a lot of production behaviour actually lives. Review it like code, because it is.
 

@@ -1,4 +1,4 @@
-# SQL et schéma
+# SQL and schema
 
 Read with `roles/data.md`, which covers repositories, migrations and pipelines. This file is the query
 and schema language itself.

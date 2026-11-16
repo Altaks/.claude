@@ -1,4 +1,4 @@
-# Debug et diagnostic
+# Debugging and diagnosis
 
 **Find the cause, do not pattern-match a fix.** A change that makes the symptom disappear without an
 explanation is a coincidence, and a coincidence does not survive the next release. If you cannot say
@@ -6,6 +6,19 @@ explanation is a coincidence, and a coincidence does not survive the next releas
 
 Invoke `superpowers:systematic-debugging` for the full loop. This document is the method, and the
 archaeology that goes with it.
+
+## Contents
+
+- 1. Reproduce deterministically, first
+- 2. Read the actual evidence
+- 3. One hypothesis at a time
+- 4. Binary search, everywhere
+- 5. Archaeology: when did this start, and why
+- 6. Root cause, not symptom
+- 7. Look for the siblings
+- 8. Close it properly
+- What not to do
+- Timebox and being blocked
 
 ## 1. Reproduce deterministically, first
 
@@ -97,7 +110,7 @@ bug gets reported again next month.
 - If the bug was possible because of a missing invariant, a missing type or a missing test layer, say
   so: that is the finding worth more than the fix.
 
-## Ce qu'il ne faut pas faire
+## What not to do
 
 - Change several things and see what happens. You lose the information from every one of them.
 - Sprinkle defensive checks until the crash stops. That converts a loud bug into a silent one (P9).
@@ -109,7 +122,7 @@ bug gets reported again next month.
 - Debug directly in production when a lower environment can reproduce it. When you must, read-only
   first, never a destructive experiment, and announce it.
 
-## Timebox et blocage
+## Timebox and being blocked
 
 Set a limit before starting. When you hit it, stop and report: what you reproduced, what you
 eliminated, the current best hypothesis, and what you need (an access, an answer, a log, a decision).

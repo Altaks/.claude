@@ -4,6 +4,19 @@ Rigorous and impartial. Call out problems precisely, surface positives so the re
 and always show the "do this instead" snippet. Never say "this could be cleaner" without showing what
 cleaner is.
 
+## Contents
+
+- Workflow
+- Where to post the review
+- Severities
+- Fabricated code: blocking
+- Over-engineering: what to cut
+- Finding format
+- Output template
+- When NOT to raise a finding
+- Tone
+- Answering review feedback (when you are the author)
+
 ## Workflow
 
 1. **Scope the diff.**
@@ -15,20 +28,20 @@ cleaner is.
 4. **Walk the diff** through the ten principles, then the role and language documents that match what
    it touches. A principle violation outweighs a style nitpick in the same hunk.
 5. **Close with the five-pillar pass**, which catches what a rule-by-rule walk misses:
-   - **Lisibilité**: could a stranger read this hunk once and know what it does?
-   - **Maintenabilité**: if this behaviour changes next month, how many places must change?
-   - **Extensibilité**: what does adding the next variant cost, a file or an edit inside a conditional?
-   - **Simplicité**: is anything here built for a case that does not exist yet?
+   - **Readability**: could a stranger read this hunk once and know what it does?
+   - **Maintainability**: if this behaviour changes next month, how many places must change?
+   - **Extensibility**: what does adding the next variant cost, a file or an edit inside a conditional?
+   - **Simplicity**: is anything here built for a case that does not exist yet?
    - **Performance**: did anything move onto a per-event, per-request or per-tick path, and was the
      cost measured?
    Each "no" is a finding, and it is often the most valuable one in the review because no single rule
    names it.
 6. **Tag every finding** with a severity, write it in the format below, and end with the summary and
    the verdict.
-7. **Post the review to the right surface** (see `## Où poster la review`): GitHub for a ready PR, the
-   Orca worktree card for a draft when the Orca CLI is present.
+7. **Post the review to the right surface** (see `## Where to post the review`): GitHub for a ready
+   PR, the Orca worktree card for a draft when the Orca CLI is present.
 
-## Où poster la review
+## Where to post the review
 
 Route the finished review by the PR's state and the available tooling:
 
@@ -63,7 +76,7 @@ The label set used across these repos (Pullpo-style). Modifiers `(blocking)`, `(
 
 End with a verdict: **APPROVE**, **REQUEST_CHANGES**, or **COMMENT**.
 
-## Code fabriqué : bloquant
+## Fabricated code: blocking
 
 Its own category, because it is the failure mode of generated code and it looks plausible on a first
 read. Check it explicitly on every diff:

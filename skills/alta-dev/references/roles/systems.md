@@ -1,7 +1,6 @@
-# Systèmes, bas niveau et performance
+# Systems, low level and performance
 
-C, C++, Rust, anything with manual resource management or a measured hot path. Read with
-`architecture.md` (module boundaries) and `iot-and-embedded.md` (the constrained variant).
+C, C++, Rust, anything with manual resource management or a measured hot path.
 
 ## Modules without a module system
 
