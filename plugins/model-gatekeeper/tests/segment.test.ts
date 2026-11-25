@@ -49,7 +49,7 @@ test('the segment shows each used tier and the savings, nothing before the first
     decision({ tier: 'sonnet', savedUsd: Number.NaN }),
   ]
 
-  expect(plain(segment(list, true))).toBe('●2 ●1 ~$0.40 éco.')
+  expect(plain(segment(list, true))).toBe('●1 ●2 ~$0.40 éco.')
   expect(plain(segment(list, false))).toBe('gk off')
 })
 

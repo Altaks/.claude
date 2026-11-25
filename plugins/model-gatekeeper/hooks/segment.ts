@@ -19,7 +19,8 @@ export function segment(list: readonly Decision[], isOn: boolean): string | unde
   if (!isOn) return paint(MUTED, 'gk off')
   if (list.length === 0) return undefined
 
-  const counts = TIERS.flatMap(tier => {
+  // Most expensive first: opus, sonnet, haiku.
+  const counts = [...TIERS].reverse().flatMap(tier => {
     const count = list.filter(one => one.tier === tier).length
 
     return count === 0 ? [] : [paint(TIER_RGB[tier], `●${count}`)]
