@@ -1,21 +1,16 @@
 # Third-party skills: mattpocock/skills
 
 The following skills in this directory are vendored from
-[mattpocock/skills](https://github.com/mattpocock/skills) (7 of the 15 skills listed in
+[mattpocock/skills](https://github.com/mattpocock/skills) (2 of the 15 skills listed in
 that repo's `.claude-plugin/plugin.json`; the others overlapped `alta-dev` or other tools
 and were removed):
 
-`grill-me`, `handoff`, `prototype`, `setup-matt-pocock-skills`, `teach`, `to-issues`,
-`to-prd`, `triage`.
+`grill-me`, `handoff`.
 
 The category nesting from upstream (`skills/engineering/*`, `skills/productivity/*`)
-was flattened into this folder. The contents are unchanged except that `triage` and
-`setup-matt-pocock-skills` no longer point at the removed skills.
+was flattened into this folder; the skill contents are unchanged.
 
-Note: `to-issues`, `to-prd` and `triage` expect an `## Agent skills` block in
-CLAUDE.md plus `docs/agents/` describing this repo's issue tracker and domain docs.
-Run `setup-matt-pocock-skills` before relying on them here, or they will be missing
-project context. This repo's own implementation workflow lives in `alta-dev`.
+This repo's own implementation workflow lives in `alta-dev`.
 
 ## License
 

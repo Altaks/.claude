@@ -32,8 +32,9 @@ not global dev guidance: that lives in the `alta-dev` skill. See `README.md` for
   `roles/delivery.md`), official titles (RGESN) and phrases users type as triggers ("fin de session").
   Pairings ("read X with Y") live only in the `SKILL.md` router, never inside role docs; every
   reference over 100 lines opens with a `## Contents` list.
-- **Hide a skill instead of deleting it**: overlapping skills get a `skillOverrides` entry in
-  `settings.json` (`off`, `user-invocable-only` or `name-only`), so the listing stays small.
+- **Remove a skill `alta-dev` already covers** (git history keeps it); `alta-dev` stays generic, so
+  never fold project-specific content into it. A distinct skill that is rarely needed is hidden instead,
+  with a `skillOverrides` entry in `settings.json` (`off`, `user-invocable-only` or `name-only`).
 - **Folding an external skill**: paraphrase its directives in your own words (ideas, not text). Vendor a
   whole third-party skill only as an **opt-in plugin** under `plugins/` (never into `skills/`), keep its
   LICENSE and attribution, and never vendor AGPL or unclear-license content into the repo.

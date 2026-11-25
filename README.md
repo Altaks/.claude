@@ -35,16 +35,14 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 ## Context cost
 
 Only `skills/` is auto-loaded, and only each skill's name and description. Always-on cost is
-**~700 tokens** (5 of the 11 skills listed). Enabling the `cybersec` plugin adds ~75k tokens **in that
+**~700 tokens** (4 of the 5 skills listed). Enabling the `cybersec` plugin adds ~75k tokens **in that
 project only**; disabling returns it to ~0. The two mods add no context: they hold no skills, only hooks.
 
-**Overlapping skills are hidden, not deleted** (`skillOverrides` in `settings.json`). Claude Code gives
-the skill listing 1% of the context window and shortens descriptions past it, so a duplicate costs
-triggering accuracy as well as tokens:
+**Skills `alta-dev` already covers are removed; rarely needed ones are hidden** (`skillOverrides` in
+`settings.json`). Claude Code gives the skill listing 1% of the context window and shortens descriptions
+past it, so a duplicate costs triggering accuracy as well as tokens:
 
-- `user-invocable-only`, still typable as `/name`: `handoff`, `teach`, `prototype`, `to-prd`,
-  `to-issues`, `triage`, and `arena`.
-- `name-only`: `setup-matt-pocock-skills`, since `to-prd`, `to-issues` and `triage` tell Claude to run it.
+- `user-invocable-only`, still typable as `/name`: `handoff` and `arena`.
 
 Change one in `/skills` or in `settings.json`; remove the entry to restore it.
 

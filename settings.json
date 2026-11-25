@@ -54,13 +54,7 @@
   },
   "skillOverrides": {
     "arena-skill:arena": "user-invocable-only",
-    "handoff": "user-invocable-only",
-    "teach": "user-invocable-only",
-    "prototype": "user-invocable-only",
-    "to-prd": "user-invocable-only",
-    "to-issues": "user-invocable-only",
-    "triage": "user-invocable-only",
-    "setup-matt-pocock-skills": "name-only"
+    "handoff": "user-invocable-only"
   },
   "hooks": {
     "Stop": [
