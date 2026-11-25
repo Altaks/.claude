@@ -1,23 +1,5 @@
-# Third-party skills: mattpocock/skills
+Vendored unmodified from https://github.com/mattpocock/skills (MIT).
 
-The following skills in this directory are vendored from
-[mattpocock/skills](https://github.com/mattpocock/skills) (2 of the 15 skills listed in
-that repo's `.claude-plugin/plugin.json`; the others overlapped `alta-dev` or other tools
-and were removed):
-
-`grill-me`, `handoff`.
-
-The category nesting from upstream (`skills/engineering/*`, `skills/productivity/*`)
-was flattened into this folder; the skill contents are unchanged.
-
-This repo's own implementation workflow lives in `alta-dev`.
-
-## License
-
-These skills are distributed under the MIT License. Per its terms, the copyright
-and permission notice is reproduced here for the vendored copies:
-
-```
 MIT License
 
 Copyright (c) 2026 Matt Pocock
@@ -39,4 +21,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-```
