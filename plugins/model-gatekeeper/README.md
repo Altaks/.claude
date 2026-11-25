@@ -15,12 +15,11 @@ It routes at spawn time, after auto mode has reviewed the Agent call as Claude w
 
 `/gatekeeper` lists the last decisions and the estimated savings. `/gatekeeper off` and `/gatekeeper on` switch routing for the session.
 
-A segment of the status line, right after its first part (the model, in the usual layouts) and in the
-line's own ` | ` separator, counts the routed subagents per tier, most expensive first (`●1 ●2`: opus violet, sonnet blue, haiku
+A segment of the status line, joined to its first group (the model, in the usual layouts) by a `·`, counts the routed subagents per tier, most expensive first (`●1 ●2`: opus violet, sonnet blue, haiku
 green; unused tiers hidden) and the estimated savings (`~$0.40 éco.`): when a routed agent reports,
 its cost is priced again at its parent's model, from list prices (`hooks/savings.ts`). It is an estimate
 like Claude Code's own cost figure, and on a subscription a share of usage rather than a bill. A line
-with no ` | ` gets the segment at its end; a line managed settings own is left alone. It shows `gk off`
+with no `|` or `│` separator gets the segment at its end; a line managed settings own is left alone. It shows `gk off`
 while routing is off.
 
 Each subagent's row in the agent list reads as a branch of the spawn tree, `├─` or `└─` for the last

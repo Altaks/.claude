@@ -53,12 +53,13 @@ test('the segment shows each used tier and the savings, nothing before the first
   expect(plain(segment(list, false))).toBe('gk off')
 })
 
-test('the segment goes after the first part, in the line own separator', () => {
-  const dimBar = ' \u001b[38;2;128;135;162m|\u001b[0m '
-  const line = `\u001b[1mOpus 5.5\u001b[0m (high)${dimBar}.claude${dimBar}81k/1m\nUpdate available`
+test('the segment joins the first group with a dot, before the first separator', () => {
+  const box = '  \u001b[38;2;91;96;120m│\u001b[0m  '
+  const line = `\u001b[1mOpus 5.5\u001b[0m (high)${box}.claude${box}ctx 8%\nsecond line`
 
-  expect(plain(withSegment(line, 'GK'))).toBe('Opus 5.5 (high) | GK | .claude | 81k/1m\nUpdate available')
-  expect(plain(withSegment('Opus 5.5 (high)', 'GK'))).toBe('Opus 5.5 (high) | GK')
+  expect(plain(withSegment(line, 'GK'))).toBe('Opus 5.5 (high) · GK  │  .claude  │  ctx 8%\nsecond line')
+  expect(plain(withSegment('Opus 5.5 (high) | .claude', 'GK'))).toBe('Opus 5.5 (high) · GK | .claude')
+  expect(plain(withSegment('Opus 5.5 (high)', 'GK'))).toBe('Opus 5.5 (high) · GK')
   expect(withSegment(null, 'GK')).toBe('GK')
   expect(withSegment('  ', 'GK')).toBe('GK')
 })

@@ -30,21 +30,20 @@ export function segment(list: readonly Decision[], isOn: boolean): string | unde
   return `${counts.join(' ')} ${paint(MUTED, `~${usd(saved)} éco.`)}`
 }
 
-// A separator as statusline scripts draw it: ` | `, the bar possibly wrapped in SGR styles.
-const SEPARATOR = / (?:\u001b\[[0-9;]*m)*\|(?:\u001b\[[0-9;]*m)* /
+// A group separator as statusline scripts draw it: `|` or `│` between spaces, possibly wrapped in SGR styles.
+const SEPARATOR = / +(?:\u001b\[[0-9;]*m)*[|│](?:\u001b\[[0-9;]*m)* +/
 
 /**
- * The status line with the segment after its first part (the model, in the usual layouts), in
- * that line's own separator; at the end of the first line where it has none, alone where empty.
+ * The status line with the segment joined to its first group (the model, in the usual layouts) by
+ * a `·`; at the end of the first line where it has no separator, alone where empty.
  */
 export function withSegment(text: string | null, added: string): string {
   if (text === null || text.trim() === '') return added
   const [first = '', ...rest] = text.split('\n')
   const found = SEPARATOR.exec(first)
+  const joined = ` ${paint(MUTED, '·')} ${added}`
   const line =
-    found === null
-      ? `${first} ${paint(MUTED, '|')} ${added}`
-      : `${first.slice(0, found.index)}${found[0]}${added}${found[0]}${first.slice(found.index + found[0].length)}`
+    found === null ? `${first}${joined}` : `${first.slice(0, found.index)}${joined}${first.slice(found.index)}`
 
   return [line, ...rest].join('\n')
 }
