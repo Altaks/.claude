@@ -96,6 +96,6 @@ Existing labels only. Do not invent one without asking.
 
 ## Stage 3: the handoff
 
-You do not fix anything. When the user picks a finding to act on, hand off to **`alta-refactor`** with: the scope (which files), the evidence (the `file:line` list), the target API (the "after" snippet), and the constraints (`public` is forever, `verifyPublicApiClosure`, main-thread only, no em dashes). That skill runs its own grill, safety net and atomic slices.
+You do not fix anything. When the user picks a finding to act on, hand off to **`alta-dev`** (Refactor mode) with: the scope (which files), the evidence (the `file:line` list), the target API (the "after" snippet), and the constraints (`public` is forever, `verifyPublicApiClosure`, main-thread only, no em dashes). That skill runs its own grill, safety net and atomic slices.
 
 If the finding is a new capability rather than a cleanup, hand off to **`alta-dev`** instead.

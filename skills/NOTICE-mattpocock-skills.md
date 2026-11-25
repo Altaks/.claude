@@ -1,23 +1,21 @@
 # Third-party skills: mattpocock/skills
 
-The following skills in this directory are vendored, unmodified, from
-[mattpocock/skills](https://github.com/mattpocock/skills) (the 15 skills listed in
-that repo's `.claude-plugin/plugin.json`):
+The following skills in this directory are vendored from
+[mattpocock/skills](https://github.com/mattpocock/skills) (7 of the 15 skills listed in
+that repo's `.claude-plugin/plugin.json`; the others overlapped `alta-dev` or other tools
+and were removed):
 
-`caveman`, `diagnose`, `grill-me`, `grill-with-docs`, `handoff`,
-`improve-codebase-architecture`, `prototype`, `setup-matt-pocock-skills`, `tdd`,
-`teach`, `to-issues`, `to-prd`, `triage`, `write-a-skill`, `zoom-out`.
+`grill-me`, `handoff`, `prototype`, `setup-matt-pocock-skills`, `teach`, `to-issues`,
+`to-prd`, `triage`.
 
 The category nesting from upstream (`skills/engineering/*`, `skills/productivity/*`)
-was flattened into this folder; the skill contents are unchanged.
+was flattened into this folder. The contents are unchanged except that `triage` and
+`setup-matt-pocock-skills` no longer point at the removed skills.
 
-Note: several of these (`to-issues`, `to-prd`, `triage`, `diagnose`, `tdd`,
-`improve-codebase-architecture`, `zoom-out`) expect an `## Agent skills` block in
+Note: `to-issues`, `to-prd` and `triage` expect an `## Agent skills` block in
 CLAUDE.md plus `docs/agents/` describing this repo's issue tracker and domain docs.
 Run `setup-matt-pocock-skills` before relying on them here, or they will be missing
-project context. `tdd` is generic test-driven development and is independent of the
-repo's Kotlin tooling; this repo's own implementation workflow lives in
-`alta-dev`.
+project context. This repo's own implementation workflow lives in `alta-dev`.
 
 ## License
 

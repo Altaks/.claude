@@ -71,7 +71,7 @@ Lighter is better, but only where it stays obvious. Look for:
 - **Ceremony a Kotlin feature deletes**: an overload telescope that named/default arguments collapse; a hand-rolled builder that an `apply {}` or a DSL receiver replaces; a `when` on a type code that a `sealed` hierarchy makes exhaustive and compiler-checked.
 - **A declaration that should read like data**, not like code. `conditionalAttributeModifiers()` returning a list of declared modifiers is the good pattern; a role that instead drives `apply()` / `remove()` by hand from its own `tick()` is the bad one, and the gap between them is a finding (what could the declarative form not express? conditions on interactions? on targets? on combat only?).
 - **A trap in the API**: `permanentPotionEffects()` is the canonical one. `VanillaPotionReconciler` absorbs any vanilla Strength/Resistance/Speed into an undetachable buff, so roles document *not* using it. An API whose KDoc says "do not use this" is a design finding, not a documentation one. Either fix it or delete it.
-- Do not turn this lens into a style review. Reach for `alta-refactor` for that. Here, only syntax that a *consumer* is forced to write counts.
+- Do not turn this lens into a style review. Reach for `alta-dev` (Refactor mode) for that. Here, only syntax that a *consumer* is forced to write counts.
 
 ## 5. Runtime CPU
 

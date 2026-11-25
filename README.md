@@ -9,7 +9,6 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 .
 ├── skills/                     # always-on skills (auto-discovered, recursive)
 │   ├── alta-dev/               #   full-lifecycle dev standard (+ references/)
-│   ├── alta-review/            #   Kotlin/Spigot PR review
 │   └── grill-me/               #   plan stress-test
 ├── plugins/
 │   ├── cybersec/               # 872 offensive+defensive security skills, DISABLED by default
@@ -36,16 +35,15 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 ## Context cost
 
 Only `skills/` is auto-loaded, and only each skill's name and description. Always-on cost is
-**~700 tokens** (8 of the 20 skills listed). Enabling the `cybersec` plugin adds ~75k tokens **in that
+**~700 tokens** (5 of the 11 skills listed). Enabling the `cybersec` plugin adds ~75k tokens **in that
 project only**; disabling returns it to ~0. The two mods add no context: they hold no skills, only hooks.
 
 **Overlapping skills are hidden, not deleted** (`skillOverrides` in `settings.json`). Claude Code gives
 the skill listing 1% of the context window and shortens descriptions past it, so a duplicate costs
 triggering accuracy as well as tokens:
 
-- `off`: `caveman` (the Spartan output style covers it), `write-a-skill` (`superpowers:writing-skills`).
-- `user-invocable-only`, still typable as `/name`: `tdd`, `diagnose`, `handoff`, `teach`, `zoom-out`,
-  `prototype`, `grill-with-docs`, `to-prd`, `to-issues`, `triage`, and `arena`.
+- `user-invocable-only`, still typable as `/name`: `handoff`, `teach`, `prototype`, `to-prd`,
+  `to-issues`, `triage`, and `arena`.
 - `name-only`: `setup-matt-pocock-skills`, since `to-prd`, `to-issues` and `triage` tell Claude to run it.
 
 Change one in `/skills` or in `settings.json`; remove the entry to restore it.
@@ -197,7 +195,7 @@ It runs when the work wraps up, on "fin de session", or when the **Stop hook** t
 
 ## Review routing (Orca / GitHub)
 
-`alta-review` (and `alta-dev`'s Review mode) route a finished review by the PR's state:
+`alta-dev`'s Review mode routes a finished review by the PR's state:
 
 - **Ready for review → GitHub**, always (`gh pr review` / inline comments).
 - **Draft + the Orca CLI available**, inside an Orca-managed worktree → a condensed

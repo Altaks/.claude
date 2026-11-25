@@ -42,17 +42,17 @@ So for each notion the GDK owns (an effect, a victory condition, a role, a camp,
 6. **Interrogate the user on the incomplete notions** before writing the target API. What must the concept be able to say? Which variants do you intend to support? One question at a time, each with a recommendation. Their answers are what makes a proposed API right rather than merely plausible.
 7. **Rank by leverage**, not by irritation: a notion that every future game mode will hit outranks a shape repeated in twenty files today.
 8. **Report.** Write `AUDIT-DX.md` per [REPORTING.md](REPORTING.md). Always. Then ask before filing issues.
-9. **Hand off.** You do not fix anything here. Once a finding is agreed, hand it to **`alta-refactor`** (scope, evidence, target API, constraints) and let that skill run its own grill + safety-net + atomic-slices loop.
+9. **Hand off.** You do not fix anything here. Once a finding is agreed, hand it to **`alta-dev`** in Refactor mode (scope, evidence, target API, constraints) and let that skill run its own grill + safety-net + atomic-slices loop.
 
 ## Guardrails
 
-- **Read-only.** No production code is edited under this skill. The output is a report and a backlog. If the user wants a fix now, hand off to `alta-refactor` explicitly rather than drifting into editing.
+- **Read-only.** No production code is edited under this skill. The output is a report and a backlog. If the user wants a fix now, hand off to `alta-dev` (Refactor mode) explicitly rather than drifting into editing.
 - **Evidence or silence.** Every finding carries `file:line` pointers and a site count. No finding rests on a hunch.
 - **Perf claims need a mechanism.** "This allocates per tick, on `GameTimerManager`'s 20 Hz path, N times per player" is a finding. "This feels slow" is not. Say what you measured or what you can prove by reading; if it needs a profile, say that the profile is the next step.
-- **No Rule of Three here.** It is the right rule for `alta-refactor` (do not abstract until duplication proves the shape) and the wrong one for a young framework: a notion can be provably incomplete on its first consumer. Judge a notion by the axes it cannot express, not by how many times someone has already worked around it. A single site is enough if the axis is real.
+- **No Rule of Three here.** It is the right rule for a refactor (`alta-dev`, do not abstract until duplication proves the shape) and the wrong one for a young framework: a notion can be provably incomplete on its first consumer. Judge a notion by the axes it cannot express, not by how many times someone has already worked around it. A single site is enough if the axis is real.
 - **But YAGNI still bites, so ask instead of guessing.** The counterweight to dropping the Rule of Three is the user, not your imagination. An axis is real because a game mode you intend to build needs it, and only the user knows that. Never propose an API built on axes you invented: put the grid in front of them and let them cut it down. Speculative generality is still the failure mode; the interrogation is the guard against it.
 - **The public API is a commitment.** Anything you propose promoting to `public` is forever, and must pass `verifyPublicApiClosure` (no third-party types in public GDK signatures). Prefer a new declarative hook with a sane default over exposing an internal manager.
-- **Do not confuse this with `alta-refactor`.** That skill improves code where it stands, behaviour-preserving, one file at a time. This one asks whether the *framework boundary* is in the right place, and produces a backlog. Read `alta-refactor`'s smell catalogue rather than duplicating it here.
+- **Do not confuse this with a refactor (`alta-dev` Refactor mode).** That improves code where it stands, behaviour-preserving, one file at a time. This one asks whether the *framework boundary* is in the right place, and produces a backlog. Read `alta-refactor`'s smell catalogue rather than duplicating it here.
 - **No em dashes** anywhere you write (code, report, issue bodies, commit messages). Repo rule.
 
 ## Output

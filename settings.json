@@ -20,21 +20,30 @@
       "source": {
         "source": "github",
         "repo": "pbakaus/impeccable",
-        "sparsePaths": [".claude-plugin", "plugin"]
+        "sparsePaths": [
+          ".claude-plugin",
+          "plugin"
+        ]
       }
     },
     "heydamir": {
       "source": {
         "source": "github",
         "repo": "heydamir/unslop",
-        "sparsePaths": [".claude-plugin", "skills"]
+        "sparsePaths": [
+          ".claude-plugin",
+          "skills"
+        ]
       }
     },
     "arena-skill": {
       "source": {
         "source": "github",
         "repo": "Jakeschincariol/arena-skill",
-        "sparsePaths": [".claude-plugin", "skills"]
+        "sparsePaths": [
+          ".claude-plugin",
+          "skills"
+        ]
       }
     }
   },
@@ -45,15 +54,9 @@
   },
   "skillOverrides": {
     "arena-skill:arena": "user-invocable-only",
-    "caveman": "off",
-    "write-a-skill": "off",
-    "tdd": "user-invocable-only",
-    "diagnose": "user-invocable-only",
     "handoff": "user-invocable-only",
     "teach": "user-invocable-only",
-    "zoom-out": "user-invocable-only",
     "prototype": "user-invocable-only",
-    "grill-with-docs": "user-invocable-only",
     "to-prd": "user-invocable-only",
     "to-issues": "user-invocable-only",
     "triage": "user-invocable-only",
