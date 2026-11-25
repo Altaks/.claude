@@ -1,8 +1,0 @@
-{
-  "name": "agent-board",
-  "version": "0.4.0",
-  "description": "A side pane of cards showing what each subagent is doing, with an on-demand graph of who spawned or messaged whom",
-  "author": { "name": "Altaks" },
-  "keywords": ["mod", "subagents", "pane", "graph"],
-  "types": "./types/index.d.ts"
-}

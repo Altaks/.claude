@@ -9,9 +9,6 @@ not global dev guidance: that lives in the `alta-dev` skill. See `README.md` for
 - **No AI self-attribution.** No `Co-Authored-By: Claude`, no "Generated with", in commits or PR bodies.
 - **Keep always-on cost low.** Only `skills/*/SKILL.md` frontmatter loads every session; keep the name
   and description tight. A description says *when* to use a skill, never a workflow summary.
-- **cybersec stays an opt-in plugin.** Never move its skills into `skills/` (that reintroduces ~75k
-  tokens of always-on discovery). Refresh it only via `plugins/cybersec/UPDATING.md`, and keep the
-  pinned upstream SHA in `plugins/cybersec/ORIGIN.md` current.
 - **Settings go in the scope that honors them.** Project-scope keys in `settings.json`; user-only keys
   (`defaultMode: auto`, `autoMode`, update channel, UI) in `user-settings.json`. The repo is public: never
   version secrets, absolute paths or machine-only hooks there.
@@ -39,7 +36,7 @@ not global dev guidance: that lives in the `alta-dev` skill. See `README.md` for
   whole third-party skill only as an **opt-in plugin** under `plugins/` (never into `skills/`), keep its
   LICENSE and attribution, and never vendor AGPL or unclear-license content into the repo.
 
-Editing a mod (`plugins/model-gatekeeper`, `plugins/agent-board`): see `plugins/CLAUDE.md`.
+Editing a mod (`plugins/model-gatekeeper`): see `plugins/CLAUDE.md`.
 
 ## Commits
 

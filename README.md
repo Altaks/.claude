@@ -1,7 +1,7 @@
 # altaks-claude: shared Claude Code configuration
 
-A portable `.claude` shared across projects. Personal dev skills load everywhere; a large
-security skill library is bundled but **opt-in** so it costs ~0 context until you turn it on.
+A portable `.claude` shared across projects. Personal dev skills load everywhere; an opt-in mod
+routes subagents to cheaper models.
 
 ## Layout
 
@@ -11,15 +11,13 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 │   ├── alta-dev/               #   full-lifecycle dev standard (+ references/)
 │   └── grill-me/               #   plan stress-test
 ├── plugins/
-│   ├── cybersec/               # 872 offensive+defensive security skills, DISABLED by default
 │   │   ├── .claude-plugin/plugin.json
 │   │   ├── skills/             #   the 872 skills (loaded only when the plugin is enabled)
 │   │   ├── ORIGIN.md           #   attribution + pinned upstream commit
 │   │   └── UPDATING.md         #   how to refresh the vendored copy
 │   ├── model-gatekeeper/       # mod: routes each subagent to haiku / sonnet / opus, opt-in
-│   └── agent-board/            # mod: side pane of subagent cards + on-demand graph, opt-in
 ├── .claude-plugin/
-│   └── marketplace.json        # exposes the three plugins (marketplace name: altaks-claude)
+│   └── marketplace.json        # exposes the mod (marketplace name: altaks-claude)
 ├── hooks/
 │   └── phase6-consolidate.sh   # Stop hook: alta-dev Phase 6 reinforcement loop
 ├── output-styles/
@@ -35,8 +33,8 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 ## Context cost
 
 Only `skills/` is auto-loaded, and only each skill's name and description. Always-on cost is
-**~700 tokens** (4 of the 5 skills listed). Enabling the `cybersec` plugin adds ~75k tokens **in that
-project only**; disabling returns it to ~0. The two mods add no context: they hold no skills, only hooks.
+**~700 tokens** (4 of the 5 skills listed). The
+`model-gatekeeper` mod adds no context: it holds no skills, only hooks.
 
 **Skills `alta-dev` already covers are removed; rarely needed ones are hidden** (`skillOverrides` in
 `settings.json`). Claude Code gives the skill listing 1% of the context window and shortens descriptions
@@ -77,7 +75,7 @@ ln -sf "$PWD/statusline/statusline.sh" ~/.claude/statusline.sh
 
 The merge keeps your machine-specific keys (hooks, local marketplaces). Arrays are replaced,
 not appended: `permissions.deny` and the `autoMode` lists come out exactly as in the template. Install
-`model-gatekeeper` separately (see the mods section below).
+`model-gatekeeper` separately (see the mod section below).
 
 ## Output styles
 
@@ -100,58 +98,27 @@ Three styles land: **Spartan** (blunt, maximum compression), **Attention-kind** 
 **Rundown** (TL;DR briefings, checkboxes). Switch with `/config` -> *Output style*, or change
 `outputStyle` in `settings.json`. Re-run the script to update; it overwrites in place.
 
-## The opt-in security library (`cybersec`)
+## The opt-in mod (`model-gatekeeper`)
 
-872 red + blue / DFIR / detection-engineering / cloud / mobile / IoT-OT / CTF skills, MITRE-mapped.
-Vendored from [26zl/cybersec-toolkit](https://github.com/26zl/cybersec-toolkit) (MIT); see
-`plugins/cybersec/ORIGIN.md` for full attribution and the pinned commit.
-
-Enable it only for **authorized** security work:
-
-```bash
-# One-time: register this repo as a marketplace
-claude plugin marketplace add /path/to/this/repo
-
-# Enable (project scope keeps it local to the current repo); then restart the session
-claude plugin enable cybersec@altaks-claude --scope project
-
-# Turn it back off any time
-claude plugin disable cybersec@altaks-claude
-```
-
-Enabled-plugin skills load at session start, so they become available the **next** session.
-
-## The opt-in mods (`model-gatekeeper`, `agent-board`)
-
-Two Claude Code mods (function-hook plugins: TypeScript hooks modules, no skills) for sessions that use
-subagents. Each one's README has the details.
+A Claude Code mod (a function-hook plugin: a TypeScript hooks module, no skills) for sessions that use
+subagents. Its README has the details.
 
 - **`model-gatekeeper`** picks a model tier for each subagent as it starts, so Opus is not the default
   for every job: `Explore` runs on haiku, `general-purpose` is classified by a small model into haiku,
   sonnet or opus, never above the parent's model. It changes only the model, at spawn time: rewriting
   the Agent call itself makes auto mode refuse it, so effort is left as the session sets it.
   `/gatekeeper` lists its decisions; `/gatekeeper off` stops it for the session.
-- **`agent-board`** docks a pane on the right with a card per running subagent (model, status, task,
-  live activity, latest message), opening by itself when a subagent starts. `g` in the pane switches to
-  a graph of who spawned or messaged whom; `/agent-board` reopens it.
 
 ```bash
 # Install at user scope (adds the altaks-claude marketplace on the way if needed)
 claude plugin install model-gatekeeper --marketplace /path/to/this/repo --scope user
-claude plugin install agent-board --marketplace /path/to/this/repo --scope user
 
-# Turn one back off
+# Turn it back off
 claude plugin disable model-gatekeeper@altaks-claude
 ```
 
 A mod installed from a folder marketplace is read from that folder: after editing it, `/reload-plugins`
 picks up the change. Check one with `claude plugin validate plugins/<mod>` and `claude plugin test plugins/<mod>`.
-
-## Security note
-
-The `cybersec` skills were audited for host-targeting malicious content (backdoors, exfiltration,
-prompt injection against the agent): none found; the content is offensive/defensive tradecraft
-whose only risk is running it against systems you are not authorized to test. Use accordingly.
 
 ## What `alta-dev` covers
 
@@ -255,7 +222,3 @@ Gitignore the output folders where they should not be committed.
 claude plugin update unslop@heydamir                       # pull a newer upstream release
 claude plugin disable arena-skill@arena-skill --scope project   # turn one off for one project
 ```
-
-## Updating the vendored security skills
-
-See `plugins/cybersec/UPDATING.md` (vendor + re-sync, deliberately not a submodule).

@@ -52,11 +52,3 @@ telemetry disclosed and consented. Each restriction is a named constraint, respe
 - [ ] Anything needing a qualified human (legal, DPO, certification) is flagged, not assumed.
 
 An unmet legal or normative obligation is a **blocking** finding, like any correctness defect.
-
-## Depth on demand
-
-The opt-in `cybersec` plugin implements many of these operationally: `implementing-gdpr-data-protection-controls`,
-`implementing-iso-27001-information-security-management`, `implementing-pci-dss-compliance-controls`,
-`performing-soc2-type2-audit-preparation`, `performing-nist-csf-maturity-assessment`,
-`performing-privacy-impact-assessment`, `analyzing-sbom-for-supply-chain-vulnerabilities`,
-`grc-compliance-privacy-program`. Enable it for compliance-heavy work.
