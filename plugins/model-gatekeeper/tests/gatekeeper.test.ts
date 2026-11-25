@@ -127,3 +127,52 @@ test('/gatekeeper off stops routing, /gatekeeper on resumes it', async ($, on) =
   expect(seen[0]?.model).toBeUndefined()
   expect(seen[1]?.model).toBe('haiku')
 })
+
+// A report of the agent the engine mock spawned as `a1`, delivered as written beneath the mod.
+function reports(on: On) {
+  on('agent.list', () => ({ value: [] }))
+  on('agent.report', (_, e) => ({ text: e.text }))
+}
+const report = (status: 'completed' | 'failed' | 'stopped') => ({
+  agentId: 'a1',
+  subagentType: 'general-purpose',
+  provider: { plugin: 'engine', tier: 'core' as const },
+  status,
+  text: 'Auth is parsed in src/auth.ts:12.',
+})
+
+test('a completed report from a cheaper model asks the parent to check it', async ($, on) => {
+  engine(on)
+  reports(on)
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+  await $.agent.spawn(spawn('find auth', 'general-purpose'))
+
+  const delivered = await $.agent.report(report('completed'))
+
+  expect(delivered.text).toMatch(/^Auth is parsed in src\/auth\.ts:12\.\n\n\[model-gatekeeper\] This report came from haiku/)
+})
+
+test('a failed report starts the task again one tier up and says so', async ($, on) => {
+  const seen = engine(on)
+  reports(on)
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+  await $.agent.spawn(spawn('find auth', 'general-purpose'))
+
+  const delivered = await $.agent.report(report('failed'))
+
+  expect(seen.map(one => one.model)).toEqual(['haiku', 'sonnet'])
+  expect(delivered.text).toMatch(/failed on haiku\. It was started again on sonnet/)
+  expect((await $.command.run(typed(''))).text).toMatch(/retry of a failed haiku run/)
+})
+
+test('a stopped agent is neither checked nor started again', async ($, on) => {
+  const seen = engine(on)
+  reports(on)
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+  await $.agent.spawn(spawn('find auth', 'general-purpose'))
+
+  const delivered = await $.agent.report(report('stopped'))
+
+  expect(seen).toHaveLength(1)
+  expect(delivered.text).toBe('Auth is parsed in src/auth.ts:12.')
+})

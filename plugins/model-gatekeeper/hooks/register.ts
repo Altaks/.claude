@@ -4,6 +4,7 @@ import type { Register } from 'claude-code'
 import type { Decision } from '../types'
 import { agentRowBody } from './agent-row'
 import { decide } from './decide'
+import { checkNote, escalation, retryNote } from './followup'
 import { savedUsd, usd } from './savings'
 import { segment, withSegment } from './segment'
 
@@ -70,16 +71,58 @@ export const register: Register = on => {
     return next({ ...e, props: { ...e.props, body: agentRowBody(e.props, rows) } })
   }).catch(($, e, next) => next(e))
 
-  // When a routed agent reports, price what it cost against its parent's model. Observe only.
+  // When a routed agent reports: a success from a cheaper model asks the parent to check it; a failure
+  // starts the task again one tier up (never above the parent) and says so; then the cost is priced.
+  // A stopped agent is left alone. Any error delivers the report as it was.
   on('agent.report', async ($, e, next) => {
-    const result = await next(e)
+    let note = ''
+    let routed: Decision | undefined
     try {
-      const list = await read($, decisions)
-      const routed = list.find(one => one.agentId === e.agentId)
+      routed = (await read($, decisions)).find(one => one.agentId === e.agentId)
+      if (routed !== undefined && e.status === 'completed') note = checkNote(routed)
+      const step = routed !== undefined && e.status === 'failed' ? escalation(routed) : undefined
+      if (routed !== undefined && step !== undefined && routed.prompt !== undefined) {
+        const spawned = await $.agent.spawn({
+          prompt: routed.prompt,
+          description: routed.description,
+          subagentType: routed.type,
+          model: step.model,
+          ...(e.parentAgentId === undefined ? {} : { parentAgentId: e.parentAgentId }),
+        }).catch(() => ({ deny: 'spawn failed' }) as const)
+        const isStarted = spawned.deny === undefined
+        note = retryNote(step, routed, isStarted)
+        if (isStarted) {
+          const retry: Decision = {
+            type: routed.type,
+            description: routed.description,
+            tier: step.tier,
+            reason: `retry of a failed ${routed.tier} run`,
+            retryOf: e.agentId,
+            prompt: routed.prompt,
+            ...(spawned.agentId === undefined ? {} : { agentId: spawned.agentId }),
+            ...(routed.parentModel === undefined ? {} : { parentModel: routed.parentModel }),
+          }
+          await update($, decisions, list => [...list, retry].slice(-KEPT_DECISIONS))
+        }
+      }
+    } catch {
+      note = ''
+    }
+
+    const result = await next(note === '' ? e : { ...e, text: `${e.text}${note}` })
+    try {
       if (routed !== undefined) {
         const agent = (await $.agent.list()).find(one => one.id === e.agentId)
         const saved = savedUsd(agent?.cost?.usd ?? 0, agent?.model, routed.parentModel)
-        await update($, decisions, all => all.map(one => (one.agentId === e.agentId ? { ...one, savedUsd: saved } : one)))
+        // Priced, and the kept prompt dropped: it only served a retry.
+        await update($, decisions, all =>
+          all.map(one => {
+            if (one.agentId !== e.agentId) return one
+            const { prompt: _prompt, ...rest } = one
+
+            return { ...rest, savedUsd: saved }
+          }),
+        )
       }
     } catch {
       // A missing price or agent leaves the decision unpriced.
@@ -104,6 +147,8 @@ export const register: Register = on => {
         reason: verdict.reason,
         ...(spawned.agentId === undefined ? {} : { agentId: spawned.agentId }),
         ...(e.parentModel === undefined ? {} : { parentModel: e.parentModel }),
+        // Kept only while a failure could still start it again one tier up.
+        ...(verdict.isInherit ? {} : { prompt: e.prompt }),
       }
       await update($, decisions, list => [...list, decision].slice(-KEPT_DECISIONS))
     }

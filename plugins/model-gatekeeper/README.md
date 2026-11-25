@@ -29,6 +29,16 @@ after it. A row the person's settings already draw is left alone.
 
 Not gated: workflow agents (their script picks), and agents spawned by a subagent. The main conversation's model is never changed, to keep its prompt cache.
 
+## Follow-up on a routed agent's report
+
+- **Check it.** A completed report from a cheaper model than the parent's gets one line asking the parent
+  to check its key claims (paths, line numbers, figures, conclusions) before relying on them.
+- **Retry one tier up.** A failed agent is started again with the same task one tier up (haiku to sonnet,
+  sonnet to opus), never above the parent's model: at the parent's tier it takes the parent's exact model.
+  The failure report still reaches the parent, saying the retry started and that its report arrives
+  separately, or, where the retry was refused, which model to ask for. A retry that fails climbs again,
+  up to that cap. A stopped agent is left alone. The task is kept only until the agent reports.
+
 ## Install
 
 Opt-in, from this repo's marketplace (`altaks-claude`). A mod has no skills, so it adds no context cost.
