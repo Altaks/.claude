@@ -1,10 +1,10 @@
 import { expect, test } from 'claude-code/testing'
 
-import { cellParts } from '../hooks/cell'
 import { priceOf, savedUsd, usd } from '../hooks/savings'
+import { segment, withSegment } from '../hooks/segment'
 import type { Decision } from '../types'
 
-const text = (parts: { text: string }[] | undefined) => parts?.map(part => part.text).join('')
+const plain = (text: string | undefined) => text?.replace(/\u001b\[[0-9;]*m/g, '')
 const decision = (extra: Partial<Decision>): Decision => ({
   type: 'Explore',
   description: 'find',
@@ -41,21 +41,24 @@ test('amounts read as dollars', () => {
   expect(usd(Number.NaN)).toBe('$0')
 })
 
-test('the cell shows each used tier and the savings, nothing before the first routing', () => {
-  expect(cellParts([], true, 40)).toBeUndefined()
+test('the segment shows each used tier and the savings, nothing before the first routing', () => {
+  expect(segment([], true)).toBeUndefined()
   const list = [
     decision({ savedUsd: 0.3 }),
     decision({ savedUsd: 0.1 }),
     decision({ tier: 'sonnet', savedUsd: Number.NaN }),
   ]
 
-  expect(text(cellParts(list, true, 40))).toBe('●2 ●1 ~$0.40 éco.')
+  expect(plain(segment(list, true))).toBe('●2 ●1 ~$0.40 éco.')
+  expect(plain(segment(list, false))).toBe('gk off')
 })
 
-test('a narrow cell drops the savings first, then itself', () => {
-  const list = [decision({ savedUsd: 0.3 })]
+test('the segment goes after the first part, in the line own separator', () => {
+  const dimBar = ' \u001b[38;2;128;135;162m|\u001b[0m '
+  const line = `\u001b[1mOpus 5.5\u001b[0m (high)${dimBar}.claude${dimBar}81k/1m\nUpdate available`
 
-  expect(text(cellParts(list, true, 5))).toBe('●1')
-  expect(cellParts(list, true, 1)).toBeUndefined()
-  expect(text(cellParts(list, false, 40))).toBe('gk off')
+  expect(plain(withSegment(line, 'GK'))).toBe('Opus 5.5 (high) | GK | .claude | 81k/1m\nUpdate available')
+  expect(plain(withSegment('Opus 5.5 (high)', 'GK'))).toBe('Opus 5.5 (high) | GK')
+  expect(withSegment(null, 'GK')).toBe('GK')
+  expect(withSegment('  ', 'GK')).toBe('GK')
 })

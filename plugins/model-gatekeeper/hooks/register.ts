@@ -3,9 +3,9 @@ import type { Register } from 'claude-code'
 
 import type { Decision } from '../types'
 import { agentRowBody } from './agent-row'
-import { cellParts } from './cell'
 import { decide } from './decide'
 import { savedUsd, usd } from './savings'
+import { segment, withSegment } from './segment'
 
 // Values outlive a reload; bump a shape tag when that value's meaning changes.
 const isOn = atom({ plugin: 'model-gatekeeper', key: 'isOn' } as const, true)
@@ -51,21 +51,14 @@ export const register: Register = on => {
     return { text: report(await read($, decisions), await read($, isOn)) }
   })
 
-  // The counter beside the prompt: subagents per tier and the estimated savings.
-  on('ui.render', { component: 'BesidePrompt' }, async ($, e, next) => {
-    const parts = cellParts(await read($, decisions), await read($, isOn), e.props.maxColumns)
-    if (parts === undefined) return next(e)
-    const { Box, Text } = $.ui.resolve(e)
+  // The status line: subagents per tier and the estimated savings, after the line's first part.
+  // A line managed settings own is left alone; any error leaves the line as it was.
+  on('ui.render', { component: 'StatusLine' }, async ($, e, next) => {
+    if (e.props.isManaged) return next(e)
+    const added = segment(await read($, decisions), await read($, isOn))
+    if (added === undefined) return next(e)
 
-    return (
-      <Box>
-        {parts.map((part, index) => (
-          <Text key={String(index)} {...(part.color === undefined ? {} : { color: part.color })} dimColor={part.dim === true}>
-            {part.text}
-          </Text>
-        ))}
-      </Box>
-    )
+    return next({ ...e, props: { ...e.props, text: withSegment(e.props.text, added) } })
   }).catch(($, e, next) => next(e))
 
   // Each subagent row: its branch in the spawn tree, type and model. Claude Code keeps the nesting.
