@@ -28,6 +28,7 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 ├── CLAUDE.md                   # maintenance guide, loaded when working in this repo
 ├── settings.json               # project scope: Stop hook, plugins, Spartan, secret deny rules, no AI attribution
 ├── user-settings.json          # user-scope defaults to merge into ~/.claude/settings.json (see below)
+├── statusline/                 # status line script (MIT, from daniel3303/ClaudeCodeStatusLine, modified)
 ├── README.md                   # this file
 └── .gitignore
 ```
@@ -71,7 +72,14 @@ tmp=$(mktemp) && jq -s '.[0] * .[1]' ~/.claude/settings.json user-settings.json 
   && mv "$tmp" ~/.claude/settings.json
 ```
 
-The merge keeps your machine-specific keys (hooks, status line, local marketplaces). Arrays are replaced,
+The template points the status line at `~/.claude/statusline.sh`; link it to the versioned script so
+edits land in the repo:
+
+```bash
+ln -sf "$PWD/statusline/statusline.sh" ~/.claude/statusline.sh
+```
+
+The merge keeps your machine-specific keys (hooks, local marketplaces). Arrays are replaced,
 not appended: `permissions.deny` and the `autoMode` lists come out exactly as in the template. Install
 `model-gatekeeper` separately (see the mods section below).
 

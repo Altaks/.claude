@@ -55,5 +55,9 @@
   "showMessageTimestamps": true,
   "showTurnDuration": true,
   "inputNeededNotifEnabled": true,
-  "showClearContextOnPlanAccept": true
+  "showClearContextOnPlanAccept": true,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  }
 }
