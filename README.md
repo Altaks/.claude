@@ -26,7 +26,8 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 ├── output-styles/
 │   └── install.sh              # fetches the attention-span styles (AGPL, referenced not vendored)
 ├── CLAUDE.md                   # maintenance guide, loaded when working in this repo
-├── settings.json               # Stop hook; impeccable (opt-in), unslop + arena + code-modernization (on); Spartan
+├── settings.json               # project scope: Stop hook, plugins, Spartan, secret deny rules, no AI attribution
+├── user-settings.json          # user-scope defaults to merge into ~/.claude/settings.json (see below)
 ├── README.md                   # this file
 └── .gitignore
 ```
@@ -56,6 +57,23 @@ Pick whichever fits how you consume config:
 - **As a project's config:** drop this repo in as the project's `.claude/`.
 
 Either way, `skills/` auto-loads; the security library stays off until enabled.
+
+### User-scope defaults (`user-settings.json`)
+
+Some settings only take effect from `~/.claude/settings.json`: Claude Code ignores them in a project's
+checked-in settings (auto mode as the default mode, the auto mode classifier rules) or they are machine
+preferences (update channel, transcript retention, UI). `user-settings.json` versions them. Merge it into
+your user settings on a new machine, or after changing it:
+
+```bash
+cp ~/.claude/settings.json ~/.claude/settings.json.bak
+tmp=$(mktemp) && jq -s '.[0] * .[1]' ~/.claude/settings.json user-settings.json > "$tmp" \
+  && mv "$tmp" ~/.claude/settings.json
+```
+
+The merge keeps your machine-specific keys (hooks, status line, local marketplaces). Arrays are replaced,
+not appended: `permissions.deny` and the `autoMode` lists come out exactly as in the template. Install
+`model-gatekeeper` separately (see the mods section below).
 
 ## Output styles
 

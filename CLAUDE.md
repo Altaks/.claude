@@ -12,6 +12,9 @@ not global dev guidance: that lives in the `alta-dev` skill. See `README.md` for
 - **cybersec stays an opt-in plugin.** Never move its skills into `skills/` (that reintroduces ~75k
   tokens of always-on discovery). Refresh it only via `plugins/cybersec/UPDATING.md`, and keep the
   pinned upstream SHA in `plugins/cybersec/ORIGIN.md` current.
+- **Settings go in the scope that honors them.** Project-scope keys in `settings.json`; user-only keys
+  (`defaultMode: auto`, `autoMode`, update channel, UI) in `user-settings.json`. The repo is public: never
+  version secrets, absolute paths or machine-only hooks there.
 - **No OS-specific junk** (`.DS_Store`, `._*`, ...); `.gitignore` blocks it.
 
 ## Editing a skill

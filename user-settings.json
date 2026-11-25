@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "defaultMode": "auto",
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.local)",
+      "Read(~/.docker/config.json)",
+      "Read(~/.gnupg/**)",
+      "Read(~/.ssh/**)"
+    ]
+  },
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(./gradlew ktlintFormat:*)",
+      "Bash(just precommit:*)",
+      "Bash(posthog-cli api:*)"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Bash(git submodule *deinit*:*)"
+    ]
+  },
+  "language": "French",
+  "advisorModel": "opus",
+  "fallbackModel": [
+    "sonnet"
+  ],
+  "switchModelsOnFlag": true,
+  "autoCompactWindow": 400000,
+  "autoDreamEnabled": true,
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
+  "disableClaudeAiConnectors": true,
+  "autoContinueAtUsageLimit": true,
+  "remoteControlAtStartup": true,
+  "feedbackDrafts": "off",
+  "feedbackSurveyRate": 0,
+  "autoUpdatesChannel": "stable",
+  "cleanupPeriodDays": 90,
+  "enabledPlugins": {
+    "kotlin-lsp@claude-plugins-official": true
+  },
+  "tui": "fullscreen",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "voiceEnabled": true,
+  "timeFormat": "24-hour",
+  "showMessageTimestamps": true,
+  "showTurnDuration": true,
+  "inputNeededNotifEnabled": true,
+  "showClearContextOnPlanAccept": true
+}
