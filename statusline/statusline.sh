@@ -1,7 +1,7 @@
 #!/bin/bash
 # Claude Code status line, grouped by meaning (one line):
-#   Opus 5.5 (high)  │  .claude ⌥ main ↑2 +3−1  │  ctx 8% · 2h05 · +120−30  │  5h 12% 00h40 · 7j 41% lun 01h53  │  v2.1.332
-#   model (effort)      code                       session                    quotas                             version
+#   Opus 5.5 (high) │ .claude ⌥ main ↑2 +3−1 │ ctx 8% · 2h05 · +120−30 │ 5h 12% 00h40 · 7j 41% lun 01h53 │ v2.1.332
+#   model (effort)    code                     session                   quotas                            version
 # The model-gatekeeper mod inserts its counter into the first group (`· ●1 ●2 ~$0.27`).
 # Derived from https://github.com/daniel3303/ClaudeCodeStatusLine (MIT, see LICENSE and ORIGIN.md).
 
@@ -27,7 +27,7 @@ bar='\033[38;2;91;96;120m'
 bold='\033[1m'
 reset='\033[0m'
 
-group_sep="  ${bar}│${reset}  "
+group_sep=" ${bar}│${reset} "
 item_sep=" ${dim}·${reset} "
 
 # ===== Helpers =====
