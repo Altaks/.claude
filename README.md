@@ -10,8 +10,7 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 ├── skills/                     # always-on skills (auto-discovered, recursive)
 │   ├── alta-dev/               #   full-lifecycle dev standard (+ references/)
 │   ├── alta-review/            #   Kotlin/Spigot PR review
-│   ├── grill-me/               #   plan stress-test
-│   └── cybersec-catalog/       #   tiny pointer to the opt-in security library (see below)
+│   └── grill-me/               #   plan stress-test
 ├── plugins/
 │   ├── cybersec/               # 872 offensive+defensive security skills, DISABLED by default
 │   │   ├── .claude-plugin/plugin.json
@@ -35,7 +34,7 @@ security skill library is bundled but **opt-in** so it costs ~0 context until yo
 ## Context cost
 
 Only `skills/` is auto-loaded, and only each skill's name and description. Always-on cost is
-**~700 tokens** (9 of the 21 skills listed). Enabling the `cybersec` plugin adds ~75k tokens **in that
+**~700 tokens** (8 of the 20 skills listed). Enabling the `cybersec` plugin adds ~75k tokens **in that
 project only**; disabling returns it to ~0. The two mods add no context: they hold no skills, only hooks.
 
 **Overlapping skills are hidden, not deleted** (`skillOverrides` in `settings.json`). Claude Code gives
@@ -99,7 +98,6 @@ claude plugin disable cybersec@altaks-claude
 ```
 
 Enabled-plugin skills load at session start, so they become available the **next** session.
-The always-on `cybersec-catalog` skill reminds Claude the library exists and walks through enabling it.
 
 ## The opt-in mods (`model-gatekeeper`, `agent-board`)
 
