@@ -19,7 +19,7 @@ routes subagents to cheaper models.
 ├── .claude-plugin/
 │   └── marketplace.json        # exposes the mod (marketplace name: altaks-claude)
 ├── hooks/
-│   └── phase6-consolidate.sh   # Stop hook: alta-dev Phase 6 reinforcement loop
+│   └── consolidate.sh          # Stop hook: alta-dev Phase 6 reinforcement loop
 ├── output-styles/
 │   └── install.sh              # fetches the attention-span styles (AGPL, referenced not vendored)
 ├── CLAUDE.md                   # maintenance guide, loaded when working in this repo
@@ -151,7 +151,7 @@ personal cross-project preferences to the memory system, a standard's rule to `r
 
 It runs when the work wraps up, on "fin de session", or when the **Stop hook** triggers it:
 
-- `hooks/phase6-consolidate.sh` fires on `Stop`, **once per session**, and only after substantive
+- `hooks/consolidate.sh` fires on `Stop`, **once per session**, and only after substantive
   file-modifying work (≥ `ALTA_PHASE6_MIN_EDITS`, default 5). It then blocks the stop once and asks
   Claude to run Phase 6. Pure Q&A sessions never trigger it. It fails open: any error allows the stop.
 - Active only when this repo is the running `.claude` (project or user). After enabling, open `/hooks`

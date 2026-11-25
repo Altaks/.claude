@@ -38,7 +38,7 @@ EOF
 [ -z "${SESSION_ID:-}" ] || [ "$SESSION_ID" = "." ] && exit 0
 
 # --- once per session ------------------------------------------------------
-STATE_DIR="${TMPDIR:-/tmp}/claude-phase6"
+STATE_DIR="${TMPDIR:-/tmp}/claude-consolidate"
 mkdir -p "$STATE_DIR" 2>/dev/null || exit 0
 SENTINEL="$STATE_DIR/$SESSION_ID"
 [ -e "$SENTINEL" ] && exit 0                            # already reminded

@@ -62,7 +62,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/phase6-consolidate.sh\"",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/consolidate.sh\"",
             "timeout": 15,
             "statusMessage": "Checking alta-dev Phase 6 (reinforcement loop)"
           }
