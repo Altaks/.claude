@@ -2,6 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
 import type { Decision } from '../types'
+import { agentRowBody } from './agent-row'
 import { TIERS, decide } from './decide'
 
 // Values outlive a reload; bump a shape tag when that value's meaning changes.
@@ -54,6 +55,15 @@ export const register: Register = on => {
 
     return { text: report(await read($, decisions), await read($, isOn)) }
   })
+
+  // Each subagent row: its branch in the spawn tree, type and model. Claude Code keeps the nesting.
+  // A row the person's settings already draw, or a hidden one, is left alone; any error falls back.
+  on('ui.render', { component: 'AgentRow' }, async ($, e, next) => {
+    if (e.props.body !== undefined || e.props.isHidden) return next(e)
+    const rows = (await $.agent.list()).filter(agent => agent.hasRow)
+
+    return next({ ...e, props: { ...e.props, body: agentRowBody(e.props, rows) } })
+  }).catch(($, e, next) => next(e))
 
   // Routes at spawn time, after auto mode reviewed the Agent call as written: only the model changes.
   // Fail open: any error lets the spawn go on as asked.

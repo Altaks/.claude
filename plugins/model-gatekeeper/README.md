@@ -15,6 +15,11 @@ It routes at spawn time, after auto mode has reviewed the Agent call as Claude w
 
 `/gatekeeper` lists the last decisions. `/gatekeeper off` and `/gatekeeper on` switch routing for the session. The status line shows counts per tier.
 
+Each subagent's row in the agent list reads as a branch of the spawn tree, `├─` or `└─` for the last
+child, then its type (and name), the model it runs on, coloured by tier (haiku green, sonnet blue, opus
+violet), what it is doing and its tokens. Claude Code keeps drawing the nesting; the mod writes the text
+after it. A row the person's settings already draw is left alone.
+
 Not gated: workflow agents (their script picks), and agents spawned by a subagent. The main conversation's model is never changed, to keep its prompt cache.
 
 ## Install

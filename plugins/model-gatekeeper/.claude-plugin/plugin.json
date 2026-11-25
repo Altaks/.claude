@@ -1,7 +1,7 @@
 {
   "name": "model-gatekeeper",
-  "version": "0.2.0",
-  "description": "Routes each subagent to the cheapest fitting model tier (haiku, sonnet, opus) as it starts",
+  "version": "0.3.0",
+  "description": "Routes each subagent to the cheapest fitting model tier (haiku, sonnet, opus) as it starts, and shows the spawn tree with each agent's model",
   "author": { "name": "Altaks" },
   "keywords": ["mod", "subagents", "model-routing", "cost"],
   "types": "./types/index.d.ts"

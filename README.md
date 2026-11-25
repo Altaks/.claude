@@ -107,7 +107,8 @@ subagents. Its README has the details.
   for every job: `Explore` runs on haiku, `general-purpose` is classified by a small model into haiku,
   sonnet or opus, never above the parent's model. It changes only the model, at spawn time: rewriting
   the Agent call itself makes auto mode refuse it, so effort is left as the session sets it.
-  `/gatekeeper` lists its decisions; `/gatekeeper off` stops it for the session.
+  `/gatekeeper` lists its decisions; `/gatekeeper off` stops it for the session. The agent list shows
+  each subagent as a branch of the spawn tree, with the model it runs on beside its type.
 
 ```bash
 # Install at user scope (adds the altaks-claude marketplace on the way if needed)
