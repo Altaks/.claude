@@ -3,14 +3,6 @@
 This file governs work **on this config repo itself** (editing its skills, plugins, hooks, docs). It is
 not global dev guidance: that lives in the `alta-dev` skill. See `README.md` for the full layout.
 
-## What this repo is
-
-A portable `.claude` shared across projects: always-on personal skills in `skills/`, an opt-in
-`cybersec` security plugin and two opt-in mods (`model-gatekeeper`, `agent-board`) in `plugins/`, a
-marketplace in `.claude-plugin/`, the Phase 6 hook in `hooks/`. `alta-dev` is the flagship standard: the full lifecycle plus cross-cutting dimensions
-(correctness, the simplicity ladder, tests, frontend and accessibility, compliance-legal,
-sustainability, response manner), with depth in its `references/roles/` and `references/languages/`.
-
 ## Conventions (enforced)
 
 - **No em dash (U+2014) anywhere.** Use `-`, `:`, or restructure. Every file, commit message, and reply.
@@ -43,19 +35,7 @@ sustainability, response manner), with depth in its `references/roles/` and `ref
   whole third-party skill only as an **opt-in plugin** under `plugins/` (never into `skills/`), keep its
   LICENSE and attribution, and never vendor AGPL or unclear-license content into the repo.
 
-## Editing a mod
-
-A mod is a plugin whose `hooks/hooks.json` names a TypeScript hooks module (`plugins/model-gatekeeper`,
-`plugins/agent-board`). Load the `plugin-authoring` skill before changing one: it writes this build's
-API types, which are the reference.
-
-- Gate: `claude plugin validate plugins/<mod>` (manifest, module, types) and
-  `claude plugin test plugins/<mod>` (`tests/*.test.ts*`), both clean.
-- Never commit `.claude-plugin/types/`: Claude Code writes it on load and git-ignores it itself.
-- A mod never rewrites a tool call's input to change behaviour: auto mode refuses the rewritten call.
-  Act at a later event instead (`model-gatekeeper` sets the model at `agent.spawn`).
-- A hook that wraps an `Agent` or `Workflow` call stops hearing the agents it spawns: match tool calls
-  so those two are left out (see `agent-board`).
+Editing a mod (`plugins/model-gatekeeper`, `plugins/agent-board`): see `plugins/CLAUDE.md`.
 
 ## Commits
 
