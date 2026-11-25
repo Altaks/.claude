@@ -13,7 +13,13 @@ An explicit `model` on the Agent call always wins. Any error lets the spawn go a
 
 It routes at spawn time, after auto mode has reviewed the Agent call as Claude wrote it. Rewriting the call itself makes auto mode refuse it. For the same reason, effort is not changed: subagents keep the session's effort.
 
-`/gatekeeper` lists the last decisions. `/gatekeeper off` and `/gatekeeper on` switch routing for the session. The status line shows counts per tier.
+`/gatekeeper` lists the last decisions and the estimated savings. `/gatekeeper off` and `/gatekeeper on` switch routing for the session.
+
+A small cell right of the prompt counts the routed subagents per tier (`●2 ●1`, haiku green, sonnet blue,
+opus violet; unused tiers hidden) and the estimated savings (`~$0.40 éco.`): when a routed agent reports,
+its cost is priced again at its parent's model, from list prices (`hooks/savings.ts`). It is an estimate
+like Claude Code's own cost figure, and on a subscription a share of usage rather than a bill. The cell
+drops the savings, then itself, when the room is short, and shows `gk off` while routing is off.
 
 Each subagent's row in the agent list reads as a branch of the spawn tree, `├─` or `└─` for the last
 child, then its type (and name), the model it runs on, coloured by tier (haiku green, sonnet blue, opus

@@ -3,23 +3,19 @@ import type { Register } from 'claude-code'
 
 import type { Decision } from '../types'
 import { agentRowBody } from './agent-row'
-import { TIERS, decide } from './decide'
+import { cellParts } from './cell'
+import { decide } from './decide'
+import { savedUsd, usd } from './savings'
 
 // Values outlive a reload; bump a shape tag when that value's meaning changes.
 const isOn = atom({ plugin: 'model-gatekeeper', key: 'isOn' } as const, true)
 const decisions = atom(
   { plugin: 'model-gatekeeper', key: 'decisions' } as const,
   [],
-  { shape: 'decisions-2' },
+  { shape: 'decisions-3' },
 )
 
 const KEPT_DECISIONS = 100
-
-function summary(list: readonly Decision[]): string {
-  const counts = TIERS.map(tier => `${list.filter(one => one.tier === tier).length} ${tier}`)
-
-  return `gatekeeper ${counts.join(' · ')}`
-}
 
 function report(list: readonly Decision[], on: boolean): string {
   const head = on ? 'Gatekeeper on.' : 'Gatekeeper off: subagents use their default model.'
@@ -27,11 +23,14 @@ function report(list: readonly Decision[], on: boolean): string {
     .slice(-10)
     .map(
       one =>
-        `  ${one.type.padEnd(16)} ${one.description.slice(0, 32).padEnd(32)} ${one.tier.padEnd(7)} ${one.reason}`,
+        `  ${one.type.padEnd(16)} ${one.description.slice(0, 32).padEnd(32)} ${one.tier.padEnd(7)} ${one.reason}` +
+        (one.savedUsd === undefined ? '' : `  ~${usd(one.savedUsd)} saved`),
     )
   const body = rows.length === 0 ? ['  No subagent routed yet.'] : rows
+  const saved = list.reduce((sum, one) => sum + (one.savedUsd ?? 0), 0)
+  const total = list.length === 0 ? [] : [`Estimated savings this session: ~${usd(saved)} (list prices, an estimate).`]
 
-  return [head, 'Last decisions:', ...body, '/gatekeeper off | on'].join('\n')
+  return [head, 'Last decisions:', ...body, ...total, '/gatekeeper off | on'].join('\n')
 }
 
 export const register: Register = on => {
@@ -40,21 +39,34 @@ export const register: Register = on => {
       name: 'gatekeeper',
       description: 'Show model-gatekeeper decisions, or switch it off or on',
     })
-    const list = await read($, decisions)
-    if (list.length > 0) $.ui.status(summary(list))
+    $.ui.status(undefined) // clears the status entry versions before 0.4.0 set
 
     return next(e)
   })
 
   on('command.run', { command: 'gatekeeper' }, async ($, e) => {
     const arg = e.args.trim().toLowerCase()
-    if (arg === 'off' || arg === 'on') {
-      await update($, isOn, () => arg === 'on')
-      $.ui.status(arg === 'on' ? summary(await read($, decisions)) : 'gatekeeper off')
-    }
+    if (arg === 'off' || arg === 'on') await update($, isOn, () => arg === 'on')
 
     return { text: report(await read($, decisions), await read($, isOn)) }
   })
+
+  // The counter beside the prompt: subagents per tier and the estimated savings.
+  on('ui.render', { component: 'BesidePrompt' }, async ($, e, next) => {
+    const parts = cellParts(await read($, decisions), await read($, isOn), e.props.maxColumns)
+    if (parts === undefined) return next(e)
+    const { Box, Text } = $.ui.resolve(e)
+
+    return (
+      <Box>
+        {parts.map((part, index) => (
+          <Text key={String(index)} {...(part.color === undefined ? {} : { color: part.color })} dimColor={part.dim === true}>
+            {part.text}
+          </Text>
+        ))}
+      </Box>
+    )
+  }).catch(($, e, next) => next(e))
 
   // Each subagent row: its branch in the spawn tree, type and model. Claude Code keeps the nesting.
   // A row the person's settings already draw, or a hidden one, is left alone; any error falls back.
@@ -64,6 +76,24 @@ export const register: Register = on => {
 
     return next({ ...e, props: { ...e.props, body: agentRowBody(e.props, rows) } })
   }).catch(($, e, next) => next(e))
+
+  // When a routed agent reports, price what it cost against its parent's model. Observe only.
+  on('agent.report', async ($, e, next) => {
+    const result = await next(e)
+    try {
+      const list = await read($, decisions)
+      const routed = list.find(one => one.agentId === e.agentId)
+      if (routed !== undefined) {
+        const agent = (await $.agent.list()).find(one => one.id === e.agentId)
+        const saved = savedUsd(agent?.cost?.usd ?? 0, agent?.model, routed.parentModel)
+        await update($, decisions, all => all.map(one => (one.agentId === e.agentId ? { ...one, savedUsd: saved } : one)))
+      }
+    } catch {
+      // A missing price or agent leaves the decision unpriced.
+    }
+
+    return result
+  })
 
   // Routes at spawn time, after auto mode reviewed the Agent call as written: only the model changes.
   // Fail open: any error lets the spawn go on as asked.
@@ -79,9 +109,10 @@ export const register: Register = on => {
         description: e.description,
         tier: verdict.tier,
         reason: verdict.reason,
+        ...(spawned.agentId === undefined ? {} : { agentId: spawned.agentId }),
+        ...(e.parentModel === undefined ? {} : { parentModel: e.parentModel }),
       }
       await update($, decisions, list => [...list, decision].slice(-KEPT_DECISIONS))
-      $.ui.status(summary(await read($, decisions)))
     }
 
     return spawned
