@@ -1,62 +1,36 @@
 #!/bin/bash
-# Source: https://github.com/daniel3303/ClaudeCodeStatusLine
-# Single line: Model | tokens | %used | %remain | think | 5h bar @reset | 7d bar @reset | extra
+# Claude Code status line, grouped by meaning (one line):
+#   Opus 5.5 (high)  │  .claude ⌥ main ↑2 +3−1  │  ctx 8% · 2h05 · +120−30  │  5h 12% 00h40 · 7j 41% lun 01h53  │  v2.1.332
+#   model (effort)      code                       session                    quotas                             version
+# The model-gatekeeper mod inserts its counter into the first group (`· ●1 ●2 ~$0.27`).
+# Derived from https://github.com/daniel3303/ClaudeCodeStatusLine (MIT, see LICENSE and ORIGIN.md).
 
-set -f  # disable globbing
-VERSION="1.4.5"
+set -f  # no globbing
 
 input=$(cat)
-
 if [ -z "$input" ]; then
     printf "Claude"
     exit 0
 fi
 
-# ANSI colors - Catppuccin Macchiato palette (https://github.com/catppuccin/catppuccin)
-blue='\033[38;2;138;173;244m'    # Blue   #8aadf4
-orange='\033[38;2;245;169;127m'  # Peach  #f5a97f
-green='\033[38;2;166;218;149m'   # Green  #a6da95
-cyan='\033[38;2;139;213;202m'    # Teal   #8bd5ca
-red='\033[38;2;237;135;150m'     # Red    #ed8796
-yellow='\033[38;2;238;212;159m'  # Yellow #eed49f
-purple='\033[38;2;198;160;246m'  # Mauve  #c6a0f6
-white='\033[38;2;202;211;245m'   # Text     #cad3f5
-lavender='\033[38;2;183;189;248m' # Lavender #b7bdf8 (session duration)
-sapphire='\033[38;2;125;196;228m' # Sapphire #7dc4e4 (session cost)
-dim='\033[38;2;128;135;162m'     # Overlay1 #8087a2 (muted separators)
+# ===== Palette: Catppuccin Macchiato =====
+blue='\033[38;2;138;173;244m'
+green='\033[38;2;166;218;149m'
+yellow='\033[38;2;238;212;159m'
+orange='\033[38;2;245;169;127m'
+red='\033[38;2;237;135;150m'
+purple='\033[38;2;198;160;246m'
+cyan='\033[38;2;139;213;202m'
+lavender='\033[38;2;183;189;248m'
+dim='\033[38;2;128;135;162m'
+bar='\033[38;2;91;96;120m'
+bold='\033[1m'
 reset='\033[0m'
 
-# Format token counts (e.g., 50k / 200k)
-format_tokens() {
-    local num=$1
-    if [ "$num" -ge 1000000 ]; then
-        awk "BEGIN {v=sprintf(\"%.1f\",$num/1000000)+0; if(v==int(v)) printf \"%dm\",v; else printf \"%.1fm\",v}"
-    elif [ "$num" -ge 1000 ]; then
-        awk "BEGIN {printf \"%.0fk\", $num / 1000}"
-    else
-        printf "%d" "$num"
-    fi
-}
+group_sep="  ${bar}│${reset}  "
+item_sep=" ${dim}·${reset} "
 
-# Format number with commas (e.g., 134,938)
-format_commas() {
-    printf "%'d" "$1"
-}
-
-# Format a duration given in milliseconds (e.g. 1h23m, 42m, 30s)
-format_duration() {
-    local s=$(( $1 / 1000 ))
-    if [ "$s" -ge 3600 ]; then
-        printf "%dh%02dm" $(( s / 3600 )) $(( (s % 3600) / 60 ))
-    elif [ "$s" -ge 60 ]; then
-        printf "%dm" $(( s / 60 ))
-    else
-        printf "%ds" "$s"
-    fi
-}
-
-# Return color escape based on usage percentage
-# Usage: usage_color <pct>
+# ===== Helpers =====
 usage_color() {
     local pct=$1
     if [ "$pct" -ge 90 ]; then echo "$red"
@@ -66,10 +40,15 @@ usage_color() {
     fi
 }
 
-# Resolve config directory: CLAUDE_CONFIG_DIR (set by alias) or default ~/.claude
-claude_config_dir="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+format_duration() {
+    local s=$(( $1 / 1000 ))
+    if [ "$s" -ge 3600 ]; then printf "%dh%02d" $(( s / 3600 )) $(( (s % 3600) / 60 ))
+    elif [ "$s" -ge 60 ]; then printf "%dm" $(( s / 60 ))
+    else printf "%ds" "$s"
+    fi
+}
 
-# Return 0 (true) if $1 > $2 using semantic versioning
+# 0 (true) when $1 > $2 as semantic versions
 version_gt() {
     local a="${1#v}" b="${2#v}"
     local IFS='.'
@@ -84,80 +63,55 @@ version_gt() {
     [ "$a3" -gt "$b3" ] 2>/dev/null && return 0
     return 1
 }
-# ===== Extract data from JSON =====
-model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"')
-model_name=$(echo "$model_name" | sed 's/ *(\([0-9.]*[kKmM]*\) context)/ \1/')  # "(1M context)" → "1M"
 
-# Context window
-size=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
-[ "$size" -eq 0 ] 2>/dev/null && size=200000
+file_age() {
+    local mtime
+    mtime=$(stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null)
+    echo $(( $(date +%s) - ${mtime:-0} ))
+}
 
-# Token usage
-input_tokens=$(echo "$input" | jq -r '.context_window.current_usage.input_tokens // 0')
-cache_create=$(echo "$input" | jq -r '.context_window.current_usage.cache_creation_input_tokens // 0')
-cache_read=$(echo "$input" | jq -r '.context_window.current_usage.cache_read_input_tokens // 0')
-current=$(( input_tokens + cache_create + cache_read ))
+# "+3−1" glued, green then red; empty when both are zero
+diff_pair() {
+    local add=${1:-0} del=${2:-0}
+    [ "$add" -gt 0 ] 2>/dev/null || [ "$del" -gt 0 ] 2>/dev/null || return 0
+    printf '%s' "${green}+${add}${reset}${red}−${del}${reset}"
+}
 
-used_tokens=$(format_tokens $current)
-total_tokens=$(format_tokens $size)
+# Reset times: "00h40" for the 5h window, "lun 01h53" for the week
+fmt_time() {
+    date -d "@$1" +"%Hh%M" 2>/dev/null || date -j -r "$1" +"%Hh%M" 2>/dev/null
+}
+fmt_day_time() {
+    local day
+    day=$(LC_TIME=fr_FR.UTF-8 date -d "@$1" +"%a" 2>/dev/null || LC_TIME=fr_FR.UTF-8 date -j -r "$1" +"%a" 2>/dev/null)
+    printf '%s %s' "${day%.}" "$(fmt_time "$1")"
+}
 
-if [ "$size" -gt 0 ]; then
-    pct_used=$(( current * 100 / size ))
-else
-    pct_used=0
-fi
-pct_remain=$(( 100 - pct_used ))
+iso_to_epoch() {
+    local iso_str="$1" epoch stripped
+    epoch=$(date -d "${iso_str}" +%s 2>/dev/null)
+    if [ -n "$epoch" ]; then echo "$epoch"; return 0; fi
+    stripped="${iso_str%%.*}"; stripped="${stripped%%Z}"; stripped="${stripped%%+*}"
+    stripped="${stripped%%-[0-9][0-9]:[0-9][0-9]}"
+    if [[ "$iso_str" == *"Z"* ]] || [[ "$iso_str" == *"+00:00"* ]] || [[ "$iso_str" == *"-00:00"* ]]; then
+        epoch=$(env TZ=UTC date -j -f "%Y-%m-%dT%H:%M:%S" "$stripped" +%s 2>/dev/null)
+    else
+        epoch=$(date -j -f "%Y-%m-%dT%H:%M:%S" "$stripped" +%s 2>/dev/null)
+    fi
+    [ -n "$epoch" ] && echo "$epoch"
+}
 
-used_comma=$(format_commas $current)
-remain_comma=$(format_commas $(( size - current )))
-
-# ===== Session metrics (cost / duration / lines) from Claude Code's cost object =====
-has_cost=$(echo "$input" | jq -r 'has("cost") and (.cost != null)')
-session_cost=$(echo "$input" | jq -r '.cost.total_cost_usd // 0' | LC_NUMERIC=C awk '{printf "%.2f", $1}')
-session_duration=$(format_duration "$(echo "$input" | jq -r '.cost.total_duration_ms // 0')")
-lines_added=$(echo "$input" | jq -r '.cost.total_lines_added // 0')
-lines_removed=$(echo "$input" | jq -r '.cost.total_lines_removed // 0')
-
+claude_config_dir="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 settings_path="$claude_config_dir/settings.json"
-effort_level=""
-stdin_effort=$(echo "$input" | jq -r '.effort.level // empty' 2>/dev/null)
-if [ -n "$stdin_effort" ]; then
-    effort_level="$stdin_effort"
-elif [ -n "$CLAUDE_CODE_EFFORT_LEVEL" ]; then
-    effort_level="$CLAUDE_CODE_EFFORT_LEVEL"
-elif [ -f "$settings_path" ]; then
-    effort_val=$(jq -r '.effortLevel // empty' "$settings_path" 2>/dev/null)
-    [ -n "$effort_val" ] && effort_level="$effort_val"
-fi
+mkdir -p /tmp/claude 2>/dev/null
+
+# ===== Group 1: model (effort) =====
+model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"' | sed 's/ *([^)]*context)//')
+
+effort_level=$(echo "$input" | jq -r '.effort.level // empty' 2>/dev/null)
+[ -z "$effort_level" ] && effort_level="$CLAUDE_CODE_EFFORT_LEVEL"
+[ -z "$effort_level" ] && [ -f "$settings_path" ] && effort_level=$(jq -r '.effortLevel // empty' "$settings_path" 2>/dev/null)
 [ -z "$effort_level" ] && effort_level="medium"
-
-# ===== Claude CLI version (cached, 1h TTL) =====
-cli_version_cache="/tmp/claude/statusline-cli-version"
-cli_version=""
-cli_version_max_age=3600
-
-if [ -f "$cli_version_cache" ]; then
-    cv_mtime=$(stat -c %Y "$cli_version_cache" 2>/dev/null || stat -f %m "$cli_version_cache" 2>/dev/null)
-    cv_now=$(date +%s)
-    cv_age=$(( cv_now - cv_mtime ))
-    if [ "$cv_age" -lt "$cli_version_max_age" ]; then
-        cli_version=$(cat "$cli_version_cache" 2>/dev/null)
-    fi
-fi
-
-if [ -z "$cli_version" ]; then
-    cli_version=$(claude --version 2>/dev/null | awk '{print $1}')
-    if [ -n "$cli_version" ]; then
-        mkdir -p /tmp/claude 2>/dev/null
-        echo "$cli_version" > "$cli_version_cache"
-    fi
-fi
-
-# ===== Build single-line output =====
-out=""
-out+="${blue}${model_name}${reset}"
-
-# Effort in parentheses right after the model name (v1.4.5 layout)
 case "$effort_level" in
     low)    effort_color="$dim" ;;
     medium) effort_color="$orange"; effort_level="med" ;;
@@ -165,162 +119,94 @@ case "$effort_level" in
     max)    effort_color="$red" ;;
     *)      effort_color="$green" ;;
 esac
-out+=" ${dim}(${reset}${effort_color}${effort_level}${reset}${dim})${reset}"
+model_group="${bold}${blue}${model_name}${reset} ${dim}(${reset}${effort_color}${effort_level}${reset}${dim})${reset}"
 
-# Current working directory
+# ===== Group 2: code (dir, branch, to push / pull, uncommitted diff) =====
+code_group=""
 cwd=$(echo "$input" | jq -r '.cwd // empty')
 if [ -n "$cwd" ]; then
-    display_dir="${cwd##*/}"
-    git_branch=$(git -C "${cwd}" rev-parse --abbrev-ref HEAD 2>/dev/null)
-    out+=" ${dim}|${reset} "
-    out+="${cyan}${display_dir}${reset}"
+    code_group="${cyan}${cwd##*/}${reset}"
+    git_branch=$(git -C "$cwd" rev-parse --abbrev-ref HEAD 2>/dev/null)
     if [ -n "$git_branch" ]; then
-        out+="${dim} ⌥ ${reset}${green}${git_branch}${reset}"
-        # Ahead/behind vs upstream (↑ to push, ↓ to pull); silent when no upstream is set
-        ab_counts=$(git -C "${cwd}" rev-list --left-right --count '@{upstream}...HEAD' 2>/dev/null)
+        code_group+="${dim} ⌥ ${reset}${green}${git_branch}${reset}"
+        ab_counts=$(git -C "$cwd" rev-list --left-right --count '@{upstream}...HEAD' 2>/dev/null)
         if [ -n "$ab_counts" ]; then
-            ab_behind=$(echo "$ab_counts" | awk '{print $1}')
-            ab_ahead=$(echo "$ab_counts" | awk '{print $2}')
-            ab_seg=""
-            [ "${ab_ahead:-0}" -gt 0 ] 2>/dev/null && ab_seg+="${green}↑${ab_ahead}${reset}"
-            [ "${ab_behind:-0}" -gt 0 ] 2>/dev/null && ab_seg+="${red}↓${ab_behind}${reset}"
-            [ -n "$ab_seg" ] && out+=" ${ab_seg}"
+            read -r ab_behind ab_ahead <<< "$ab_counts"
+            [ "${ab_ahead:-0}" -gt 0 ] 2>/dev/null && code_group+=" ${green}↑${ab_ahead}${reset}"
+            [ "${ab_behind:-0}" -gt 0 ] 2>/dev/null && code_group+=" ${red}↓${ab_behind}${reset}"
         fi
-        git_stat=$(git -C "${cwd}" diff --numstat 2>/dev/null | awk '{a+=$1; d+=$2} END {if (a+d>0) printf "+%d -%d", a, d}')
-        [ -n "$git_stat" ] && out+=" ${dim}(${reset}${green}${git_stat%% *}${reset} ${red}${git_stat##* }${reset}${dim})${reset}"
+        # Staged and unstaged together; a repository with no commit yet has no HEAD to compare.
+        git_stat=$(git -C "$cwd" diff --numstat HEAD 2>/dev/null | awk '{a+=$1; d+=$2} END {printf "%d %d", a, d}')
+        read -r git_add git_del <<< "${git_stat:-0 0}"
+        pair=$(diff_pair "$git_add" "$git_del")
+        [ -n "$pair" ] && code_group+=" ${pair}"
     fi
 fi
 
-out+=" ${dim}|${reset} "
-out+="${orange}${used_tokens}/${total_tokens}${reset} ${dim}(${reset}${green}${pct_used}%${reset}${dim})${reset}"
+# ===== Group 3: session (context, duration, lines changed) =====
+size=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
+[ "$size" -gt 0 ] 2>/dev/null || size=200000
+current=$(echo "$input" | jq -r '(.context_window.current_usage // {}) | (.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0)')
+pct_used=$(( current * 100 / size ))
+session_group="${dim}ctx${reset} $(usage_color "$pct_used")${pct_used}%${reset}"
 
-# Session cost / duration / lines changed (distinct from the git working-tree +/- above)
-if [ "$has_cost" = "true" ]; then
-    out+=" ${dim}|${reset} "
-    out+="${sapphire}\$${session_cost}${reset} ${lavender}${session_duration}${reset}"
-    if [ "${lines_added:-0}" -gt 0 ] 2>/dev/null || [ "${lines_removed:-0}" -gt 0 ] 2>/dev/null; then
-        out+=" ${green}+${lines_added}${reset} ${red}-${lines_removed}${reset}"
-    fi
+if [ "$(echo "$input" | jq -r 'has("cost") and (.cost != null)')" = "true" ]; then
+    duration_ms=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
+    [ "$duration_ms" -gt 0 ] 2>/dev/null && session_group+="${item_sep}${lavender}$(format_duration "$duration_ms")${reset}"
+    pair=$(diff_pair "$(echo "$input" | jq -r '.cost.total_lines_added // 0')" "$(echo "$input" | jq -r '.cost.total_lines_removed // 0')")
+    [ -n "$pair" ] && session_group+="${item_sep}${pair}"
 fi
 
-
-# ===== Cross-platform OAuth token resolution (from statusline.sh) =====
-# Tries credential sources in order: env var → macOS Keychain → Linux creds file → GNOME Keyring
+# ===== Group 4: quotas (5h, 7 days, extra credit) =====
+# OAuth token, only for the usage endpoint (extra credit, or when Claude Code sends no rate limits).
 get_oauth_token() {
-    local token=""
-
-    # 1. Explicit env var override
-    if [ -n "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
-        echo "$CLAUDE_CODE_OAUTH_TOKEN"
-        return 0
-    fi
-
-    # 2. macOS Keychain (Claude Code appends a SHA256 hash of CLAUDE_CONFIG_DIR to the service name)
+    local token="" blob
+    if [ -n "$CLAUDE_CODE_OAUTH_TOKEN" ]; then echo "$CLAUDE_CODE_OAUTH_TOKEN"; return 0; fi
     if command -v security >/dev/null 2>&1; then
         local keychain_svc="Claude Code-credentials"
         if [ -n "$CLAUDE_CONFIG_DIR" ]; then
-            local dir_hash
-            dir_hash=$(echo -n "$CLAUDE_CONFIG_DIR" | shasum -a 256 | cut -c1-8)
-            keychain_svc="Claude Code-credentials-${dir_hash}"
+            keychain_svc="Claude Code-credentials-$(echo -n "$CLAUDE_CONFIG_DIR" | shasum -a 256 | cut -c1-8)"
         fi
-        local blob
         blob=$(security find-generic-password -s "$keychain_svc" -w 2>/dev/null)
-        if [ -n "$blob" ]; then
-            token=$(echo "$blob" | jq -r '.claudeAiOauth.accessToken // empty' 2>/dev/null)
-            if [ -n "$token" ] && [ "$token" != "null" ]; then
-                echo "$token"
-                return 0
-            fi
-        fi
+        token=$(echo "$blob" | jq -r '.claudeAiOauth.accessToken // empty' 2>/dev/null)
+        if [ -n "$token" ]; then echo "$token"; return 0; fi
     fi
-
-    # 3. Linux credentials file
-    local creds_file="${claude_config_dir}/.credentials.json"
-    if [ -f "$creds_file" ]; then
-        token=$(jq -r '.claudeAiOauth.accessToken // empty' "$creds_file" 2>/dev/null)
-        if [ -n "$token" ] && [ "$token" != "null" ]; then
-            echo "$token"
-            return 0
-        fi
+    if [ -f "${claude_config_dir}/.credentials.json" ]; then
+        token=$(jq -r '.claudeAiOauth.accessToken // empty' "${claude_config_dir}/.credentials.json" 2>/dev/null)
+        if [ -n "$token" ]; then echo "$token"; return 0; fi
     fi
-
-    # 4. GNOME Keyring via secret-tool
     if command -v secret-tool >/dev/null 2>&1; then
-        local blob
         blob=$(timeout 2 secret-tool lookup service "Claude Code-credentials" 2>/dev/null)
-        if [ -n "$blob" ]; then
-            token=$(echo "$blob" | jq -r '.claudeAiOauth.accessToken // empty' 2>/dev/null)
-            if [ -n "$token" ] && [ "$token" != "null" ]; then
-                echo "$token"
-                return 0
-            fi
-        fi
+        token=$(echo "$blob" | jq -r '.claudeAiOauth.accessToken // empty' 2>/dev/null)
+        if [ -n "$token" ]; then echo "$token"; return 0; fi
     fi
-
     echo ""
 }
 
-# ===== LINE 2 & 3: Usage limits with progress bars =====
-# First, try to use rate_limits data provided directly by Claude Code in the JSON input.
-# This is the most reliable source - no OAuth token or API call required.
-builtin_five_hour_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
-builtin_five_hour_reset=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
-builtin_seven_day_pct=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
-builtin_seven_day_reset=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // empty')
+five_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+five_reset=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
+seven_pct=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
+seven_reset=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // empty')
 
+# All zero with no reset time usually means Claude's side failed: fall back to the cache then.
 use_builtin=false
-if [ -n "$builtin_five_hour_pct" ] || [ -n "$builtin_seven_day_pct" ]; then
-    use_builtin=true
-fi
+for v in "$five_pct" "$seven_pct"; do
+    [ -n "$v" ] && [ "$(printf '%.0f' "$v" 2>/dev/null)" != "0" ] && use_builtin=true
+done
+for v in "$five_reset" "$seven_reset"; do
+    [ -n "$v" ] && [ "$v" != "null" ] && [ "$v" != "0" ] && use_builtin=true
+done
 
-# Cache setup - shared across all Claude Code instances to avoid rate limits
-claude_config_dir_hash=$(echo -n "$claude_config_dir" | shasum -a 256 2>/dev/null || echo -n "$claude_config_dir" | sha256sum 2>/dev/null)
-claude_config_dir_hash=$(echo "$claude_config_dir_hash" | cut -c1-8)
-cache_file="/tmp/claude/statusline-usage-cache-${claude_config_dir_hash}.json"
-cache_max_age=60  # seconds between API calls
-mkdir -p /tmp/claude
-
-needs_refresh=true
+config_hash=$(echo -n "$claude_config_dir" | { shasum -a 256 2>/dev/null || sha256sum; } | cut -c1-8)
+cache_file="/tmp/claude/statusline-usage-cache-${config_hash}.json"
 usage_data=""
+[ -s "$cache_file" ] && usage_data=$(cat "$cache_file" 2>/dev/null)
 
-# Always load cache - used as primary source for API path, and as fallback when builtin reports zero
-if [ -f "$cache_file" ] && [ -s "$cache_file" ]; then
-    cache_mtime=$(stat -c %Y "$cache_file" 2>/dev/null || stat -f %m "$cache_file" 2>/dev/null)
-    now=$(date +%s)
-    cache_age=$(( now - cache_mtime ))
-    if [ "$cache_age" -lt "$cache_max_age" ]; then
-        needs_refresh=false
-    fi
-    usage_data=$(cat "$cache_file" 2>/dev/null)
-fi
-
-# When builtin values are all zero AND reset timestamps are missing, it likely indicates
-# an API failure on Claude's side - fall through to cached data instead of displaying
-# misleading 0%. Genuine zero responses (after a billing reset) still include valid
-# resets_at timestamps, so we trust those.
-effective_builtin=false
-if $use_builtin; then
-    # Trust builtin if any percentage is non-zero
-    if { [ -n "$builtin_five_hour_pct" ] && [ "$(printf '%.0f' "$builtin_five_hour_pct" 2>/dev/null)" != "0" ]; } || \
-       { [ -n "$builtin_seven_day_pct" ] && [ "$(printf '%.0f' "$builtin_seven_day_pct" 2>/dev/null)" != "0" ]; }; then
-        effective_builtin=true
-    fi
-    # Also trust if reset timestamps are present - genuine zero responses include valid reset times
-    if ! $effective_builtin; then
-        if { [ -n "$builtin_five_hour_reset" ] && [ "$builtin_five_hour_reset" != "null" ] && [ "$builtin_five_hour_reset" != "0" ]; } || \
-           { [ -n "$builtin_seven_day_reset" ] && [ "$builtin_seven_day_reset" != "null" ] && [ "$builtin_seven_day_reset" != "0" ]; }; then
-            effective_builtin=true
-        fi
-    fi
-fi
-
-# Refresh API cache when stale - runs regardless of builtin rate_limits because
-# extra_usage is only exposed through the OAuth usage endpoint (not stdin JSON).
-# Throttled to cache_max_age and stampede-locked via touch for shared panes.
-if $needs_refresh; then
-    touch "$cache_file"  # stampede lock: prevent parallel panes from fetching simultaneously
+# Refresh at most once a minute, shared by every pane; extra credit is only on this endpoint.
+if [ ! -s "$cache_file" ] || [ "$(file_age "$cache_file")" -ge 60 ]; then
+    touch "$cache_file"
     token=$(get_oauth_token)
-    if [ -n "$token" ] && [ "$token" != "null" ]; then
+    if [ -n "$token" ]; then
         response=$(curl -s --max-time 10 \
             -H "Accept: application/json" \
             -H "Content-Type: application/json" \
@@ -328,267 +214,81 @@ if $needs_refresh; then
             -H "anthropic-beta: oauth-2025-04-20" \
             -H "User-Agent: claude-code/2.1.34" \
             "https://api.anthropic.com/api/oauth/usage" 2>/dev/null)
-        # Only cache valid usage responses (not error/rate-limit JSON)
-        if [ -n "$response" ] && echo "$response" | jq -e '.five_hour' >/dev/null 2>&1; then
+        if echo "$response" | jq -e '.five_hour' >/dev/null 2>&1; then
             usage_data="$response"
             echo "$response" > "$cache_file"
         fi
     fi
-    # Remove the stampede sentinel if the fetch failed to produce valid JSON:
-    # otherwise an empty cache file would suppress retries for a full cache_max_age window.
     [ -f "$cache_file" ] && [ ! -s "$cache_file" ] && rm -f "$cache_file"
 fi
 
-# Cross-platform ISO to epoch conversion
-# Converts ISO 8601 timestamp (e.g. "2025-06-15T12:30:00Z" or "2025-06-15T12:30:00.123+00:00") to epoch seconds.
-# Properly handles UTC timestamps and converts to local time.
-iso_to_epoch() {
-    local iso_str="$1"
-
-    # Try GNU date first (Linux) - handles ISO 8601 format automatically
-    local epoch
-    epoch=$(date -d "${iso_str}" +%s 2>/dev/null)
-    if [ -n "$epoch" ]; then
-        echo "$epoch"
-        return 0
-    fi
-
-    # BSD date (macOS) - handle various ISO 8601 formats
-    local stripped="${iso_str%%.*}"          # Remove fractional seconds (.123456)
-    stripped="${stripped%%Z}"                 # Remove trailing Z
-    stripped="${stripped%%+*}"               # Remove timezone offset (+00:00)
-    stripped="${stripped%%-[0-9][0-9]:[0-9][0-9]}"  # Remove negative timezone offset
-
-    # Check if timestamp is UTC (has Z or +00:00 or -00:00)
-    if [[ "$iso_str" == *"Z"* ]] || [[ "$iso_str" == *"+00:00"* ]] || [[ "$iso_str" == *"-00:00"* ]]; then
-        # For UTC timestamps, parse with timezone set to UTC
-        epoch=$(env TZ=UTC date -j -f "%Y-%m-%dT%H:%M:%S" "$stripped" +%s 2>/dev/null)
-    else
-        epoch=$(date -j -f "%Y-%m-%dT%H:%M:%S" "$stripped" +%s 2>/dev/null)
-    fi
-
-    if [ -n "$epoch" ]; then
-        echo "$epoch"
-        return 0
-    fi
-
-    return 1
-}
-
-# Format ISO reset time to compact local time
-# Usage: format_reset_time <iso_string> <style: time|datetime|date>
-format_reset_time() {
-    local iso_str="$1"
-    local style="$2"
-    { [ -z "$iso_str" ] || [ "$iso_str" = "null" ]; } && return
-
-    # Parse ISO datetime and convert to local time (cross-platform)
-    local epoch
-    epoch=$(iso_to_epoch "$iso_str")
-    [ -z "$epoch" ] && return
-
-    # Format based on style
-    # Try GNU date first (Linux), then BSD date (macOS)
-    # Previous implementation piped BSD date through sed/tr, which always returned
-    # exit code 0 from the last pipe stage, preventing the GNU date fallback from
-    # ever executing on Linux.
-    # French locale + French conventions: 24h time as "21h00", day-before-month order.
-    local formatted=""
-    case "$style" in
-        time)
-            formatted=$(date -d "@$epoch" +"%Hh%M" 2>/dev/null) || \
-            formatted=$(date -j -r "$epoch" +"%Hh%M" 2>/dev/null)
-            ;;
-        datetime)
-            formatted=$(LC_TIME=fr_FR.UTF-8 date -d "@$epoch" +"%a %-d %b, %Hh%M" 2>/dev/null) || \
-            formatted=$(LC_TIME=fr_FR.UTF-8 date -j -r "$epoch" +"%a %-d %b, %Hh%M" 2>/dev/null)
-            ;;
-        *)
-            formatted=$(LC_TIME=fr_FR.UTF-8 date -d "@$epoch" +"%-d %b" 2>/dev/null) || \
-            formatted=$(LC_TIME=fr_FR.UTF-8 date -j -r "$epoch" +"%-d %b" 2>/dev/null)
-            ;;
-    esac
-    [ -n "$formatted" ] && echo "$formatted"
-}
-
-sep=" ${dim}|${reset} "
-
-# Render extra_usage segment from API usage data (not available via stdin rate_limits).
-# Appends to the global $out. No-op when data is missing or is_enabled is false.
-render_extra_usage() {
-    local data="$1"
-    [ -z "$data" ] && return
-    local enabled
-    enabled=$(echo "$data" | jq -r '.extra_usage.is_enabled // false' 2>/dev/null)
-    [ "$enabled" != "true" ] && return
-
-    local pct used limit
-    pct=$(echo "$data" | jq -r '.extra_usage.utilization // 0' | awk '{printf "%.0f", $1}')
-    used=$(echo "$data" | jq -r '.extra_usage.used_credits // 0' | LC_NUMERIC=C awk '{printf "%.2f", $1/100}')
-    limit=$(echo "$data" | jq -r '.extra_usage.monthly_limit // 0' | LC_NUMERIC=C awk '{printf "%.2f", $1/100}')
-
-    if [ -n "$used" ] && [ -n "$limit" ] && [[ "$used" != *'$'* ]] && [[ "$limit" != *'$'* ]]; then
-        local color
-        color=$(usage_color "$pct")
-        out+="${sep}${white}extra${reset} ${color}\$${used}/\$${limit}${reset}"
-    else
-        out+="${sep}${white}extra${reset} ${green}enabled${reset}"
-    fi
-}
-
-if $effective_builtin; then
-    # ---- Use rate_limits data provided directly by Claude Code in JSON input ----
-    # resets_at values are Unix epoch integers in this source
-    if [ -n "$builtin_five_hour_pct" ]; then
-        five_hour_pct=$(printf "%.0f" "$builtin_five_hour_pct")
-        five_hour_color=$(usage_color "$five_hour_pct")
-        out+="${sep}${white}5h${reset} ${five_hour_color}${five_hour_pct}%${reset}"
-        if [ -n "$builtin_five_hour_reset" ] && [ "$builtin_five_hour_reset" != "null" ]; then
-            five_hour_reset=$(date -j -r "$builtin_five_hour_reset" +"%Hh%M" 2>/dev/null || date -d "@$builtin_five_hour_reset" +"%Hh%M" 2>/dev/null)
-            [ -n "$five_hour_reset" ] && out+=" ${dim}@${five_hour_reset}${reset}"
-        fi
-    fi
-
-    if [ -n "$builtin_seven_day_pct" ]; then
-        seven_day_pct=$(printf "%.0f" "$builtin_seven_day_pct")
-        seven_day_color=$(usage_color "$seven_day_pct")
-        out+="${sep}${white}7d${reset} ${seven_day_color}${seven_day_pct}%${reset}"
-        if [ -n "$builtin_seven_day_reset" ] && [ "$builtin_seven_day_reset" != "null" ]; then
-            seven_day_reset=$(LC_TIME=fr_FR.UTF-8 date -j -r "$builtin_seven_day_reset" +"%a %-d %b, %Hh%M" 2>/dev/null || LC_TIME=fr_FR.UTF-8 date -d "@$builtin_seven_day_reset" +"%a %-d %b, %Hh%M" 2>/dev/null)
-            [ -n "$seven_day_reset" ] && out+=" ${dim}@${seven_day_reset}${reset}"
-        fi
-    fi
-
-    # Render extra_usage from API cache (stdin rate_limits doesn't expose it)
-    render_extra_usage "$usage_data"
-
-    # Cache builtin values so they're available as fallback when API is unavailable.
-    # Convert epoch resets_at to ISO 8601 for compatibility with the API-format cache parser.
-    # Preserve extra_usage from prior API response so we don't clobber it.
-    _fh_reset_json="null"
-    if [ -n "$builtin_five_hour_reset" ] && [ "$builtin_five_hour_reset" != "null" ] && [ "$builtin_five_hour_reset" != "0" ]; then
-        _fh_iso=$(date -u -r "$builtin_five_hour_reset" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || \
-                  date -u -d "@$builtin_five_hour_reset" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null)
-        [ -n "$_fh_iso" ] && _fh_reset_json="\"$_fh_iso\""
-    fi
-    _sd_reset_json="null"
-    if [ -n "$builtin_seven_day_reset" ] && [ "$builtin_seven_day_reset" != "null" ] && [ "$builtin_seven_day_reset" != "0" ]; then
-        _sd_iso=$(date -u -r "$builtin_seven_day_reset" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || \
-                  date -u -d "@$builtin_seven_day_reset" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null)
-        [ -n "$_sd_iso" ] && _sd_reset_json="\"$_sd_iso\""
-    fi
-    _extra_json=$(echo "$usage_data" | jq -c '.extra_usage // null' 2>/dev/null)
-    [ -z "$_extra_json" ] && _extra_json="null"
-    printf '{"five_hour":{"utilization":%s,"resets_at":%s},"seven_day":{"utilization":%s,"resets_at":%s},"extra_usage":%s}' \
-        "${builtin_five_hour_pct:-0}" "$_fh_reset_json" \
-        "${builtin_seven_day_pct:-0}" "$_sd_reset_json" \
-        "$_extra_json" > "$cache_file" 2>/dev/null
-elif [ -n "$usage_data" ] && echo "$usage_data" | jq -e '.five_hour' >/dev/null 2>&1; then
-    # ---- Fall back: API-fetched usage data ----
-    # ---- 5-hour (current) ----
-    five_hour_pct=$(echo "$usage_data" | jq -r '.five_hour.utilization // 0' | awk '{printf "%.0f", $1}')
-    five_hour_reset_iso=$(echo "$usage_data" | jq -r '.five_hour.resets_at // empty')
-    five_hour_reset=$(format_reset_time "$five_hour_reset_iso" "time")
-    five_hour_color=$(usage_color "$five_hour_pct")
-
-    out+="${sep}${white}5h${reset} ${five_hour_color}${five_hour_pct}%${reset}"
-    [ -n "$five_hour_reset" ] && out+=" ${dim}@${five_hour_reset}${reset}"
-
-    # ---- 7-day (weekly) ----
-    seven_day_pct=$(echo "$usage_data" | jq -r '.seven_day.utilization // 0' | awk '{printf "%.0f", $1}')
-    seven_day_reset_iso=$(echo "$usage_data" | jq -r '.seven_day.resets_at // empty')
-    seven_day_reset=$(format_reset_time "$seven_day_reset_iso" "datetime")
-    seven_day_color=$(usage_color "$seven_day_pct")
-
-    out+="${sep}${white}7d${reset} ${seven_day_color}${seven_day_pct}%${reset}"
-    [ -n "$seven_day_reset" ] && out+=" ${dim}@${seven_day_reset}${reset}"
-
-    render_extra_usage "$usage_data"
-else
-    # No valid usage data - show placeholders
-    out+="${sep}${white}5h${reset} ${dim}-${reset}"
-    out+="${sep}${white}7d${reset} ${dim}-${reset}"
+if ! $use_builtin && echo "$usage_data" | jq -e '.five_hour' >/dev/null 2>&1; then
+    five_pct=$(echo "$usage_data" | jq -r '.five_hour.utilization // empty')
+    seven_pct=$(echo "$usage_data" | jq -r '.seven_day.utilization // empty')
+    five_reset=$(iso_to_epoch "$(echo "$usage_data" | jq -r '.five_hour.resets_at // empty')")
+    seven_reset=$(iso_to_epoch "$(echo "$usage_data" | jq -r '.seven_day.resets_at // empty')")
 fi
 
-# ===== Update check (cached, 24h TTL) =====
-# Set STATUSLINE_CHECK_UPDATES=false to disable the update check (no network calls).
-update_line=""
-if [ "${STATUSLINE_CHECK_UPDATES:-true}" != "false" ]; then
-    version_cache_file="/tmp/claude/statusline-version-cache.json"
-    version_cache_max_age=86400  # 24 hours
-
-    version_needs_refresh=true
-    version_data=""
-
-    if [ -f "$version_cache_file" ]; then
-        vc_mtime=$(stat -c %Y "$version_cache_file" 2>/dev/null || stat -f %m "$version_cache_file" 2>/dev/null)
-        vc_now=$(date +%s)
-        vc_age=$(( vc_now - vc_mtime ))
-        if [ "$vc_age" -lt "$version_cache_max_age" ]; then
-            version_needs_refresh=false
-        fi
-        version_data=$(cat "$version_cache_file" 2>/dev/null)
-    fi
-
-    if $version_needs_refresh; then
-        touch "$version_cache_file" 2>/dev/null
-        vc_response=$(curl -s --max-time 5 \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/daniel3303/ClaudeCodeStatusLine/releases/latest" 2>/dev/null)
-        if [ -n "$vc_response" ] && echo "$vc_response" | jq -e '.tag_name' >/dev/null 2>&1; then
-            version_data="$vc_response"
-            echo "$vc_response" > "$version_cache_file"
-        elif [ ! -s "$version_cache_file" ]; then
-            rm -f "$version_cache_file" 2>/dev/null
-        fi
-    fi
-
-    if [ -n "$version_data" ]; then
-        latest_tag=$(echo "$version_data" | jq -r '.tag_name // empty')
-        if [ -n "$latest_tag" ] && version_gt "$latest_tag" "$VERSION"; then
-            update_line="\n${dim}Update available: ${latest_tag} → Tell Claude: \"Find my installed status bar and update it\"${reset}"
-        fi
+quota_group=""
+if [ -n "$five_pct" ]; then
+    p=$(printf '%.0f' "$five_pct")
+    quota_group="5h $(usage_color "$p")${p}%${reset}"
+    [ -n "$five_reset" ] && [ "$five_reset" != "null" ] && [ "$five_reset" != "0" ] && quota_group+=" ${dim}$(fmt_time "$five_reset")${reset}"
+fi
+if [ -n "$seven_pct" ]; then
+    p=$(printf '%.0f' "$seven_pct")
+    [ -n "$quota_group" ] && quota_group+="$item_sep"
+    quota_group+="7j $(usage_color "$p")${p}%${reset}"
+    [ -n "$seven_reset" ] && [ "$seven_reset" != "null" ] && [ "$seven_reset" != "0" ] && quota_group+=" ${dim}$(fmt_day_time "$seven_reset")${reset}"
+fi
+# Extra credit only once it is on, capped and in use.
+if [ "$(echo "$usage_data" | jq -r '.extra_usage.is_enabled // false' 2>/dev/null)" = "true" ]; then
+    used=$(echo "$usage_data" | jq -r '.extra_usage.used_credits // 0' | LC_NUMERIC=C awk '{printf "%.2f", $1/100}')
+    limit=$(echo "$usage_data" | jq -r '.extra_usage.monthly_limit // 0' | LC_NUMERIC=C awk '{printf "%.2f", $1/100}')
+    if LC_NUMERIC=C awk -v u="$used" -v l="$limit" 'BEGIN {exit !(u > 0 && l > 0)}'; then
+        p=$(echo "$usage_data" | jq -r '.extra_usage.utilization // 0' | awk '{printf "%.0f", $1}')
+        [ -n "$quota_group" ] && quota_group+="$item_sep"
+        quota_group+="extra $(usage_color "$p")\$${used}/\$${limit}${reset}"
     fi
 fi
 
-# ===== Latest Claude Code version from npm (cached, 6h TTL) =====
-# Used to show whether the installed CLI is current, next to the version segment.
-# Honors STATUSLINE_CHECK_UPDATES=false to skip the network call.
-cli_latest=""
-if [ "${STATUSLINE_CHECK_UPDATES:-true}" != "false" ] && [ -n "$cli_version" ]; then
-    cli_latest_cache="/tmp/claude/statusline-cli-latest"
-    cli_latest_max_age=21600  # 6 hours
-    if [ -f "$cli_latest_cache" ]; then
-        cl_mtime=$(stat -c %Y "$cli_latest_cache" 2>/dev/null || stat -f %m "$cli_latest_cache" 2>/dev/null)
-        cl_age=$(( $(date +%s) - cl_mtime ))
-        [ "$cl_age" -lt "$cli_latest_max_age" ] && cli_latest=$(cat "$cli_latest_cache" 2>/dev/null)
-    fi
-    if [ -z "$cli_latest" ]; then
-        touch "$cli_latest_cache" 2>/dev/null  # stampede lock for parallel panes
-        cl_resp=$(curl -s --max-time 5 "https://registry.npmjs.org/@anthropic-ai/claude-code/latest" 2>/dev/null)
-        cl_ver=$(echo "$cl_resp" | jq -r '.version // empty' 2>/dev/null)
-        if [ -n "$cl_ver" ]; then
-            cli_latest="$cl_ver"
-            echo "$cl_ver" > "$cli_latest_cache"
-        elif [ ! -s "$cli_latest_cache" ]; then
-            rm -f "$cli_latest_cache" 2>/dev/null  # don't suppress retries on failure
-        fi
-    fi
+# ===== Group 5: version (red ⇡ with the newer one when the release channel has it) =====
+cli_cache="/tmp/claude/statusline-cli-version"
+cli_version=""
+[ -s "$cli_cache" ] && [ "$(file_age "$cli_cache")" -lt 3600 ] && cli_version=$(cat "$cli_cache")
+if [ -z "$cli_version" ]; then
+    cli_version=$(claude --version 2>/dev/null | awk '{print $1}')
+    [ -n "$cli_version" ] && echo "$cli_version" > "$cli_cache"
 fi
 
-# Append CLI version as last segment, with an up-to-date indicator
+version_group=""
 if [ -n "$cli_version" ]; then
-    out+=" ${dim}|${reset} ${orange}v${cli_version}${reset}"
-    if [ -n "$cli_latest" ]; then
-        if version_gt "$cli_latest" "$cli_version"; then
-            out+=" ${yellow}↑${cli_latest}${reset}"   # newer version available
-        else
-            out+=" ${green}✓${reset}"                 # up to date
+    version_group="${dim}v${cli_version}${reset}"
+    # Set STATUSLINE_CHECK_UPDATES=false for no network call.
+    if [ "${STATUSLINE_CHECK_UPDATES:-true}" != "false" ]; then
+        channel=$(jq -r '.autoUpdatesChannel // "latest"' "$settings_path" 2>/dev/null)
+        case "$channel" in latest|stable) ;; *) channel="latest" ;; esac
+        latest_cache="/tmp/claude/statusline-cli-${channel}"
+        latest=""
+        [ -s "$latest_cache" ] && [ "$(file_age "$latest_cache")" -lt 21600 ] && latest=$(cat "$latest_cache")
+        if [ -z "$latest" ]; then
+            touch "$latest_cache"  # one fetch for parallel panes
+            fetched=$(curl -s --max-time 5 "https://downloads.claude.ai/claude-code-releases/${channel}" 2>/dev/null)
+            if [[ "$fetched" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                latest="$fetched"
+                echo "$latest" > "$latest_cache"
+            else
+                rm -f "$latest_cache"
+            fi
         fi
+        [ -n "$latest" ] && version_gt "$latest" "$cli_version" && version_group+=" ${red}⇡${latest}${reset}"
     fi
 fi
 
-# Output
-printf "%b" "$out$update_line"
-
+# ===== Output =====
+out="$model_group"
+for group in "$code_group" "$session_group" "$quota_group" "$version_group"; do
+    [ -n "$group" ] && out+="${group_sep}${group}"
+done
+printf "%b" "$out"
 exit 0
