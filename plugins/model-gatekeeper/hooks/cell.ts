@@ -21,7 +21,7 @@ export function cellParts(list: readonly Decision[], isOn: boolean, maxColumns: 
 
     return count === 0 ? [] : [{ text: `●${count}`, color: TIER_COLOR[tier] }]
   }).flatMap((part, index) => (index === 0 ? [part] : [{ text: ' ' }, part]))
-  const saved = list.reduce((sum, one) => sum + (one.savedUsd ?? 0), 0)
+  const saved = list.reduce((sum, one) => sum + (Number.isFinite(one.savedUsd) ? (one.savedUsd ?? 0) : 0), 0)
   const withSaved: Part[] = [...counts, { text: ` ~${usd(saved)} éco.`, dim: true }]
 
   return fit(withSaved, maxColumns) ?? fit(counts, maxColumns)

@@ -19,8 +19,10 @@ const INPUT_PRICE: Readonly<Record<string, number>> = {
   'claude-fable-5': 10,
 }
 
-export function priceOf(model: string | undefined): number | undefined {
-  if (model === undefined) return undefined
+export function priceOf(raw: string | undefined): number | undefined {
+  if (raw === undefined) return undefined
+  // `us.anthropic.claude-opus-4-8-v1:0`, `anthropic/claude-...` and upper case read as the bare id.
+  const model = raw.toLowerCase().replace(/^.*?(?=claude-)/, '')
   const key = Object.keys(INPUT_PRICE)
     .filter(id => model === id || (model.startsWith(id) && !/[a-z0-9]/.test(model.charAt(id.length))))
     .sort((a, b) => b.length - a.length)[0]
@@ -35,13 +37,13 @@ export function priceOf(model: string | undefined): number | undefined {
 export function savedUsd(costUsd: number, agentModel: string | undefined, parentModel: string | undefined): number {
   const ran = priceOf(agentModel)
   const would = priceOf(parentModel)
-  if (ran === undefined || would === undefined || ran <= 0 || would <= ran || costUsd <= 0) return 0
+  if (ran === undefined || would === undefined || ran <= 0 || would <= ran || !(costUsd > 0) || !Number.isFinite(costUsd)) return 0
 
   return costUsd * (would / ran - 1)
 }
 
 export function usd(amount: number): string {
-  if (amount <= 0) return '$0'
+  if (!Number.isFinite(amount) || amount <= 0) return '$0'
   if (amount < 0.01) return '<$0.01'
 
   return `$${amount.toFixed(2)}`
