@@ -5,8 +5,7 @@ description: Use when implementing a feature, fixing a bug, refactoring, reviewi
 
 # alta-dev
 
-Full-lifecycle development standard, from the first question to the merged PR. Supersedes
-`alta-implement` and `alta-review`.
+Full-lifecycle development standard, from the first question to the merged PR.
 
 **Two deliverables, always: clean code and an architecture that holds.** When the work creates
 something new, the shape comes first (`roles/architecture.md`), then the code that fills it.
